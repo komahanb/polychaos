@@ -371,7 +371,8 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
               fvarprime= fvarprime(1:ndim) !/(DS(2,1:ndim)-DS(1,1:ndim))
               write(filenum,*)
               write(filenum,'(6x,a,5e15.5)')'>> xavg ',xavg(1:ndim)
-              write(filenum,'(6x,a,5e15.5)')'>> xstd ',xstd(1:ndim)              
+              write(filenum,'(6x,a,5e15.5)')'>> xstd ',xstd(1:ndim)  
+              write(filenum,'(6x,a,i4)')'>> Function index:',fctindx
               write(filenum,*)
               write(filenum,'(6x,a,3e15.5)')'>> Mean, Var, SD  = ',fmean,fvar,fstd
               write(filenum,'(6x,a,20e15.5)')'>> Meanprime = ',fmeanprime(1:ndim)

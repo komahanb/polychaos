@@ -1,4 +1,4 @@
-subroutine PCestimate(dim,xavgin,xstdin,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fctin,fctindxin,orderfinal,statinitial,statfinal)
+subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,statin,fmeanout,fvarout,fmeanprimeout,fvarprimeout)
 
   use dimpce
   !  use timer_mod
@@ -12,7 +12,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fmeanout,fvarout,fmeanprimeout,fvarprime
   !Input variables
   integer,intent(in):: DIM
   double precision,intent(in) :: xavgin(dim),xstdin(dim)
-  integer,intent(in)::fctindxin,fctin,orderfinal,statinitial,statfinal
+  integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
   
   !Export variables  
   double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(dim),fvarprimeout(dim)
@@ -69,7 +69,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fmeanout,fvarout,fmeanprimeout,fvarprime
 
   !Settings
    
-  filenum=  6 ! 6 for screen, any other number for fort.x
+  filenum=  77 ! 6 for screen, any other number for fort.x
   
   if(id_proc.eq.0)  then
 
@@ -117,11 +117,11 @@ subroutine PCestimate(dim,xavgin,xstdin,fmeanout,fvarout,fmeanprimeout,fvarprime
 !!$     read(10,*) evlfnc
 !!$     close(10)
 !!$  end if
-  print*,'here1'
 
-          xavg(1:dim)=xavgin(1:dim)
-     	  xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
-	    print*,'here2'
+
+  xavg(1:dim)=xavgin(1:dim)
+  xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
+
   do  dynamics=1,1
 
      !===============================
@@ -130,8 +130,8 @@ subroutine PCestimate(dim,xavgin,xstdin,fmeanout,fvarout,fmeanprimeout,fvarprime
 
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=statinitial,statfinal   ! 0= Function only, 1= Function + Gradient , 2= Function +Gradient +Hessian   
-  print*,'here3'
+        do  stat=statin,statin   ! 0= Function only, 1= Function + Gradient , 2= Function +Gradient +Hessian   
+
 
 !	if(id_proc.eq.0) print *, stat,fctin,fctindxin,statinitial, statfinal,orderfinal
 
@@ -194,8 +194,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fmeanout,fvarout,fmeanprimeout,fvarprime
               !             if (fctindx.eq.4) call system('cp MCSampCFD00.dat MCSampCFD04.dat')
 
               dyncyccnt=0
-  print*,'here3'
-              do DIMPC =2,orderfinal !order 5D requires 3003 terms
+              do DIMPC =orderinitial,orderfinal !order 5D requires 3003 terms
 
                  dyncyccnt=dyncyccnt+1
 

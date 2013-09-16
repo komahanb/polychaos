@@ -31,30 +31,30 @@
      >> Setting up the RHS with Function evals . . .
      >> Number of RHS entries :          12
  
-           1 -0.345885910691692     
-           2 -0.765334063049421     
-           3 -0.115050656342681     
-           4 -0.367126101168508     
-           5 -0.750111673486813     
-           6  0.461511405671732     
-           7 -0.263298339395540     
-           8 -0.226375621819256     
-           9 -0.694020534119390     
-          10 -0.950912688341638     
-          11 -0.959480863792812     
-          12  0.760064099924284     
+           1  0.210560846182736     
+           2  0.153392528319307     
+           3 -0.777867357326559     
+           4 -0.168794343077449     
+           5 -0.949517810164168     
+           6  0.647749044762047     
+           7 -0.606465870454015     
+           8 -0.372579991168847     
+           9 -0.982396371216830     
+          10 -0.420974732619971     
+          11  0.663336848302573     
+          12 -0.966565026371330     
  
  =================================================
              Solve Linear System                  
  =================================================
  
  >> Solving for the coefficients . . . 
-           1   1.71898005645292     
-           2  -1.34331226812849     
-           3  -1.15222457401074     
-           4  0.121855170440984     
-           5  0.146342614298278     
-           6  8.897963695286405E-002
+           1   2.09427943403256     
+           2  -1.73975042686735     
+           3  -1.46671458051481     
+           4  0.231432629710769     
+           5  0.304972806023079     
+           6  0.140633498078583     
  >> Coeffs are succesfully determined . . .
  >> Number of coefficients :            6
  
@@ -67,28 +67,31 @@
       >> # of Monte-Carlo Samples =   100000
       >> Writing       100000  Monte-Carlo samples to MCsamp.dat
  
-           >> [     25001     37500 ] for Processor  2
-           >> [     62501     75000 ] for Processor  5
            >> [         1     12500 ] for Processor  0
+           >> [     12501     25000 ] for Processor  1
+           >> [     25001     37500 ] for Processor  2
            >> [     75001     87500 ] for Processor  6
+           >> [     62501     75000 ] for Processor  5
+           >> [     50001     62500 ] for Processor  4
            >> [     37501     50000 ] for Processor  3
            >> [     87501    100000 ] for Processor  7
-           >> [     12501     25000 ] for Processor  1
-           >> [     50001     62500 ] for Processor  4
  
-      >> Mean, Var, SD  =    -0.39961E+00    0.77854E-01    0.27902E+00
-      >> Meanprime =    -0.83140E+00   -0.73894E+00
-      >> Varprime =    -0.51538E-01   -0.39890E-01
-      >> Range of X(min) =   -0.080  -0.077
-      >> Range of X(max) =    2.099   2.137
-      >> Ymax/min =     0.95963E+00   -0.13459E+01
-      >> Output Histogram  [   -0.13459E+01 :    0.95963E+00 ]
+      >> xavg     0.10000E+01    0.10000E+01
+      >> xstd     0.25000E+00    0.25000E+00
  
-      Real : Mean, Var, SD   -0.39091E+00    0.92657E-01    0.30440E+00
+      >> Mean, Var, SD  =    -0.40021E+00    0.70561E-01    0.26563E+00
+      >> Meanprime =    -0.74048E+00   -0.73984E+00
+      >> Varprime =    -0.92904E-01   -0.67566E-01
+      >> Range of X(min) =   -0.125  -0.072
+      >> Range of X(max) =    2.122   2.147
+      >> Ymax/min =     0.13531E+01   -0.10725E+01
+      >> Output Histogram  [   -0.10725E+01 :    0.13531E+01 ]
  
-      PC   : Mean, Var, SD   -0.39961E+00    0.77854E-01    0.27902E+00
+      Real : Mean, Var, SD   -0.39095E+00    0.93163E-01    0.30523E+00
  
-      Error: Mean, Var, SD    0.87028E-02    0.14803E-01    0.25373E-01
+      PC   : Mean, Var, SD   -0.40021E+00    0.70561E-01    0.26563E+00
+ 
+      Error: Mean, Var, SD    0.92554E-02    0.22602E-01    0.39593E-01
  
  
  =================================================
@@ -99,15 +102,15 @@
       >> RMSE on        10201  points . . .
  
            >> [         1      1275 ] for Processor  0
-           >> [      2551      3825 ] for Processor  2
            >> [      1276      2550 ] for Processor  1
-           >> [      3826      5100 ] for Processor  3
+           >> [      5101      6375 ] for Processor  4
+           >> [      2551      3825 ] for Processor  2
            >> [      7651      8925 ] for Processor  6
            >> [      6376      7650 ] for Processor  5
+           >> [      3826      5100 ] for Processor  3
            >> [      8926     10201 ] for Processor  7
-           >> [      5101      6375 ] for Processor  4
  
-      >> RMSE compared to Analytical function =     0.7127966973E-01
+      >> RMSE compared to Analytical function =     0.6175294610E-01
  
  
  =================================================
@@ -123,37 +126,37 @@
   >> NPTS to add this cycle:           8
  >> Number of test candidates         400
            >> [         1        50 ] for Processor  0
-           >> [       301       350 ] for Processor  6
-           >> [       101       150 ] for Processor  2
-           >> [       151       200 ] for Processor  3
-           >> [       351       400 ] for Processor  7
            >> [        51       100 ] for Processor  1
            >> [       201       250 ] for Processor  4
+           >> [       101       150 ] for Processor  2
+           >> [       301       350 ] for Processor  6
            >> [       251       300 ] for Processor  5
+           >> [       151       200 ] for Processor  3
+           >> [       351       400 ] for Processor  7
  
->>Loc diff is  0.18E+00 for test candidate   127 at iteration   2
- x =       1.66      1.73
+>>Loc diff is  0.21E+00 for test candidate   115 at iteration   2
+ x =       0.27      0.28
  
->>Loc diff is  0.16E+00 for test candidate   154 at iteration   2
- x =       0.37      1.74
+>>Loc diff is  0.15E+00 for test candidate   248 at iteration   2
+ x =       1.73      0.38
  
->>Loc diff is  0.11E+00 for test candidate    93 at iteration   2
- x =       0.65      1.65
+>>Loc diff is  0.15E+00 for test candidate   204 at iteration   2
+ x =       1.72      0.92
  
->>Loc diff is  0.10E+00 for test candidate   116 at iteration   2
- x =       1.72      1.41
+>>Loc diff is  0.12E+00 for test candidate   303 at iteration   2
+ x =       1.63      0.65
  
->>Loc diff is  0.71E-01 for test candidate   395 at iteration   2
- x =       0.78      0.56
+>>Loc diff is  0.11E+00 for test candidate   109 at iteration   2
+ x =       1.70      1.15
  
->>Loc diff is  0.63E-01 for test candidate   348 at iteration   2
- x =       0.40      1.42
+>>Loc diff is  0.10E+00 for test candidate   197 at iteration   2
+ x =       0.62      1.74
  
->>Loc diff is  0.53E-01 for test candidate    75 at iteration   2
- x =       0.54      0.76
+>>Loc diff is  0.94E-01 for test candidate   260 at iteration   2
+ x =       0.85      1.75
  
->>Loc diff is  0.50E-01 for test candidate   139 at iteration   2
- x =       1.09      0.61
+>>Loc diff is  0.90E-01 for test candidate   320 at iteration   2
+ x =       0.88      0.48
  
  =================================================
          Matrix Setup & Pseudo-Inverse            
@@ -172,42 +175,42 @@
      >> Setting up the RHS with Function evals . . .
      >> Number of RHS entries :          20
  
-           1 -0.345885910691692     
-           2 -0.765334063049421     
-           3 -0.115050656342681     
-           4 -0.367126101168508     
-           5 -0.750111673486813     
-           6  0.461511405671732     
-           7 -0.263298339395540     
-           8 -0.226375621819256     
-           9 -0.694020534119390     
-          10 -0.950912688341638     
-          11 -0.959480863792812     
-          12  0.760064099924284     
-          13 -0.967690625369863     
-          14 -0.515824145325971     
-          15 -0.668971241498690     
-          16 -0.999862355643131     
-          17  0.226197350065143     
-          18 -0.248083149514431     
-          19  0.267086410786784     
-          20 -0.122313858074063     
+           1  0.210560846182736     
+           2  0.153392528319307     
+           3 -0.777867357326559     
+           4 -0.168794343077449     
+           5 -0.949517810164168     
+           6  0.647749044762047     
+           7 -0.606465870454015     
+           8 -0.372579991168847     
+           9 -0.982396371216830     
+          10 -0.420974732619971     
+          11  0.663336848302573     
+          12 -0.966565026371330     
+          13  0.854752948623201     
+          14 -0.515291294181340     
+          15 -0.879679239673358     
+          16 -0.647175781658770     
+          17 -0.956577632732938     
+          18 -0.706851660846574     
+          19 -0.852785656312358     
+          20  0.213103149700982     
  
  =================================================
              Solve Linear System                  
  =================================================
  
  >> Solving for the coefficients . . . 
-           1  0.651887396070542     
-           2  8.105418990484381E-002
-           3  0.231301436633508     
-           4 -0.363754877156145     
-           5  -1.18519998207265     
-           6 -0.444060170980764     
-           7  4.441565562412050E-002
-           8  0.260984045362115     
-           9  0.256778141488381     
-          10  5.891910501432915E-002
+           1  0.602959430712636     
+           2  0.233292960384701     
+           3  0.200866251060893     
+           4 -0.436371495804831     
+           5  -1.24140516179772     
+           6 -0.408627386676029     
+           7  5.623807370148302E-002
+           8  0.271929109960982     
+           9  0.261156561576206     
+          10  5.190288078763788E-002
  >> Coeffs are succesfully determined . . .
  >> Number of coefficients :           10
  
@@ -220,28 +223,31 @@
       >> # of Monte-Carlo Samples =   100000
       >> Writing       100000  Monte-Carlo samples to MCsamp.dat
  
+           >> [         1     12500 ] for Processor  0
            >> [     25001     37500 ] for Processor  2
-           >> [     37501     50000 ] for Processor  3
-           >> [     50001     62500 ] for Processor  4
            >> [     62501     75000 ] for Processor  5
+           >> [     12501     25000 ] for Processor  1
+           >> [     50001     62500 ] for Processor  4
+           >> [     37501     50000 ] for Processor  3
            >> [     75001     87500 ] for Processor  6
            >> [     87501    100000 ] for Processor  7
-           >> [     12501     25000 ] for Processor  1
-           >> [         1     12500 ] for Processor  0
  
-      >> Mean, Var, SD  =    -0.38637E+00    0.90827E-01    0.30137E+00
-      >> Meanprime =    -0.84423E+00   -0.84910E+00
-      >> Varprime =    -0.72888E-01   -0.68796E-01
-      >> Range of X(min) =   -0.067  -0.069
-      >> Range of X(max) =    2.111   2.135
-      >> Ymax/min =     0.85602E+00   -0.10155E+01
-      >> Output Histogram  [   -0.10155E+01 :    0.85602E+00 ]
+      >> xavg     0.10000E+01    0.10000E+01
+      >> xstd     0.25000E+00    0.25000E+00
  
-      Real : Mean, Var, SD   -0.39087E+00    0.92668E-01    0.30441E+00
+      >> Mean, Var, SD  =    -0.38664E+00    0.91741E-01    0.30289E+00
+      >> Meanprime =    -0.85203E+00   -0.84981E+00
+      >> Varprime =    -0.70893E-01   -0.69531E-01
+      >> Range of X(min) =   -0.175  -0.184
+      >> Range of X(max) =    2.106   2.110
+      >> Ymax/min =     0.88426E+00   -0.10223E+01
+      >> Output Histogram  [   -0.10223E+01 :    0.88426E+00 ]
  
-      PC   : Mean, Var, SD   -0.38637E+00    0.90827E-01    0.30137E+00
+      Real : Mean, Var, SD   -0.39095E+00    0.92710E-01    0.30448E+00
  
-      Error: Mean, Var, SD    0.44998E-02    0.18417E-02    0.30402E-02
+      PC   : Mean, Var, SD   -0.38664E+00    0.91741E-01    0.30289E+00
+ 
+      Error: Mean, Var, SD    0.43163E-02    0.96841E-03    0.15944E-02
  
  
  =================================================
@@ -251,16 +257,16 @@
  
       >> RMSE on        10201  points . . .
  
+           >> [         1      1275 ] for Processor  0
+           >> [      1276      2550 ] for Processor  1
+           >> [      5101      6375 ] for Processor  4
            >> [      3826      5100 ] for Processor  3
            >> [      8926     10201 ] for Processor  7
-           >> [      1276      2550 ] for Processor  1
-           >> [      6376      7650 ] for Processor  5
-           >> [      7651      8925 ] for Processor  6
-           >> [      5101      6375 ] for Processor  4
            >> [      2551      3825 ] for Processor  2
-           >> [         1      1275 ] for Processor  0
+           >> [      7651      8925 ] for Processor  6
+           >> [      6376      7650 ] for Processor  5
  
-      >> RMSE compared to Analytical function =     0.6296393337E-02
+      >> RMSE compared to Analytical function =     0.5630311674E-02
  
  
  =================================================
