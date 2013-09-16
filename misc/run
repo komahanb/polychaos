@@ -1,0 +1,2 @@
+ifort -r8 -i8 npts.f90 
+./a.out

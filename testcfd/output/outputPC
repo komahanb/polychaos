@@ -1,0 +1,2 @@
+ variables= "x","y","fPC"
+ zone i=                   101  j=                   101  datapacking=point

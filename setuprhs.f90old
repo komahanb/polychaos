@@ -1,0 +1,120 @@
+!subroutine setupRHS(type,stat,dim,npts,fpcb,gpcb,rhsF,rhsG)
+subroutine setupRHS(stat,dim,npts,fpcb,gpcb,hpcb,numpc,rhsF)
+
+  implicit none
+  include 'collsub.h'
+
+  integer,intent(in):: stat,dim,npts
+  integer::j,k,i
+  integer,intent(out)::numpc
+  
+  real*8,intent(in) :: fpcb(MAXPTS),gpcb(DIM,MAXPTS),hpcb(dim,dim,maxpts)
+
+  real*8::rhsF(maxdat)
+  real*8 :: tmp(maxdat)
+
+  if (stat.eq.0) then
+     numpc=0
+     do j=1,npts
+        numpc=numpc+1
+        tmp(j) = fpcb(j)
+     enddo
+     rhsF(:)=tmp(:)
+
+  else if (stat.eq.1) then
+
+     numpc=0
+     do j=1,npts
+        numpc=numpc+1
+        tmp(numpc) = fpcb(j)
+
+        do k=1,DIM
+
+           numpc=numpc+1
+           tmp(numpc) = gpcb(k,j)
+
+        end do
+     enddo
+     rhsF=tmp
+
+  else if (stat.eq.2) then
+
+
+     numpc=0
+     do j=1,npts
+        numpc=numpc+1
+        tmp(numpc) = fpcb(j)
+
+        do k=1,DIM
+
+           numpc=numpc+1
+           tmp(numpc) = gpcb(k,j)
+
+        end do
+
+
+        do k=1,dim
+           do i=1,dim
+              numpc=numpc+1
+              tmp(numpc) = hpcb(k,i,j)
+           end do
+        end do
+
+
+
+     enddo
+     rhsF=tmp
+
+  else
+
+     stop 'unknown stat'
+
+  end if
+
+end subroutine setupRHS
+
+!else if (type.eq.2) then
+!!$
+
+!!$  !===============================================================
+!!$
+!!$  ! Set up linear system Ax=B [xmat*=tmp]
+!!$
+!!$  !================================================================
+!!$
+!!$  !-----------------------------------
+!!$  ! ( 1 ) Right hand side vector (tmp)
+!!$  ! -----------------------------------
+!!$
+!!$   if (stat.eq.0) then
+!!$     numpc=0
+!!$     do j=1,npts
+!!$        numpc=numpc+1
+!!$        rhsF(j) = fpcb(j)
+!!$     enddo
+!!$
+!!$  else if (stat.eq.1) then
+!!$
+!!$     numpc=0
+!!$     do j=1,npts
+!!$        numpc=numpc+1
+!!$        rhsF(numpc) = fpcb(j)
+!!$     end do
+!!$
+!!$     numpc=0
+!!$     do j=1,npts
+!!$        do k=1,DIM
+!!$           numpc=numpc+1
+!!$           rhsG(numpc) = gpcb(k,j)
+!!$!           print *, rhsG(numpc)
+!!$        end do
+!!$        ! rhsgrad(1:DIM,j)=gpcb(1:DIM,j) not needed
+!!$     enddo
+!!$
+!!$  else 
+!!$
+!!$     stop 'Hessian not yet implemented'
+!!$
+!!$  end if
+!!$  
+!!$end if !type number
