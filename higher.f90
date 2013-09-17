@@ -39,7 +39,7 @@ subroutine RMSE_Higher(stat,ndim,fct,npts,dimPC,ipar,par,xcof)
   if(ndim.eq.3) ifac=30
 
   if (ndim.eq.2) then
-     if (fct.eq.10) then
+     if (fct.eq.20) then
         ifac = 51 ! I have database of only  51*51 for CFD
      else 
         ifac=101
@@ -79,7 +79,7 @@ subroutine RMSE_Higher(stat,ndim,fct,npts,dimPC,ipar,par,xcof)
   ! CFD TEST CASE SPECIAL CODING
   !===============================
 
-  if (id_proc.eq.0.and.ndim.eq.2.and.fct.eq.10) then
+  if (id_proc.eq.0.and.ndim.eq.2.and.fct.eq.20) then
 
      write(filenum,*) '>>  Reading from the existing CFD database for RMSE'
 

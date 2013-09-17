@@ -15,7 +15,7 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv) !hpcb to be implemented
   ! Evaluate Function value and gradients and also hessian
   !======================================================
 
-  if (fct.le.8) then
+  if (fct.le.19) then
 
      call get_f(dim,fct,x(1:DIM),fv)
 
@@ -27,7 +27,7 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv) !hpcb to be implemented
         call get_dff(dim,fct,x(1:DIM),hv)
      end if
 
-  else if (Fct.eq.10) then
+  else if (Fct.eq.20) then
 
      ! Flow solver needs input 1) Angle of attack in rads and 2) Mach number
 
@@ -119,224 +119,396 @@ end subroutine evalcostf
 subroutine get_f(dim,fct,x,f)
   use dimpce
   implicit none
+
+  integer :: fct,dim,k
+  real*8, intent(in)  :: x(dim)
+  real*8, intent(out) :: f
+
+  !real*8 :: rho, L, sigmay, pi, Fs, p, E !Truss design parameters
+  real*8 :: rho, L, sigmay, pi, Fs, p, E, R, T,sigma_allow !Truss design parameters
+  real*8:: tau_allow,M,V,B,D
+  f=0.0d0
+
+  if (fct.eq.1) then     
+
+     f=0.0
+     do k=1,DIM
+        f=f+x(k)
+     end do
+     f=cos(f)
+
+
+  else if (fct.eq.2) then
+
+     f=1.0
+     do k=1,DIM
+        f=f+x(k)**2
+     end do
+     f=1.0/f
+
+  else if (fct.eq.3) then
+
+     f=0.0
+     do k=1,DIM
+        f=f+x(k)**2
+     end do
+     f=f
+
+  else if (fct.eq.4) then
+
+     f=0.0
+     do k=1,DIM
+        f=f+x(k)
+     end do
+     f=exp(f)
+
+  else if (fct.eq.5) then
+
+     f=0.0
+     do k=1,DIM
+        f=f+x(k)**3
+     end do
+     f=f
+
+  else if (fct.eq.6) then
+
+     f=0.0
+     do k=1,DIM-1
+        f=f+100.0*(x(k+1)-x(k)**2)**2+(1-x(k))**2
+     end do
+
+  else if (fct.eq.7) then
+
+
+     f=0.0
+     do k=1,DIM        
+        f=f+sin(3.0*x(k)-1.5)+cos(3.0*x(k)-3.0)
+     end do
+     f=f
+
+  else if (fct.eq.8) then
+
+     rho=0.2836
+     sigmay=36260.0
+     p=25000.0
+     L=5.0
+     E=30e6
+     pi=4.0*atan(1.0)
+
+     Fs=1.0
+
+     if (fctindx.eq.0) then
+        !---- OBJECTIVE FUNCTION
+        f = rho*x(1)*L+rho*x(2)*sqrt(L**2+x(3)**2)
+     else if (fctindx.eq.1) then
+        !---- INEQUALITY CONSTRAINTS
+        f = p*Fs*sqrt(L**2+x(3)**2) / (x(2)*x(3)*sigmay) - 1.0
+     else if (fctindx.eq.2) then  
+        f = p*Fs*L / (x(1)*x(3)*sigmay) - 1.0
+     else if (fctindx.eq.3) then
+        f = 4.0*p*Fs*L**3 / (x(1)**2*x(3)*E*pi) - 1.0
+     end if
+
+
+
+  else if (fct.eq.9) then ! Tubular column
+
+     !Thanks: Arora Section 3.7
+
+     p=10.0e6               !10 MN
+     E=207000               !N/mm2
+     rho=7.833e-6           !kg/m3
+     sigma_allow=248        !N/mm2
+     pi=4.0*atan(1.0)
+     Fs=1.0
+
+     !define R,T
+
+     R=x(1)
+     T=x(2)
+     L=x(3)
+
+     if (fctindx.eq.0) then
+
+        !---- OBJECTIVE FUNCTION
+        f = 2.0*rho*L*pi*R*T
+
+     else if (fctindx.eq.1) then
+
+        !---- INEQUALITY CONSTRAINTS
+        f = P*Fs / (2.0*pi*R*T*sigma_allow) - 1.0
+
+     else if (fctindx.eq.2) then
+
+        f = 4.0*p*Fs*L**2 / (t*E*(R*pi)**3) - 1.0
+
+     else
+
+        print*, 'Wrong function index for this test case',fctindx
+        stop
+     end if
+
+
+  else if (fct.eq.10) then ! Cantilever beam 
+
+     ! Thanks: Section 3.8 Arora 
+
+     sigma_allow= 10.0 !N/mm2
+     M=40.0e6 !Nmm
+     V=150000.0 !N
+     tau_allow= 2.0 !N/mm2     
+     Fs=1.0
+
+     !define R,T
+
+     B=x(1)
+     D=x(2)
+!     L=x(3)
+
+     if (fctindx.eq.0) then
+
+        !---- OBJECTIVE FUNCTION
+        f = B*D
+
+     else if (fctindx.eq.1) then
+
+        !---- INEQUALITY CONSTRAINTS
+        !bending stress constraint
+
+        f=(6.0*M*fs)/(b*(d**2)*sigma_allow)       
+
+     else if (fctindx.eq.2) then
+
+        ! Inequality constraint 2
+        ! Shear Stress constraint
+
+        f=(3.0*V*fs)/(2*b*d*tau_allow)
+        
+     else
+
+        print*, 'Wrong function index for this test case',fctindx
+        stop
+     end if
+
+  else
+
+     print*,fct
+     stop'Unsupported function number'
+
+  end if
+
+end subroutine get_f
   
-    integer :: fct,dim,k
-    real*8, intent(in)  :: x(dim)
-    real*8, intent(out) :: f
+subroutine get_df(dim,fct,x,df)
+  use dimpce
+  implicit none
 
-    real*8 :: rho, L, sigmay, pi, Fs, p, E !Truss design parameters
+  integer :: fct,dim,k
+  real*8, intent(in)  :: x(dim)
+  real*8:: fac
+  real*8, intent(out) :: df(DIM)
+  real*8:: tau_allow,M,V,B,D
+  !    real*8 :: rho, L, sigmay, pi, Fs, p, E
+  real*8 :: rho, L, sigmay, pi, Fs, p, E, R, T,sigma_allow !Truss design parameters
 
-    f=0.0d0
- 
-    if (fct.eq.1) then     
+  if (fct.eq.1) then
 
-       f=0.0
-       do k=1,DIM
-          f=f+x(k)
-       end do
-       f=cos(f)
+     fac=0.0
+     do k=1,DIM
+        fac=fac+x(k)
+     end do
 
+     fac=-sin(fac)
 
-    else if (fct.eq.2) then
+     do k=1,DIM
+        df(k)=fac
+     end do
 
-       f=1.0
-       do k=1,DIM
-          f=f+x(k)**2
-       end do
-       f=1.0/f
+  else if (fct.eq.2) then 
 
-    else if (fct.eq.3) then
+     fac=1.0
+     do k=1,DIM
+        fac=fac+x(k)**2
+     end do
+     fac=1.0/fac**2
 
-       f=0.0
-       do k=1,DIM
-          f=f+x(k)**2
-       end do
-       f=f
+     do k=1,DIM
+        df(k)=-2.0*x(k)*fac
+     end do
 
-    else if (fct.eq.4) then
+  else if (fct.eq.3) then  
 
-       f=0.0
-       do k=1,DIM
-          f=f+x(k)
-       end do
-       f=exp(f)
+     do k=1,DIM
+        df(k)=2.0*x(k)
+     end do
 
-    else if (fct.eq.5) then
+  else if (fct.eq.4) then  
 
-       f=0.0
-       do k=1,DIM
-          f=f+x(k)**3
-       end do
-       f=f
+     !f=exp(x+y)
+     fac=0.0
+     do k=1,DIM
+        fac=fac+x(k)
+     end do
+     fac=exp(fac)
+     do k=1,DIM
+        df(k)=fac
+     end do
 
-    else if (fct.eq.6) then
+  else if (fct.eq.5) then  
 
-       f=0.0
-       do k=1,DIM-1
-          f=f+100.0*(x(k+1)-x(k)**2)**2+(1-x(k))**2
-       end do
+     !f=(x**2+y**2)
 
+     do k=1,DIM
+        df(k)=3.0*x(k)**2
+     end do
 
-
-
-    else if (fct.eq.7) then
-
-
-       f=0.0
-       do k=1,DIM        
-          f=f+sin(3.0*x(k)-1.5)+cos(3.0*x(k)-3.0)
-       end do
-       f=f
+  else if (fct.eq.6) then
 
 
+     df(1)=-200.0*(x(2)-x(1)**2)*2.0*x(1)-2.d0*(1-x(1))
+     do k=2,DIM-1
+        df(k)=200.0*(x(k)-x(k-1)**2)-200.0*(x(k+1)-x(k)**2)*2.0*x(k)-2.0*(1-x(k))
+     end do
+     df(DIM)=200.0*(x(DIM)-x(DIM-1)**2)
 
-    else if (fct.eq.8) then
+  else if (fct.eq.7) then
 
-       rho=0.2836
-       sigmay=36260.0
-       p=25000.0
-       L=5.0
-       E=30e6
-       pi=4.0*atan(1.0)
+     do k=1,DIM
+        df(k)=3.0*cos(3.0*x(k)-1.5)-3.0*sin(3.0*x(k)-3.0d0)
+     end do
 
-       Fs=1.0
 
-       if (fctindx.eq.0) then
-          !---- OBJECTIVE FUNCTION
-          f = rho*x(1)*L+rho*x(2)*sqrt(L**2+x(3)**2)
-       else if (fctindx.eq.1) then
-          !---- INEQUALITY CONSTRAINTS
-          f = p*Fs*sqrt(L**2+x(3)**2) / (x(2)*x(3)*sigmay) - 1.0
-       else if (fctindx.eq.2) then  
-          f = p*Fs*L / (x(1)*x(3)*sigmay) - 1.0
-       else if (fctindx.eq.3) then
-          f = 4.0*p*Fs*L**3 / (x(1)**2*x(3)*E*pi) - 1.0
-       end if
+  else if (fct.eq.8)then
 
-    else
+     rho=0.2836
+     sigmay=36260.0
+     p=25000.0
+     L=5.0
+     E=30e6
+     pi=4.0*atan(1.0)
 
-       stop'Unsupported function number'
-       
-    end if
+     Fs=1.0
 
-  end subroutine get_f
-  
-  subroutine get_df(dim,fct,x,df)
-    use dimpce
-    implicit none
+     if (fctindx.eq.0) then
+        !---- OBJECTIVE FUNCTION
+        df(1) = rho*L
+        df(2) = rho*sqrt(L**2+x(3)**2)
+        df(3) = rho*x(2)*x(3) / sqrt(L**2+x(3)**2)
+     else if (fctindx.eq.1) then
+        !---- INEQUALITY CONSTRAINTS
+        df(1) = 0.0
+        df(2) =-p*Fs*sqrt(L**2+x(3)**2) / (x(2)**2*x(3)*sigmay)
+        df(3) =-p*Fs*L**2 /sqrt(L**2/x(3)**2+1.0)/ (x(2)*x(3)**3*sigmay)
+     else if (fctindx.eq.2) then  
+        df(1) =-p*Fs*L / (x(1)**2*x(3)*sigmay)
+        df(2) = 0.0
+        df(3) =-p*Fs*L / (x(1)*x(3)**2*sigmay)
+     else if (fctindx.eq.3) then
+        df(1) =-8.0*p*Fs*L**3 / (pi*E*x(1)**3*x(3))
+        df(2) = 0.0
+        df(3) =-4.0*p*Fs*L**3 / (pi*E*x(1)**2*x(3)**2)
+     end if
 
-    integer :: fct,dim,k
-    real*8, intent(in)  :: x(dim)
-    real*8:: fac
-    real*8, intent(out) :: df(DIM)
+  else if (fct.eq.9) then
 
-    real*8 :: rho, L, sigmay, pi, Fs, p, E
+     !Thanks: Arora Section 3.7
 
-    if (fct.eq.1) then
+     p=10.0e6               !10 MN
+     E=207000               !N/mm2
+     rho=7.833e-6           !kg/m3
+     sigma_allow=248        !N/mm2
+     pi=4.0*atan(1.0)
+     Fs=1.0
 
-       fac=0.0
-       do k=1,DIM
-          fac=fac+x(k)
-       end do
+     !define R,T
 
-       fac=-sin(fac)
+     R=x(1)
+     T=x(2)
+     L=x(3)
 
-       do k=1,DIM
-          df(k)=fac
-       end do
+     if (fctindx.eq.0) then
 
-    else if (fct.eq.2) then 
+        !---- OBJECTIVE FUNCTION
+        df(1)=2.0*pi*rho*T*L
+        df(2)=2.0*pi*rho*R*L
+        df(3)=2.0*pi*rho*R*T
 
-       fac=1.0
-       do k=1,DIM
-          fac=fac+x(k)**2
-       end do
-       fac=1.0/fac**2
+     else if (fctindx.eq.1) then
 
-       do k=1,DIM
-          df(k)=-2.0*x(k)*fac
-       end do
+        !---- INEQUALITY CONSTRAINT 1
 
-    else if (fct.eq.3) then  
+        df(1)= -P*FS / (2.0*pi*rho*sigma_allow*(R**2)*T)
+        df(2)= -P*FS / (2.0*pi*rho*sigma_allow*R*T**2)
+        df(3)= 0.0
 
-       do k=1,DIM
-          df(k)=2.0*x(k)
-       end do
+     else if (fctindx.eq.2) then
 
-    else if (fct.eq.4) then  
+        !---- INEQUALITY CONSTRAINT 2
 
-       !f=exp(x+y)
-       fac=0.0
-       do k=1,DIM
-          fac=fac+x(k)
-       end do
-       fac=exp(fac)
-       do k=1,DIM
-          df(k)=fac
-       end do
+        df(1)=-12.0*fs*P*L**2 / (E*T*(pi**3)*(R**4))
+        df(2)= 8.0*P*L*FS / (E*T*(pi**3)*(R**3))
+        df(3)=-4.0*P*FS*L**2 / (E*(T**2)*(pi**3)*(R**3))
 
-    else if (fct.eq.5) then  
+     else
 
-       !f=(x**2+y**2)
+        print*, 'Wrong function index for this test case',fctindx
+        stop
 
-       do k=1,DIM
-          df(k)=3.0*x(k)**2
-       end do
+     end if
 
- else if (fct.eq.6) then
 
-  
-       df(1)=-200.0*(x(2)-x(1)**2)*2.0*x(1)-2.d0*(1-x(1))
-       do k=2,DIM-1
-          df(k)=200.0*(x(k)-x(k-1)**2)-200.0*(x(k+1)-x(k)**2)*2.0*x(k)-2.0*(1-x(k))
-       end do
-       df(DIM)=200.0*(x(DIM)-x(DIM-1)**2)
+  else if (fct.eq.10) then ! Cantilever beam 
 
-    else if (fct.eq.7) then
+     ! Thanks: Section 3.8 Arora 
 
-       do k=1,DIM
-          df(k)=3.0*cos(3.0*x(k)-1.5)-3.0*sin(3.0*x(k)-3.0d0)
-       end do
+     sigma_allow= 10.0 !N/mm2
+     M=40.0e6 !Nmm
+     V=150000.0 !N
+     tau_allow= 2.0 !N/mm2     
+     Fs=1.0
 
-   
-    else if (fct.eq.8)then
-       
-       rho=0.2836
-       sigmay=36260.0
-       p=25000.0
-       L=5.0
-       E=30e6
-       pi=4.0*atan(1.0)
+     !define R,T
 
-       Fs=1.0
+     B=x(1)
+     D=x(2)
 
-       if (fctindx.eq.0) then
-          !---- OBJECTIVE FUNCTION
-          df(1) = rho*L
-          df(2) = rho*sqrt(L**2+x(3)**2)
-          df(3) = rho*x(2)*x(3) / sqrt(L**2+x(3)**2)
-       else if (fctindx.eq.1) then
-!---- INEQUALITY CONSTRAINTS
-          df(1) = 0.0
-          df(2) =-p*Fs*sqrt(L**2+x(3)**2) / (x(2)**2*x(3)*sigmay)
-          df(3) =-p*Fs*L**2 /sqrt(L**2/x(3)**2+1.0)/ (x(2)*x(3)**3*sigmay)
-       else if (fctindx.eq.2) then  
-          df(1) =-p*Fs*L / (x(1)**2*x(3)*sigmay)
-          df(2) = 0.0
-          df(3) =-p*Fs*L / (x(1)*x(3)**2*sigmay)
-       else if (fctindx.eq.3) then
-          df(1) =-8.0*p*Fs*L**3 / (pi*E*x(1)**3*x(3))
-          df(2) = 0.0
-          df(3) =-4.0*p*Fs*L**3 / (pi*E*x(1)**2*x(3)**2)
-       end if
+     if (fctindx.eq.0) then
 
-    else
-       
-          stop'Unsupported function number'
+        !---- OBJECTIVE FUNCTION
+        df(1)=d
+        df(2)=b
 
-    end if
+     else if (fctindx.eq.1) then
 
-  end subroutine get_df
+        !---- INEQUALITY CONSTRAINT 1
+
+        df(1)= -(6.0*fs*M)/((b*d)**2*sigma_allow)
+        df(2)= -(12.0*M*fs)/(b*(d**3)*sigma_allow)
+
+
+     else if (fctindx.eq.2) then
+
+        !---- INEQUALITY CONSTRAINT 2
+
+        df(1)=-(3.0*V*fs)/(2.0*(b**2)*d*tau_allow)
+        df(2)=-(3.0*V*FS)/(2.0*b*(d**2)*tau_allow)
+
+     else
+
+        print*, 'Wrong function index for this test case',fctindx
+        stop
+
+     end if
+
+
+
+  else
+
+     stop'Unsupported function number'
+
+  end if
+
+end subroutine get_df
 
 !+++++++++++++++++++++++++++++++++++++++++++
 
@@ -347,8 +519,9 @@ subroutine get_f(dim,fct,x,f)
 
     integer :: DIM,fct,j,k
     real*8 :: x(DIM),d2f(DIM,DIM),fac,A,omeg
-
-    real*8 :: rho, L, sigmay, pi, Fs, p, E
+    real*8:: tau_allow,M,V,B,D
+!    real*8 :: rho, L, sigmay, pi, Fs, p, E
+    real*8 :: rho, L, sigmay, pi, Fs, p, E, R, T,sigma_allow !Truss design parameters
 
 
     if (fct.eq.1) then !Cosine
@@ -471,24 +644,189 @@ subroutine get_f(dim,fct,x,f)
           d2f(3,1) = rho*x(2)*x(3) / sqrt(L**2+x(3)**2)
 
        else if (fctindx.eq.1) then
-!---- INEQUALITY CONSTRAINTS
-!!$          df(1) = 0.0
-!!$          df(2) =-p*Fs*sqrt(L**2+x(3)**2) / (x(2)**2*x(3)*sigmay)
-!!$          df(3) =-p*Fs*L**2 /sqrt(L**2/x(3)**2+1.0)/ (x(2)*x(3)**3*sigmay)
+          !---- INEQUALITY CONSTRAINTS
+
+          d2f(2,3)= p*Fs*L**2/ sqrt(L**2/x(3)**2+1.0) / (x(2)**2*x(3)**3*sigmay)
+          d2f(3,3)= -p*Fs*L**2/(x(2)*sigmay)*(L**2/sqrt(L**2/x(3)**2+1.0)**3/x(3)**6 - 3.0/x(3)**4/sqrt(L**2/x(3)**2+1.0))
+
+          !copy to the upper triangle
+          d2f(3,2)=d2f(2,3)
+
        else if (fctindx.eq.2) then  
-!!$          df(1) =-p*Fs*L / (x(1)**2*x(3)*sigmay)
-!!$          df(2) = 0.0
-!!$          df(3) =-p*Fs*L / (x(1)*x(3)**2*sigmay)
+
+          d2f(1,3)= p*Fs*L / (x(1)**2*x(3)**2*sigmay)
+          d2f(3,3)= 2.0*p*Fs*L / (x(1)*x(3)**3*sigmay)
+
+          !copy to upper
+
+          d2f(3,1)=d2f(1,3)
+          
        else if (fctindx.eq.3) then
-!!$          df(1) =-8.0*p*Fs*L**3 / (pi*E*x(1)**3*x(3))
-!!$          df(2) = 0.0
-!!$          df(3) =-4.0*p*Fs*L**3 / (pi*E*x(1)**2*x(3)**2)
+
+         d2f(1,3)= 8.0*p*Fs*L**3 / (pi*x(3)**2*E*x(1)**3)
+         d2f(3,3)= 8.0*p*Fs*L**3 / (pi*x(3)**3*E*x(1)**2)
+
+         !copy to upper Triangle
+
+         d2f(3,1)=d2f(1,3)
+
        end if
 
+    else if (fct.eq.9) then
+
+
+       !Thanks: Arora Section 3.7
+       
+       p=10.0e6               !10 MN
+       E=207000               !N/mm2
+       rho=7.833e-6           !kg/m3
+       sigma_allow=248        !N/mm2
+       pi=4.0*atan(1.0)
+       Fs=1.0
+  
+       !define R,T
+       
+       R=x(1)
+       T=x(2)
+       L=x(3)
+
+       if (fctindx.eq.0) then
+
+          !---- OBJECTIVE FUNCTION
+          !lower triangle
+          d2f(1,1)=0.0
+          d2f(2,2)=0.0
+          d2f(3,3)=0.0
+
+          d2f(2,1)=2.0*pi*rho*L
+          d2f(3,2)=2.0*pi*rho*R
+
+          d2f(3,1)=2.0*pi*rho*T
+
+          !copy to upper triangle
+
+          d2f(1,2)=d2f(2,1)
+          d2f(2,3)=d2f(3,2)
+
+          d2f(1,3)=d2f(3,1)
+
+          
+       else if (fctindx.eq.1) then
+
+          !---- INEQUALITY CONSTRAINT 1
+          d2f(1,1)= P*FS/(pi*(R**3)*T*rho*sigma_allow)
+          d2f(2,2)= P*FS/(pi*R*(T**3)*rho*sigma_allow)
+          d2f(3,3)= 0.0
+
+          d2f(2,1)= P*FS/(2.0*pi*(R**2)*(T**2)*rho*sigma_allow)
+          d2f(3,2)= 0.0
+
+          d2f(3,1)= 0.0
+
+          !copy to upper triangle
+
+          d2f(1,2)=d2f(2,1)
+          d2f(2,3)=d2f(3,2)
+
+          d2f(1,3)=d2f(3,1)
+
+       else if (fctindx.eq.2) then
+
+          !---- INEQUALITY CONSTRAINT 2
+
+          !lower triangle
+          d2f(1,1)= 48.0*FS*(L**2)*P/(E*T*(pi**3)*(R**5))
+          d2f(2,2)= 8.0*P*FS/(E*T*(pi*R)**3)
+          d2f(3,3)= 8.0*FS*(L**2)*P/(E*(pi*R*T)**3)
+
+          d2f(2,1)= -24.0*FS*L*P/(E*T*(pi**3)*(R**4))
+          d2f(3,2)= -8.0*L*P*FS/((pi**3)*E*(R**3)*(T**2))
+
+          d2f(3,1)= 12.0*L**2*P*FS/((pi**3)*E*(R**4)*(T**2))
+
+          !copy to upper triangle
+
+          d2f(1,2)=d2f(2,1)
+          d2f(2,3)=d2f(3,2)
+
+          d2f(1,3)=d2f(3,1)
+
+       else
+
+          print*, 'Wrong function index for this test case',fctindx
+          stop
+
+       end if
+
+       else if (fct.eq.10) then 
+
+          ! Thanks: Section 3.8 Arora 
+          
+          sigma_allow= 10.0 !N/mm2
+          M=40.0e6 !Nmm
+          V=150000.0 !N
+          tau_allow= 2.0 !N/mm2     
+          Fs=1.0
+
+          !define R,T
+
+          B=x(1)
+          D=x(2)
+
+
+          if (fctindx.eq.0) then
+
+          !---- OBJECTIVE FUNCTION
+          
+          !lower triangle
+          d2f(1,1)=0.0
+          d2f(2,2)=0.0
+          
+          d2f(2,1)=1.0
+          
+          !copy to upper triangle
+
+          d2f(1,2)=d2f(2,1)
+          
+       else if (fctindx.eq.1) then
+
+          !---- INEQUALITY CONSTRAINT 1
+
+          d2f(1,1)= (12*M*fs)/((b**3)*(d**2)*sigma_allow)
+          d2f(2,2)= (36*M*fs)/(b*(d**4)*sigma_allow)
+
+          d2f(2,1)= (12*M*Fs)/((b**2)*(d**3)*sigma_allow)
+
+          !copy to upper triangle
+
+          d2f(1,2)=d2f(2,1)
+
+       else if (fctindx.eq.2) then
+
+          !---- INEQUALITY CONSTRAINT 2
+
+          !lower triangle
+
+          d2f(1,1)= (3.0*V*fs)/((b**3)*d*tau_allow)
+          d2f(2,2)= (3.0*V*fs)/(b*(d**3)*tau_allow)
+
+          d2f(2,1)=(3.0*V*fs)/(2.0*(b**2)*(d**2)*tau_allow)
+
+          !copy to upper triangle
+
+          d2f(1,2)=d2f(2,1)
+
+       else
+
+          print*, 'Wrong function index for this test case',fctindx
+          stop
+
+       end if !fctindx
+       
     else
 
        print *,'Warning',fct
-       stop'Invalid fct for gradients'
+       stop'Invalid fct for Hessian'
 
     end if
       
@@ -513,7 +851,7 @@ subroutine get_f(dim,fct,x,f)
     if (fct.ne.10) then
        open(unit=44,file='output/outputsamplePC')
 
-    else if (fct.eq.10) then
+    else if (fct.eq.20) then
 
        if (fctindx.eq.0) then
           open(unit=44,file='output/tecsamp00.dat')
@@ -546,7 +884,7 @@ subroutine get_f(dim,fct,x,f)
           hpcb(1:dim,1:dim,j)=hv(1:dim,1:dim)
        end if
 
-       if (fct.eq.10) then
+       if (fct.eq.20) then
           x(1)=x(1)*180.0/4.0/atan(1.0)   !RADINS TO degree
        end if
 

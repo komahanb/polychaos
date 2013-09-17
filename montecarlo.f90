@@ -95,7 +95,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   if(id_proc.eq.0)then
        if (readMcsamples.eq.1) then
 
-        if (fct.lt.10) then
+        if (fct.lt.20) then
            write(filenum,*)'     >> Reading ',nmcs,' Monte-Carlo samples from MCsamp.dat'
            write(filenum,*)
 
@@ -110,7 +110,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
           
         end if
 
-        if (fct.eq.10) then
+        if (fct.eq.20) then
            if (fctindx.eq.0) then
               write(filenum,*)'     >> Reading ',nmcs,' Monte-Carlo samples from MCSampCFD00.dat'
               open(120,file='MCSampCFD00.dat',form='formatted',status='old')
@@ -154,7 +154,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
            end do
         end do
 
-        if (fct.lt.10) then
+        if (fct.lt.20) then
 
            ! write monte carlo samples to file
            write(filenum,*)'     >> Writing ',nmcs,' Monte-Carlo samples to MCsamp.dat'
@@ -241,7 +241,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
      MCdprime(:)=0.d0
      ict  = 0
 
-!!$     if (fct.eq.10.and.id_proc.eq.0) then
+!!$     if (fct.eq.20.and.id_proc.eq.0) then
 !!$        open(10,file='MCCFDvalues.dat',form='formatted',status='unknown')
 !!$        write(120,*) NMCS, ndim,fctindx
 !!$        write(120,*) (xavg(i),i=1,ndim)
@@ -396,7 +396,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 
         if (id_proc.eq.0) then
            
-           if (fct.eq.10) then
+           if (fct.eq.20) then
 
               
               if (fctindx.eq.0) then
@@ -415,7 +415,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
            do i=1,NMCS
 
 !!$              ! Real function evaluation
-!!$              if (fct.lt.10) then
+!!$              if (fct.lt.20) then
 !!$                 call evalcostf(stat,ndim,fct,MNCX(:,i),freal,df,d2f,DS) 
 !!$
 !!$              else
@@ -424,7 +424,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 !!$              
               ! Real function evaluation
 
-              if (fct.eq.10) then   
+              if (fct.eq.20) then   
                  
                  if (evlfnc.eq.1) then
 
@@ -482,13 +482,13 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 
            end do
 
-           if (fct.eq.10)  close(10)
+           if (fct.eq.20)  close(10)
 
            Javg(:)=Javg(:)/real(NMCS)      
            Jvar(:)=Jvar(:)/real(NMCS)-Javg(:)**2
            Jstd(:)=sqrt(Jvar(:))
 
-!!$           if (fct.eq.10) then
+!!$           if (fct.eq.20) then
 !!$              if (xstd(1).eq.0.01) then
 !!$                 Javg(1)= 0.25906E+00    
 !!$                 Jvar(1)= 0.31653E-01

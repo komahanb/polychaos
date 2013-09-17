@@ -23,7 +23,7 @@ subroutine tecplot(ndim,dimpc,ipar,par,fct,npts,xcof)
 
   call get_ifac(NDIM,ifac)
 
-  if (fct.ne.10) then
+  if (fct.ne.20) then
      !=========================================
      ! Exact function with output to file
      !=========================================
@@ -55,7 +55,7 @@ subroutine tecplot(ndim,dimpc,ipar,par,fct,npts,xcof)
      !====================================================
      ! Polynomial chaos sample points to file
      !=====================================================
-     if (fct.ne.10) then
+     if (fct.ne.20) then
         open(unit=44,file='output/outputsamplePC')
 
      else
@@ -85,7 +85,7 @@ subroutine tecplot(ndim,dimpc,ipar,par,fct,npts,xcof)
      do j=1,npts
         read(55,*)(X(i),i=1,nDIM) !Read from temp file.
         call get_f(ndim,fct,x,fex)
-        if (fct.eq.10) then
+        if (fct.eq.20) then
            x(1)=x(1)*180.0/4.0/atan(1.0)   !RADINS TO degree
         end if
 
@@ -113,7 +113,7 @@ subroutine tecplot(ndim,dimpc,ipar,par,fct,npts,xcof)
 
         write (45,*) (x(k),k=1,nDIM),yhat !PC to file
 
-        if(fct.ne.10) then
+        if(fct.ne.20) then
 
            call get_f(ndim,fct,x,fex)
 
@@ -130,7 +130,7 @@ subroutine tecplot(ndim,dimpc,ipar,par,fct,npts,xcof)
      close(45)
 
 
-  end if !fct.ne.10
+  end if !fct.ne.20
 
   return
 end subroutine tecplot

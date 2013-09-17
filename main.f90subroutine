@@ -136,10 +136,10 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 !	if(id_proc.eq.0) print *, stat,fctin,fctindxin,statinitial, statfinal,orderfinal
 
 	   call solvertype(stat,os,solver)
+	   
+	   !1: cos(x+y) 2: 1.0/(1.0+x**2+y**2) 3: x**2+y**2 4: exp(x+y) 5: x**3+y**3,6: Rosenbrock, 7:sin(3x-1.5)+cos(3y-3), 8:  Truss design, 9: Cantiliver beam(3D) 20: CFD
 
-           !1: cos(x+y) 2: 1.0/(1.0+x**2+y**2) 3: x**2+y**2 4: exp(x+y) 5: x**3+y**3,6: Rosenbrock, 7:sin(3x-1.5)+cos(3y-3), 8:  Truss design 10: CFD
-           
-           fctindx=fctindxin
+         fctindx=fctindxin
 	
            do fct=fctin,fctin
 
@@ -155,7 +155,33 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
                  else if (Fct.eq.8) then ! Truss design
 
-             !       if (fctindx.gt.3.or.dim.ne.3) stop'Wrong Function Index or Dimension for this Truss test case. Please check'
+                    if (fctindx.gt.3.or.dim.ne.3) stop'Wrong Function Index or Dimension for this Truss test case. Please check'
+                    !0=obj, 1,2,3= constraints
+
+                    DO j = 1, DIM
+
+                       par(j,1)=1.0d0
+                       par(j,2)=3.0d0
+
+                    end do
+
+
+                 else if (Fct.eq.9) then ! Short Column
+                    
+                    if (fctindx.gt.2.or.dim.ne.3) stop'Wrong Function Index or Dimension for this Truss test case. Please check'
+                    !0=obj, 1,2,3= constraints
+                    
+                    DO j = 1, DIM ! Figure out a best range
+                       
+                       par(j,1)=1.0d0
+                       par(j,2)=3.0d0
+                       
+                    end do
+
+
+                 else if (Fct.eq.8) then ! Cantilever beam problem
+
+                    if (fctindx.gt.3.or.dim.ne.3) stop'Wrong Function Index or Dimension for this Truss test case. Please check'
                     !0=obj, 1,2,3= constraints
 
                     DO j = 1, DIM
@@ -165,15 +191,14 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
                     end do
                     
-                 else if (fct.eq.10) then
+
+                 else if (fct.eq.20) then
                     
                     call cfdparams(par) !? on all threads?
-
+                    
                  end if
 
               else if (Casemode.eq.1) then ! stats + rmse domain
-
-!                 if (fctindx.ne.0.or.4) stop'Wrong Function Index. Please check'
 
                  ! statistics--> construct PC surrogate between mean and 3 SD's
                  do i=1,dim
@@ -181,13 +206,14 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
                     par(i,2)=xavg(i)+3.0*xstd(i)
                  end do
 
-
               else
 
                  print *, casemode              
                  stop 'Wrong Casemode'
 
               end if
+
+
 
               !              do fctindx=0,4,4  
 
