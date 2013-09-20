@@ -656,7 +656,7 @@ subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
      lenc=lenc+3
      filename(lenc+1:lenc+2)=fctnumber
      lenc=lenc+2
-     if (fct.eq.10) then
+     if (fct.eq.20) then
         filename(lenc+1:lenc+1)='i'
         lenc=lenc+1
         filename(lenc+1:lenc+2)=fctindxnumber

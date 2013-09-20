@@ -256,7 +256,7 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
            hpcb(1:ndim,1:ndim,nptsold+ii)=hv(1:ndim,1:ndim)
         end if
 
-        !        if (fct.eq.10) then
+        !        if (fct.eq.20) then
         !           x(1)=x(1)*180.0/4.0/atan(1.0)   !RADINS TO degree
         !        end if
 
@@ -298,7 +298,7 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
 
   if (id_proc.eq.0 ) then
 
-     if (fct.eq.10) then
+     if (fct.eq.20) then
 
         if (fctindx.eq.0) then
            open(unit=88,file='output/tecsamp00.dat')
@@ -501,7 +501,7 @@ NTOEX=(30-ndim)*NCP
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
 !                      CFD   
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
-     if (fct.eq.10) then
+     if (fct.eq.20) then
         if (nhs.le.10)  then  
            NCP=nhs
            Taylororder=nhs!nhs!2!2!INT(NHS/4)
