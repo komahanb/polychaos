@@ -758,7 +758,7 @@ end subroutine get_df
 
        end if
 
-       else if (fct.eq.10) then 
+       else if (fct.eq.10) then !cantilever beam
 
           ! Thanks: Section 3.8 Arora 
           
