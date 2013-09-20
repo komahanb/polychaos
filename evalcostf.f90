@@ -127,6 +127,7 @@ subroutine get_f(dim,fct,x,f)
   !real*8 :: rho, L, sigmay, pi, Fs, p, E !Truss design parameters
   real*8 :: rho, L, sigmay, pi, Fs, p, E, R, T,sigma_allow !Truss design parameters
   real*8:: tau_allow,M,V,B,D
+
   f=0.0d0
 
   if (fct.eq.1) then     
@@ -275,14 +276,14 @@ subroutine get_f(dim,fct,x,f)
         !---- INEQUALITY CONSTRAINTS
         !bending stress constraint
 
-        f=(6.0*M*fs)/(b*(d**2)*sigma_allow)       
+        f=(6.0*M*fs)/(b*(d**2)*sigma_allow)-1.0       
 
      else if (fctindx.eq.2) then
 
         ! Inequality constraint 2
         ! Shear Stress constraint
 
-        f=(3.0*V*fs)/(2*b*d*tau_allow)
+        f=(3.0*V*fs)/(2*b*d*tau_allow) -1.0
         
      else
 
@@ -792,10 +793,10 @@ end subroutine get_df
 
           !---- INEQUALITY CONSTRAINT 1
 
-          d2f(1,1)= (12*M*fs)/((b**3)*(d**2)*sigma_allow)
-          d2f(2,2)= (36*M*fs)/(b*(d**4)*sigma_allow)
+          d2f(1,1)= (12.0*M*fs)/((b**3)*(d**2)*sigma_allow)
+          d2f(2,2)= (36.0*M*fs)/(b*(d**4)*sigma_allow)
 
-          d2f(2,1)= (12*M*Fs)/((b**2)*(d**3)*sigma_allow)
+          d2f(2,1)= (12.0*M*Fs)/((b**2)*(d**3)*sigma_allow)
 
           !copy to upper triangle
 
