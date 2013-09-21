@@ -285,7 +285,11 @@ subroutine get_f(dim,fct,x,f)
 
         f=(3.0*V*fs)/(2*b*d*tau_allow) -1.0
         
-     else
+     else if (fctindx.eq.3) then
+
+        f= d/(2.0*b) - 1.0
+
+     else 
 
         print*, 'Wrong function index for this test case',fctindx
         stop
@@ -494,13 +498,16 @@ subroutine get_df(dim,fct,x,df)
         df(1)=-(3.0*V*fs)/(2.0*(b**2)*d*tau_allow)
         df(2)=-(3.0*V*FS)/(2.0*b*(d**2)*tau_allow)
 
+     else if (fctindx.eq.3) then
+
+        df(1) = -d/(2.0*b**2)
+        df(2) = 1.0/(2.0*b) 
      else
 
         print*, 'Wrong function index for this test case',fctindx
         stop
 
      end if
-
 
 
   else
@@ -816,6 +823,18 @@ end subroutine get_df
           !copy to upper triangle
 
           d2f(1,2)=d2f(2,1)
+
+          else if (fctindx.eq.3) then
+
+             !lower triangle
+             
+             d2f(1,1)= d/(B**3)
+             d2f(2,2)= 0.0             
+             d2f(2,1)=-1.0/(2.0*b**2)
+
+             !copy 
+
+             d2f(1,2)=d2f(2,1)
 
        else
 
