@@ -283,11 +283,11 @@ subroutine get_f(dim,fct,x,f)
         ! Inequality constraint 2
         ! Shear Stress constraint
 
-        f=(3.0*V*fs)/(2*b*d*tau_allow) -1.0
+        f=(3.0*V*fs)/(2.0*b*d*tau_allow) -1.0
         
      else if (fctindx.eq.3) then
 
-        f= d/(2.0*b) - 1.0
+        f= d*FS/(2.0*b) - 1.0
 
      else 
 
@@ -500,8 +500,8 @@ subroutine get_df(dim,fct,x,df)
 
      else if (fctindx.eq.3) then
 
-        df(1) = -d/(2.0*b**2)
-        df(2) = 1.0/(2.0*b) 
+        df(1) = -1.0*d*FS/(2.0*b**2)
+        df(2) = 1.0*FS/(2.0*b) 
      else
 
         print*, 'Wrong function index for this test case',fctindx
@@ -828,9 +828,9 @@ end subroutine get_df
 
              !lower triangle
              
-             d2f(1,1)= d/(B**3)
+             d2f(1,1)= d*FS/(B**3)
              d2f(2,2)= 0.0             
-             d2f(2,1)=-1.0/(2.0*b**2)
+             d2f(2,1)=-1.0*FS/(2.0*b**2)
 
              !copy 
 
