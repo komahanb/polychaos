@@ -217,9 +217,9 @@ subroutine get_f(dim,fct,x,f)
      !Thanks: Arora Section 3.7
 
      p=10.0e6               !10 MN
-     E=207000               !N/mm2
+     E=207000.0               !N/mm2
      rho=7.833e-6           !kg/m3
-     sigma_allow=248        !N/mm2
+     sigma_allow=248.0        !N/mm2
      pi=4.0*atan(1.0)
      Fs=1.0
 
@@ -242,6 +242,10 @@ subroutine get_f(dim,fct,x,f)
      else if (fctindx.eq.2) then
 
         f = 4.0*p*Fs*L**2 / (t*E*(R*pi)**3) - 1.0
+
+!     else if (fctindx.eq.3) then
+
+!        f= x(1)*Fs/(32.0*x(2)) - 1.0
 
      else
 
@@ -442,8 +446,8 @@ subroutine get_df(dim,fct,x,df)
 
         !---- INEQUALITY CONSTRAINT 1
 
-        df(1)= -P*FS / (2.0*pi*rho*sigma_allow*(R**2)*T)
-        df(2)= -P*FS / (2.0*pi*rho*sigma_allow*R*T**2)
+        df(1)= -P*FS / (2.0*pi*sigma_allow*(R**2)*T)
+        df(2)= -P*FS / (2.0*pi*sigma_allow*R*T**2)
         df(3)= 0.0
 
      else if (fctindx.eq.2) then
@@ -451,8 +455,9 @@ subroutine get_df(dim,fct,x,df)
         !---- INEQUALITY CONSTRAINT 2
 
         df(1)=-12.0*fs*P*L**2 / (E*T*(pi**3)*(R**4))
-        df(2)= 8.0*P*L*FS / (E*T*(pi**3)*(R**3))
-        df(3)=-4.0*P*FS*L**2 / (E*(T**2)*(pi**3)*(R**3))
+        df(2)=-4.0*P*FS*L**2 / (E*(T**2)*(pi**3)*(R**3))
+        df(3)= 8.0*P*L*FS / (E*T*(pi**3)*(R**3))
+
 
      else
 
@@ -722,11 +727,11 @@ end subroutine get_df
        else if (fctindx.eq.1) then
 
           !---- INEQUALITY CONSTRAINT 1
-          d2f(1,1)= P*FS/(pi*(R**3)*T*rho*sigma_allow)
-          d2f(2,2)= P*FS/(pi*R*(T**3)*rho*sigma_allow)
+          d2f(1,1)= P*FS/(pi*(R**3)*T*sigma_allow)
+          d2f(2,2)= P*FS/(pi*R*(T**3)*sigma_allow)
           d2f(3,3)= 0.0
 
-          d2f(2,1)= P*FS/(2.0*pi*(R**2)*(T**2)*rho*sigma_allow)
+          d2f(2,1)= P*FS/(2.0*pi*(R**2)*(T**2)*sigma_allow)
           d2f(3,2)= 0.0
 
           d2f(3,1)= 0.0
@@ -743,14 +748,15 @@ end subroutine get_df
           !---- INEQUALITY CONSTRAINT 2
 
           !lower triangle
-          d2f(1,1)= 48.0*FS*(L**2)*P/(E*T*(pi**3)*(R**5))
-          d2f(2,2)= 8.0*P*FS/(E*T*(pi*R)**3)
-          d2f(3,3)= 8.0*FS*(L**2)*P/(E*(pi*R*T)**3)
 
-          d2f(2,1)= -24.0*FS*L*P/(E*T*(pi**3)*(R**4))
+          d2f(1,1)= 48.0*FS*(L**2)*P/(E*T*(pi**3)*(R**5))
+          d2f(2,2)=  8.0*FS*(L**2)*P/(E*(pi*R*T)**3)
+          d2f(3,3)=  8.0*P*FS/(E*T*(pi*R)**3)
+
+          d2f(2,1)= (12.0*L**2*P*FS)/(E*pi**3*R**4*T**2)
           d2f(3,2)= -8.0*L*P*FS/((pi**3)*E*(R**3)*(T**2))
 
-          d2f(3,1)= 12.0*L**2*P*FS/((pi**3)*E*(R**4)*(T**2))
+          d2f(3,1)= -(24.0*L*P*FS)/(E*pi**3*R**4*T)
 
           !copy to upper triangle
 
