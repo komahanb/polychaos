@@ -128,6 +128,12 @@ subroutine get_f(dim,fct,x,f)
   real*8 :: rho, L, sigmay, pi, Fs, p, E, R, T,sigma_allow !Truss design parameters
   real*8:: tau_allow,M,V,B,D
 
+  real*8::gamma
+  real*8::tensile_sigma1_max,tensile_sigma2_max,tensile_sigma3_max
+  real*8::comp_sigma1_max,comp_sigma2_max,comp_sigma3_max
+  real*8::max_u_disp,max_v_disp,theta,pu,pv,u,sigma(dim)
+  
+
   f=0.0d0
 
   if (fct.eq.1) then     
@@ -258,10 +264,10 @@ subroutine get_f(dim,fct,x,f)
 
      ! Thanks: Section 3.8 Arora 
 
-     sigma_allow= 10.0 !N/mm2
-     M=40.0e6 !Nmm
+     sigma_allow= 10.0d6 !N/m2
+     M=40.0d6 !Nm
      V=150000.0 !N
-     tau_allow= 2.0 !N/mm2     
+     tau_allow= 2.0d6 !N/m2     
      Fs=1.0
 
      !define R,T
@@ -299,18 +305,104 @@ subroutine get_f(dim,fct,x,f)
         stop
      end if
 
+  else if (fct.eq.11) then ! Three bar truss 
+     
+     
+     gamma= 0.1 ! weight density lb/in3
+     L=10.0     !in  
+     pi=4.0*atan(1.0)
+
+     P=20000.0
+     theta=135.0*pi/180.0
+     E=1.0d7 !psi
+
+     tensile_sigma1_max=5000.0
+     tensile_sigma2_max=20000.0
+     tensile_sigma3_max=5000.0
+
+     comp_sigma1_max=5000.0     
+     comp_sigma2_max=20000.0
+     comp_sigma3_max=5000.0
+
+     max_u_disp=0.005
+     max_v_disp=0.005
+
+     pu=P*cos(theta)
+     pv=P*sin(theta)
+     
+     if (fctindx.gt.0) then
+        u=(L/E)*(x(1)*pu + 2*dsqrt(2.0)*x(2)*pu + x(3)*pu + x(3)*pv - x(1)*pv)/(x(1)*x(2) + dsqrt(2.0)*x(1)*x(3) + x(2)*x(3))
+
+        v=(L/E)*(-x(1)*pu + x(3)*pu + x(1)*pv + x(3)*pv)/(x(1)*x(2) + dsqrt(2.0)*x(1)*x(3) + x(2)*x(3))
+
+!!$if (loadcase.eq.2) then
+
+        sigma(1)=-1.0*(sqrt(2.0)*x(2)*pu + x(3)*pu  +x(3)*pv)/(x(1)*x(2)+sqrt(2.0)*x(1)*x(3)+x(2)*x(3))
+
+!!$else
+
+!!$   sigma(1)=(sqrt(2.0)*x(2)*pu + x(3)*pu  +x(3)*pv)/(x(1)*x(2)+sqrt(2.0)*x(1)*x(3)+x(2)*x(3))
+
+!!$ end if
+
+        sigma(2)= (-(x(1)-x(3))*pu+(x(1)+x(3))*pv)/(x(1)*x(2)+sqrt(2.0)*x(1)*x(3)+x(2)*x(3))
+
+        sigma(3)=(-sqrt(2.0)*x(2)*pu -x(1)*pu  +x(1)*pv)/(x(1)*x(2)+sqrt(2.0)*x(1)*x(3)+x(2)*x(3))
+
+     end if
+
+     if (fctindx.eq.0) then
+
+        F= x(1)*gamma*L*sqrt(2.0) + x(2)*gamma*L +  x(3)*gamma*L*sqrt(2.0)  
+
+     else if (fctindx.eq.1) then
+
+        F = (sigma(1) - tensile_sigma1_max)/tensile_sigma1_max    !tensile 1
+
+     else if (fctindx.eq.2) then
+
+        F = (sigma(2) - tensile_sigma2_max)/tensile_sigma2_max   !tensile 2
+
+     else if (fctindx.eq.3) then
+
+        F = (sigma(3) - tensile_sigma3_max)/tensile_sigma3_max    ! tensile 3
+
+     else if (fctindx.eq.4) then
+
+        F = (-1.0*sigma(1)/comp_sigma1_max) -1.0     !compressive 1
+
+     else if (fctindx.eq.5) then
+
+        F = (-1.0*sigma(2)/comp_sigma2_max) -1.0  !compressive 2
+
+     else if (fctindx.eq.6) then
+
+        F = (-1.0*sigma(3) / comp_sigma3_max) -1.0 !compressive 3
+
+     else if (fctindx.eq.7) then
+
+        F = (-1.0*u -max_u_disp)/max_u_disp
+
+     else if (fctindx.eq.8) then
+
+        F = (v -max_v_disp)/max_v_disp
+
+     else 
+
+        print*,fctindx
+        stop'Unsupported function index'
+
+     end if
   else
-
      print*,fct
-     stop'Unsupported function number'
-
+     stop'Wrong Function number'
   end if
 
-end subroutine get_f
-  
-subroutine get_df(dim,fct,x,df)
-  use dimpce
-  implicit none
+   end subroutine get_f
+
+   subroutine get_df(dim,fct,x,df)
+     use dimpce
+     implicit none
 
   integer :: fct,dim,k
   real*8, intent(in)  :: x(dim)
@@ -319,7 +411,14 @@ subroutine get_df(dim,fct,x,df)
   real*8:: tau_allow,M,V,B,D
   !    real*8 :: rho, L, sigmay, pi, Fs, p, E
   real*8 :: rho, L, sigmay, pi, Fs, p, E, R, T,sigma_allow !Truss design parameters
-
+  
+  real*8:: gamma
+  real*8::tensile_sigma1_max,tensile_sigma2_max,tensile_sigma3_max
+  
+  real*8::comp_sigma1_max,comp_sigma2_max,comp_sigma3_max
+  
+  real*8::max_u_disp,max_v_disp,theta,pu,pv,u,sigma(3)
+  
   if (fct.eq.1) then
 
      fac=0.0
@@ -457,24 +556,23 @@ subroutine get_df(dim,fct,x,df)
         df(1)=-12.0*fs*P*L**2 / (E*T*(pi**3)*(R**4))
         df(2)=-4.0*P*FS*L**2 / (E*(T**2)*(pi**3)*(R**3))
         df(3)= 8.0*P*L*FS / (E*T*(pi**3)*(R**3))
-
-
+        
+        
      else
-
         print*, 'Wrong function index for this test case',fctindx
         stop
-
+        
      end if
-
+     
 
   else if (fct.eq.10) then ! Cantilever beam 
 
      ! Thanks: Section 3.8 Arora 
 
-     sigma_allow= 10.0 !N/mm2
-     M=40.0e6 !Nmm
+     sigma_allow= 10.0d6 !N/m2
+     M=40.0e3 !Nm
      V=150000.0 !N
-     tau_allow= 2.0 !N/mm2     
+     tau_allow= 2.0d6 !N/m2     
      Fs=1.0
 
      !define R,T
@@ -513,6 +611,111 @@ subroutine get_df(dim,fct,x,df)
         stop
 
      end if
+
+  else if (fct.eq.11) then
+     
+     gamma= 0.1 ! weight density lb/in3
+     L=10.0     !in  
+     pi=4.0*atan(1.0)
+
+     P=20000.0
+     theta=135.0*pi/180.0
+     E=1.0d7 !psi
+
+     tensile_sigma1_max=5000.0
+     tensile_sigma2_max=20000.0
+     tensile_sigma3_max=5000.0
+
+     comp_sigma1_max=5000.0     
+     comp_sigma2_max=20000.0
+     comp_sigma3_max=5000.0
+
+     max_u_disp=0.005
+     max_v_disp=0.005
+
+     pu=P*cos(theta)
+     pv=P*sin(theta)
+
+if (fctindx.eq.0) then
+
+   df(1)= L*sqrt(2.0)*gamma
+   df(2) = L*gamma
+   df(3) = L*sqrt(2.0)*gamma
+
+else if (fctindx.eq.1) then
+
+
+         df(1)=((x(2) + 2.0**(1.0/2.0)*x(3))*(x(3)*pu + x(3)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(tensile_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(2)=((x(1) + x(3))*(x(3)*pu + x(3)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(tensile_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0**(1.0/2.0)*pu)/(tensile_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3)))
+
+         df(3)=((x(2) + 2.0**(1.0/2.0)*x(1))*(x(3)*pu + x(3)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(tensile_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (pu + pv)/(tensile_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3)))    
+
+
+else if (fctindx.eq.2) then
+  df(1)=((pu*(x(1) - x(3)) - pv*(x(1) + x(3)))*(x(2) + 2.0**(1.0/2.0)*x(3)))/(tensile_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (pu - pv)/(tensile_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3)))
+
+         df(2)=((x(1) + x(3))*(pu*(x(1) - x(3)) - pv*(x(1) + x(3))))/(tensile_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(3)=(pu + pv)/(tensile_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))) + ((pu*(x(1) - x(3)) - pv*(x(1) + x(3)))*(x(2) + 2.0**(1.0/2.0)*x(1)))/(tensile_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+
+else if (fctindx.eq.3) then
+
+     df(1)=((x(2) + 2.0**(1.0/2.0)*x(3))*(x(1)*pu - x(1)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (pu - pv)/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3)))
+
+         df(2)=((x(1) + x(3))*(x(1)*pu - x(1)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0**(1.0/2.0)*pu)/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3)))
+
+         df(3)=((x(2) + 2.0**(1.0/2.0)*x(1))*(x(1)*pu - x(1)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+else if (fctindx.eq.4) then
+
+   df(1)=-((x(2) + 2.0**(1.0/2.0)*x(3))*(x(3)*pu + x(3)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(2)=(2.0**(1.0/2.0)*pu)/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))) - ((x(1) + x(3))*(x(3)*pu + x(3)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(3)=(pu + pv)/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))) - ((x(2) + 2.0**(1.0/2.0)*x(1))*(x(3)*pu + x(3)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+else if (fctindx.eq.5) then
+
+
+         df(1)=(pu - pv)/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))) - ((pu*(x(1) - x(3)) - pv*(x(1) + x(3)))*(x(2) + 2.0**(1.0/2.0)*x(3)))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(2)=-((x(1) + x(3))*(pu*(x(1) - x(3)) - pv*(x(1) + x(3))))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(3)=- (pu + pv)/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))) - ((pu*(x(1) - x(3)) - pv*(x(1) + x(3)))*(x(2) + 2.0**(1.0/2.0)*x(1)))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+
+else if (fctindx.eq.6) then
+
+  df(1)=(pu - pv)/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))) - ((x(2) + 2.0**(1.0/2.0)*x(3))*(x(1)*pu - x(1)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(2)=(2.0**(1.0/2.0)*pu)/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))) - ((x(1) + x(3))*(x(1)*pu - x(1)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(3)=-((x(2) + 2.0**(1.0/2.0)*x(1))*(x(1)*pu - x(1)*pv + 2.0**(1.0/2.0)*x(2)*pu))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+else if (fctindx.eq.7) then
+         df(1) = ((1.0/max_u_disp)*L*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(1)*pu + x(3)*pu - x(1)*pv + x(3)*pv + 2.0*2.0**(1.0/2.0)*x(2)*pu))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - ((1.0/max_u_disp)*L*(pu - pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3)))
+
+         df(2) = ((1.0/max_u_disp)*L*(x(1) + x(3))*(x(1)*pu + x(3)*pu - x(1)*pv + x(3)*pv + 2.0*2.0**(1.0/2.0)*x(2)*pu))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (400.0*2.0**(1.0/2.0)*L*pu)/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3)))
+
+         df(3) = ((1.0/max_u_disp)*L*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(1)*pu + x(3)*pu - x(1)*pv + x(3)*pv + 2.0*2.0**(1.0/2.0)*x(2)*pu))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - ((1.0/max_u_disp)*L*(pu + pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3)))
+
+else if (fctindx.eq.8) then
+
+   df(1)= -((1.0/max_v_disp)*L*(pu - pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))) - ((1.0/max_v_disp)*L*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(3)*pu - x(1)*pu + x(1)*pv + x(3)*pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(2)= -((1.0/max_v_disp)*L*(x(1) + x(3))*(x(3)*pu - x(1)*pu + x(1)*pv + x(3)*pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+         df(3)= ((1.0/max_v_disp)*L*(pu + pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))) - ((1.0/max_v_disp)*L*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(3)*pu - x(1)*pu + x(1)*pv + x(3)*pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+
+else
+
+stop'wrong function index for this case'
+
+
+endif
 
 
   else
@@ -776,10 +979,10 @@ end subroutine get_df
 
           ! Thanks: Section 3.8 Arora 
           
-          sigma_allow= 10.0 !N/mm2
-          M=40.0e6 !Nmm
+          sigma_allow= 10.0d6 !N/m2
+          M=40.0e3 !Nm
           V=150000.0 !N
-          tau_allow= 2.0 !N/mm2     
+          tau_allow= 2.0d6 !N/m2     
           Fs=1.0
 
           !define R,T
