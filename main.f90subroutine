@@ -119,8 +119,9 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 !!$  end if
 
 
-  xavg(1:dim)=xavgin(1:dim)
-  xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
+  	 xavg(1:dim)=xavgin(1:dim)
+         xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
+!  xstd(1:dim)=xstdin(1:dim)
 
   do  dynamics=1,1
 

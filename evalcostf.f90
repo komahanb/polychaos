@@ -307,6 +307,8 @@ subroutine get_f(dim,fct,x,f)
 
   else if (fct.eq.11) then ! Three bar truss 
      
+
+     if(dim.ne.3) stop'Wrong dimension'
      
      gamma= 0.1 ! weight density lb/in3
      L=10.0     !in  
@@ -1045,15 +1047,19 @@ end subroutine get_df
 
              d2f(1,2)=d2f(2,1)
 
-       else
-
+          else
+             
           print*, 'Wrong function index for this test case',fctindx
           stop
 
        end if !fctindx
        
+    else if (fct.eq.11) then
+       
+       d2f(:,:)=0.0
+       
     else
-
+       
        print *,'Warning',fct
        stop'Invalid fct for Hessian'
 

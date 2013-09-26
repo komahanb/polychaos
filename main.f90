@@ -1,32 +1,23 @@
-subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,statin,fmeanout,fvarout,fmeanprimeout,fvarprimeout)
-
+program main
   use dimpce
   !  use timer_mod
   implicit none
 
-  !xavgin,xstdin are unused currently, the control lies with MC.inp
-
   INCLUDE "collsub.h"
   include 'mpif.h'
-  
-  !Input variables
-  integer,intent(in):: DIM
-  double precision,intent(in) :: xavgin(dim),xstdin(dim)
-  integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
-  
-  !Export variables  
-  double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(dim),fvarprimeout(dim)
-  
+
+  integer :: DIM
+  parameter (DIM=3)
+
   !indices
   integer :: i,j,k,ii,jj,kk,fuct
-  integer::ierr
 
   !Monte Carlo
   integer::nmcs,readMCsamples
 
   !flags
-  integer :: stat,makesamples,solver
-  
+  integer :: stat,makesamples,solver,ierr
+
   !PC vitals
   integer::DIMPC,numpc,npts,nterms
   real*8 :: coll(MAXPTS,DIM),par(DIM,MAXPAR)
@@ -65,11 +56,11 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
 
-!  call MPI_START 
+  call MPI_START 
 
   !Settings
-   
-  filenum=  77 ! 6 for screen, any other number for fort.x
+  
+  filenum=6 ! 6 for screen, any other number for fort.x
   
   if(id_proc.eq.0)  then
 
@@ -89,7 +80,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
   ! Initial settings
   !============================================================
 
-
+  
   makesamples=1 ! 0=read, 1= Make via LHS for building surrogate
 
   ! Choice of orthogonal basis
@@ -100,27 +91,28 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
      ipar(j)=1  
   end do
 
-  casemode=1 !0=RMSE only, 1=Stats
+  casemode=1 !0=RMSE only, 1=Stats+RMSE
 
-!  evlfnc=1  ! For montecarlo, should the program evaluate the exact fn (CFD)?
+  evlfnc=1  ! For montecarlo, should the program evaluate the exact fn (CFD)?
 
-!!$  if (casemode.eq.1) then
-!!$     ! This file is read again in montecarlo subroutine. Here it is needed to define the domain size when doing casemode=1(Stats)
-!!$     open(10,file='MC.inp',form='formatted',status='old')     
-!!$     read(10,*) (xavg(i),i=1,dim)
-!!$     read(10,*) (xstd(i),i=1,dim)     
-!!$     read(10,*)
-!!$     read(10,*)
-!!$     read(10,*) NMCS!,ndimtmp
-!!$     read(10,*) !npdf
-!!$     read(10,*) readMCsamples
-!!$     read(10,*) evlfnc
-!!$     close(10)
-!!$  end if
-
-
-  xavg(1:dim)=xavgin(1:dim)
-  xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
+  if (casemode.eq.1) then
+     ! This file is read again in montecarlo subroutine. Here it is needed to define the domain size when doing casemode=1(Stats)
+     open(10,file='MC.inp',form='formatted',status='old')
+!     read(10,*) (xavg(i),i=1,dim)
+!     read(10,*) (xstd(i),i=1,dim)     
+     read(10,*)
+     read(10,*)
+     read(10,*) NMCS!,ndimtmp
+     read(10,*) !npdf
+     read(10,*) readMCsamples
+     read(10,*) evlfnc
+     close(10)
+  end if
+  
+  do i =1,dim
+     xavg(i)=1.0d0
+     xstd(i)=0.15d0
+  end do
 
   do  dynamics=1,1
 
@@ -130,18 +122,21 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=statin,statin   ! 0= Function only, 1= Function + Gradient , 2= Function +Gradient +Hessian   
+        do  stat=0,0,1   ! 0= Function only, 1= Function + Gradient , 2= Function +Gradient +Hessian   
 
+           call solvertype(stat,os,solver)
 
-!	if(id_proc.eq.0) print *, stat,fctin,fctindxin,statinitial, statfinal,orderfinal
+           !1: cos(x+y) 2: 1.0/(1.0+x**2+y**2) 3: x**2+y**2 4: exp(x+y) 5: x**3+y**3,6: Rosenbrock, 7:sin(3x-1.5)+cos(3y-3), 8:  Truss design, 9: Cantiliver beam(3D) 20: CFD
 
-	   call solvertype(stat,os,solver)
-	   
-	   !1: cos(x+y) 2: 1.0/(1.0+x**2+y**2) 3: x**2+y**2 4: exp(x+y) 5: x**3+y**3,6: Rosenbrock, 7:sin(3x-1.5)+cos(3y-3), 8:  Truss design, 9: Cantiliver beam(3D) 20: CFD
+           do fct=11,11,1
 
-         fctindx=fctindxin
-	
-           do fct=fctin,fctin
+              fctindx=0 
+
+!!$              if (fuct.eq.1) fct=4
+!!$              if (fuct.eq.2) fct =2
+!!$              if (fuct.eq.3) fct =6
+!!$              if (fuct.eq.4) fct =10
+
 
               !Domain size
               if (casemode.eq.0) then !RMSE comparisons only
@@ -213,14 +208,13 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
               end if
 
-
-
               !              do fctindx=0,4,4  
 
               !             if (fctindx.eq.4) call system('cp MCSampCFD00.dat MCSampCFD04.dat')
 
               dyncyccnt=0
-              do DIMPC =orderinitial,orderfinal !order 5D requires 3003 terms
+
+              do DIMPC =2,3 !order 5D requires 3003 terms
 
                  dyncyccnt=dyncyccnt+1
 
@@ -229,9 +223,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
                  !              if (id_proc.eq.0) call TimerStart('PC')
 
                  ! Get number of terms in the expansion
-		 
-		call combination(DIM+DIMPC,DIM,nterms)
-
+                 call combination(DIM+DIMPC,DIM,nterms)
                  ! Get number of points based on stat,solver,oversamp ratios
 
                  call getnpts(solver,stat,dim,nterms,OS,npts) 
@@ -393,38 +385,38 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
                  call montecarlo(stat,fct,DIM,dimpc,nterms,npts,ipar,xcof)
 
                  call MPI_Barrier(MPI_COMM_WORLD,ierr)
-!!$
-!!$                 !=======================================================
-!!$                 ! Calculate RMSE
-!!$                 !=======================================================
-!!$
-!!$                 if(id_proc.eq.0) then
-!!$                    write(filenum,*)
-!!$                    write(filenum,*) '================================================='
-!!$                    write(filenum,*) '             RMSE on Surrogate                   '
-!!$                    write(filenum,*) '================================================='
-!!$                    write(filenum,*)
-!!$                 end if
-!!$                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
-!!$                 call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
-!!$                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
-!!$
-!!$                 !================================================================
-!!$                 ! Tecplot output to file
-!!$                 !================================================================
-!!$
-!!$                 if(id_proc.eq.0) then
-!!$                    if(dim.le.2) then
-!!$                       write(filenum,*)
-!!$                       write(filenum,*) '================================================='
-!!$                       write(filenum,*) '             Tecplot Output                      '
-!!$                       write(filenum,*) '================================================='
-!!$                       write(filenum,*)
-!!$                       write(filenum,*)'>> Writing Tecplot output to file . . .'
-!!$
-!!$                       call tecplot(dim,dimpc,ipar,par,fct,npts,xcof) 
-!!$                    end if
-!!$                 end if
+
+                 !=======================================================
+                 ! Calculate RMSE
+                 !=======================================================
+
+                 if(id_proc.eq.0) then
+                    write(filenum,*)
+                    write(filenum,*) '================================================='
+                    write(filenum,*) '             RMSE on Surrogate                   '
+                    write(filenum,*) '================================================='
+                    write(filenum,*)
+                 end if
+                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
+                 call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
+                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
+                 !================================================================
+                 ! Tecplot output to file
+                 !================================================================
+
+                 if(id_proc.eq.0) then
+                    if(dim.le.2) then
+                       write(filenum,*)
+                       write(filenum,*) '================================================='
+                       write(filenum,*) '             Tecplot Output                      '
+                       write(filenum,*) '================================================='
+                       write(filenum,*)
+                       write(filenum,*)'>> Writing Tecplot output to file . . .'
+
+                       call tecplot(dim,dimpc,ipar,par,fct,npts,xcof) 
+                    end if
+                 end if
 
                  nptsold=npts
                  ntermsold=nterms
@@ -441,8 +433,6 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
   end do !dynamics loop
 
-  call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
   if (id_proc.eq.0) then
      write(filenum,*)
      write(filenum,*)'>> Program terminated successfully'
@@ -454,16 +444,11 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 !!$     print *,fvar,fvarprime(1:dim)
 !!$  end if
 
-  ! Export out of this subroutine for optimization
+  call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-  fmeanout=fmean
-  fvarout=fvar  
-  fmeanprimeout(1:dim)=fmeanprime(1:dim)
-  fvarprimeout(1:dim)=fvarprime(1:dim)
+  call stop_all
 
-  !  call stop_all
-
-end subroutine PCestimate
+end program main
 
 !+======================================================================
 
@@ -618,7 +603,6 @@ subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
   implicit none  
   character*2 :: dimnumber,fctnumber,ordnumber,OSnumber,fctindxnumber
   integer ::lenc,fct,dim,stat,casemode,dimpc
-
   character*60 :: filename
 
   call i_to_s(fct,fctnumber)
