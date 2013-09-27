@@ -731,404 +731,627 @@ end subroutine get_df
 !+++++++++++++++++++++++++++++++++++++++++++
 
 
-  subroutine get_dff(DIM,fct,x,d2f)
-    use dimpce
-    implicit none
-
-    integer :: DIM,fct,j,k
-    real*8 :: x(DIM),d2f(DIM,DIM),fac,A,omeg
-    real*8:: tau_allow,M,V,B,D
-!    real*8 :: rho, L, sigmay, pi, Fs, p, E
-    real*8 :: rho, L, sigmay, pi, Fs, p, E, R, T,sigma_allow !Truss design parameters
-
-
-    if (fct.eq.1) then !Cosine
-       !f=cos(x+y)
-
-       fac=0.0
-       do k=1,DIM
-          fac=fac+x(k)
-       end do
-       
-       fac=-cos(fac)
-
-       do j=1,DIM
-          do k=1,DIM
-             d2f(j,k)=fac
-          end do
-       end do
-       
-        
-    else if (fct.eq.2) then !Runge
-       
-       !f=1.0/(1.0+x**2+y**2)
-
-       fac=1.0
-       do k=1,DIM
-          fac=fac+x(k)**2
-       end do
-       fac=1.0/fac
-       
-       do j=1,DIM
-          do k=1,DIM
-             if (j.ne.k) then
-                d2f(j,k)=8.0*x(j)*x(k)*fac**3
-             else
-                d2f(j,k)=(-2.0+8.0*x(k)**2*fac)*fac**2
-             end if
-          end do
-       end do
-  
-    else  if (fct.eq.3) then !quadratic
-       
-
-       
-       d2f(:,:)=0.0d0
-       do k=1,DIM
-          d2f(k,k)=2.0d0
-       end do
-       
-    else if (fct.eq.4) then !exponential
-       
-       !f=cos(x+y)
-       
-       fac=0.0
-       do k=1,DIM
-          fac=fac+x(k)
-       end do
-       
-       fac=exp(fac)
-
-       do j=1,DIM
-          do k=1,DIM
-             d2f(j,k)=fac
-          end do
-       end do
-      
-     
-    else if (fct.eq.5) then !Cubic OK
-       
-       !f=x**3+y**3
-       
-       d2f(:,:)=0.0
-       do k=1,DIM
-          d2f(k,k)=6.0*x(k)
-       end do 
-
-
-    else if (fct.eq.6) then  !Rosenbrock
-
-       !f=(1.0-x)**2 + 100.0*(y-x**2)**2
-
-       d2f(:,:)=0.0
-
-       d2f(1,1)=(-400.0*x(2)+1200.0*x(1)**2+2.0)
-       do k=2,DIM-1
-          d2f(k,k)=200.0-400.0*x(k+1)+1200.0*x(k)**2+2.0
-       end do
-       d2f(DIM,DIM)=200.0
-
-       do k=2,DIM
-          d2f(k,k-1)=-400.0*x(k-1)
-          d2f(k-1,k)=d2f(k,k-1)
-       end do
+subroutine get_dff(DIM,fct,x,d2f)
+  use dimpce
+  implicit none
 
-    else if (fct.eq.7) then ! 6:sin(3x-1.5)+cos(3y-3)
-       
-       d2f(:,:)=0.0
-       do j=1,dim
-          do k=1,dim
-             d2f(j,k)= 3.0*cos(3.0*x(k) - 1.5d0) - 3.0*sin(3.0*x(k) - 3.0)
-          end do
-       end do
+  integer :: DIM,fct,j,k
+  real*8 :: x(DIM),d2f(DIM,DIM),fac,A,omeg
+  real*8:: tau_allow,M,V,B,D
+  !    real*8 :: rho, L, sigmay, pi, Fs, p, E
+  real*8 :: rho, L, sigmay, pi, Fs, p, E, R, T,sigma_allow !Truss design parameters
+  real*8:: gamma
+  real*8::tensile_sigma1_max,tensile_sigma2_max,tensile_sigma3_max
 
-    else if (fct.eq.8) then
+  real*8::comp_sigma1_max,comp_sigma2_max,comp_sigma3_max
 
- 
-       rho=0.2836
-       sigmay=36260.0
-       p=25000.0
-       L=5.0
-       E=30e6
-       pi=4.0*atan(1.0)
+  real*8::max_u_disp,max_v_disp,theta,pu,pv,u,sigma(3)
 
-       Fs=1.0
+  if (fct.eq.1) then !Cosine
+     !f=cos(x+y)
 
-       d2f(:,:)=0.0d0
-       if (fctindx.eq.0) then
-          !---- OBJECTIVE FUNCTION
-          d2f(1,1) = 0.0d0
-          d2f(2,1) = 0.0d0
-          d2f(3,1) = rho*x(2)*x(3) / sqrt(L**2+x(3)**2)
+     fac=0.0
+     do k=1,DIM
+        fac=fac+x(k)
+     end do
 
-       else if (fctindx.eq.1) then
-          !---- INEQUALITY CONSTRAINTS
+     fac=-cos(fac)
 
-          d2f(2,3)= p*Fs*L**2/ sqrt(L**2/x(3)**2+1.0) / (x(2)**2*x(3)**3*sigmay)
-          d2f(3,3)= -p*Fs*L**2/(x(2)*sigmay)*(L**2/sqrt(L**2/x(3)**2+1.0)**3/x(3)**6 - 3.0/x(3)**4/sqrt(L**2/x(3)**2+1.0))
+     do j=1,DIM
+        do k=1,DIM
+           d2f(j,k)=fac
+        end do
+     end do
 
-          !copy to the upper triangle
-          d2f(3,2)=d2f(2,3)
 
-       else if (fctindx.eq.2) then  
+  else if (fct.eq.2) then !Runge
 
-          d2f(1,3)= p*Fs*L / (x(1)**2*x(3)**2*sigmay)
-          d2f(3,3)= 2.0*p*Fs*L / (x(1)*x(3)**3*sigmay)
+     !f=1.0/(1.0+x**2+y**2)
 
-          !copy to upper
+     fac=1.0
+     do k=1,DIM
+        fac=fac+x(k)**2
+     end do
+     fac=1.0/fac
 
-          d2f(3,1)=d2f(1,3)
-          
-       else if (fctindx.eq.3) then
+     do j=1,DIM
+        do k=1,DIM
+           if (j.ne.k) then
+              d2f(j,k)=8.0*x(j)*x(k)*fac**3
+           else
+              d2f(j,k)=(-2.0+8.0*x(k)**2*fac)*fac**2
+           end if
+        end do
+     end do
 
-         d2f(1,3)= 8.0*p*Fs*L**3 / (pi*x(3)**2*E*x(1)**3)
-         d2f(3,3)= 8.0*p*Fs*L**3 / (pi*x(3)**3*E*x(1)**2)
+  else  if (fct.eq.3) then !quadratic
 
-         !copy to upper Triangle
 
-         d2f(3,1)=d2f(1,3)
 
-       end if
+     d2f(:,:)=0.0d0
+     do k=1,DIM
+        d2f(k,k)=2.0d0
+     end do
 
-    else if (fct.eq.9) then
+  else if (fct.eq.4) then !exponential
 
+     !f=cos(x+y)
 
-       !Thanks: Arora Section 3.7
-       
-       p=10.0e6               !10 MN
-       E=207000               !N/mm2
-       rho=7.833e-6           !kg/m3
-       sigma_allow=248        !N/mm2
-       pi=4.0*atan(1.0)
-       Fs=1.0
-  
-       !define R,T
-       
-       R=x(1)
-       T=x(2)
-       L=x(3)
+     fac=0.0
+     do k=1,DIM
+        fac=fac+x(k)
+     end do
 
-       if (fctindx.eq.0) then
+     fac=exp(fac)
 
-          !---- OBJECTIVE FUNCTION
-          !lower triangle
-          d2f(1,1)=0.0
-          d2f(2,2)=0.0
-          d2f(3,3)=0.0
+     do j=1,DIM
+        do k=1,DIM
+           d2f(j,k)=fac
+        end do
+     end do
 
-          d2f(2,1)=2.0*pi*rho*L
-          d2f(3,2)=2.0*pi*rho*R
 
-          d2f(3,1)=2.0*pi*rho*T
+  else if (fct.eq.5) then !Cubic OK
 
-          !copy to upper triangle
+     !f=x**3+y**3
 
-          d2f(1,2)=d2f(2,1)
-          d2f(2,3)=d2f(3,2)
+     d2f(:,:)=0.0
+     do k=1,DIM
+        d2f(k,k)=6.0*x(k)
+     end do
 
-          d2f(1,3)=d2f(3,1)
 
-          
-       else if (fctindx.eq.1) then
+  else if (fct.eq.6) then  !Rosenbrock
 
-          !---- INEQUALITY CONSTRAINT 1
-          d2f(1,1)= P*FS/(pi*(R**3)*T*sigma_allow)
-          d2f(2,2)= P*FS/(pi*R*(T**3)*sigma_allow)
-          d2f(3,3)= 0.0
+     !f=(1.0-x)**2 + 100.0*(y-x**2)**2
 
-          d2f(2,1)= P*FS/(2.0*pi*(R**2)*(T**2)*sigma_allow)
-          d2f(3,2)= 0.0
+     d2f(:,:)=0.0
 
-          d2f(3,1)= 0.0
+     d2f(1,1)=(-400.0*x(2)+1200.0*x(1)**2+2.0)
+     do k=2,DIM-1
+        d2f(k,k)=200.0-400.0*x(k+1)+1200.0*x(k)**2+2.0
+     end do
+     d2f(DIM,DIM)=200.0
 
-          !copy to upper triangle
+     do k=2,DIM
+        d2f(k,k-1)=-400.0*x(k-1)
+        d2f(k-1,k)=d2f(k,k-1)
+     end do
 
-          d2f(1,2)=d2f(2,1)
-          d2f(2,3)=d2f(3,2)
+  else if (fct.eq.7) then ! 6:sin(3x-1.5)+cos(3y-3)
 
-          d2f(1,3)=d2f(3,1)
+     d2f(:,:)=0.0
+     do j=1,dim
+        do k=1,dim
+           d2f(j,k)= 3.0*cos(3.0*x(k) - 1.5d0) - 3.0*sin(3.0*x(k) - 3.0)
+        end do
+     end do
 
-       else if (fctindx.eq.2) then
+  else if (fct.eq.8) then
+     !       Two bar truss
 
-          !---- INEQUALITY CONSTRAINT 2
+     rho=0.2836
+     sigmay=36260.0
+     p=25000.0
+     L=5.0
+     E=30e6
+     pi=4.0*atan(1.0)
 
-          !lower triangle
+     Fs=1.0
 
-          d2f(1,1)= 48.0*FS*(L**2)*P/(E*T*(pi**3)*(R**5))
-          d2f(2,2)=  8.0*FS*(L**2)*P/(E*(pi*R*T)**3)
-          d2f(3,3)=  8.0*P*FS/(E*T*(pi*R)**3)
+     d2f(:,:)=0.0d0
+     if (fctindx.eq.0) then
+        !---- OBJECTIVE FUNCTION
+        d2f(1,1) = 0.0d0
+        d2f(2,1) = 0.0d0
+        d2f(3,1) = rho*x(2)*x(3) / sqrt(L**2+x(3)**2)
 
-          d2f(2,1)= (12.0*L**2*P*FS)/(E*pi**3*R**4*T**2)
-          d2f(3,2)= -8.0*L*P*FS/((pi**3)*E*(R**3)*(T**2))
+     else if (fctindx.eq.1) then
+        !---- INEQUALITY CONSTRAINTS
 
-          d2f(3,1)= -(24.0*L*P*FS)/(E*pi**3*R**4*T)
+        d2f(2,3)= p*Fs*L**2/ sqrt(L**2/x(3)**2+1.0) / (x(2)**2*x(3)**3*sigmay)
+        d2f(3,3)= -p*Fs*L**2/(x(2)*sigmay)*(L**2/sqrt(L**2/x(3)**2+1.0)**3/x(3)**6 - 3.0/x(3)**4/sqrt(L**2/x(3)**2+1.0))
 
-          !copy to upper triangle
+        !copy to the upper triangle
+        d2f(3,2)=d2f(2,3)
 
-          d2f(1,2)=d2f(2,1)
-          d2f(2,3)=d2f(3,2)
+     else if (fctindx.eq.2) then  
 
-          d2f(1,3)=d2f(3,1)
+        d2f(1,3)= p*Fs*L / (x(1)**2*x(3)**2*sigmay)
+        d2f(3,3)= 2.0*p*Fs*L / (x(1)*x(3)**3*sigmay)
 
-       else
+        !copy to upper
 
-          print*, 'Wrong function index for this test case',fctindx
-          stop
+        d2f(3,1)=d2f(1,3)
 
-       end if
+     else if (fctindx.eq.3) then
 
-       else if (fct.eq.10) then !cantilever beam
+        d2f(1,3)= 8.0*p*Fs*L**3 / (pi*x(3)**2*E*x(1)**3)
+        d2f(3,3)= 8.0*p*Fs*L**3 / (pi*x(3)**3*E*x(1)**2)
 
-          ! Thanks: Section 3.8 Arora 
-          
-          sigma_allow= 10.0d6 !N/m2
-          M=40.0e3 !Nm
-          V=150000.0 !N
-          tau_allow= 2.0d6 !N/m2     
-          Fs=1.0
+        !copy to upper Triangle
 
-          !define R,T
+        d2f(3,1)=d2f(1,3)
 
-          B=x(1)
-          D=x(2)
+     end if
 
+  else if (fct.eq.9) then
 
-          if (fctindx.eq.0) then
+     ! Short column
+     ! Thanks: Arora Section 3.7
 
-          !---- OBJECTIVE FUNCTION
-          
-          !lower triangle
-          d2f(1,1)=0.0
-          d2f(2,2)=0.0
-          
-          d2f(2,1)=1.0
-          
-          !copy to upper triangle
+     p=10.0e6               !10 MN
+     E=207000               !N/mm2
+     rho=7.833e-6           !kg/m3
+     sigma_allow=248        !N/mm2
+     pi=4.0*atan(1.0)
+     Fs=1.0
 
-          d2f(1,2)=d2f(2,1)
-          
-       else if (fctindx.eq.1) then
+     !define R,T
 
-          !---- INEQUALITY CONSTRAINT 1
+     R=x(1)
+     T=x(2)
+     L=x(3)
 
-          d2f(1,1)= (12.0*M*fs)/((b**3)*(d**2)*sigma_allow)
-          d2f(2,2)= (36.0*M*fs)/(b*(d**4)*sigma_allow)
+     if (fctindx.eq.0) then
 
-          d2f(2,1)= (12.0*M*Fs)/((b**2)*(d**3)*sigma_allow)
+        !---- OBJECTIVE FUNCTION
+        !lower triangle
+        d2f(1,1)=0.0
+        d2f(2,2)=0.0
+        d2f(3,3)=0.0
 
-          !copy to upper triangle
+        d2f(2,1)=2.0*pi*rho*L
+        d2f(3,2)=2.0*pi*rho*R
 
-          d2f(1,2)=d2f(2,1)
+        d2f(3,1)=2.0*pi*rho*T
 
-       else if (fctindx.eq.2) then
+        !copy to upper triangle
 
-          !---- INEQUALITY CONSTRAINT 2
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
 
-          !lower triangle
+        d2f(1,3)=d2f(3,1)
 
-          d2f(1,1)= (3.0*V*fs)/((b**3)*d*tau_allow)
-          d2f(2,2)= (3.0*V*fs)/(b*(d**3)*tau_allow)
 
-          d2f(2,1)=(3.0*V*fs)/(2.0*(b**2)*(d**2)*tau_allow)
+     else if (fctindx.eq.1) then
 
-          !copy to upper triangle
+        !---- INEQUALITY CONSTRAINT 1
 
-          d2f(1,2)=d2f(2,1)
+        d2f(1,1)= P*FS/(pi*(R**3)*T*sigma_allow)
+        d2f(2,2)= P*FS/(pi*R*(T**3)*sigma_allow)
+        d2f(3,3)= 0.0
 
-          else if (fctindx.eq.3) then
+        d2f(2,1)= P*FS/(2.0*pi*(R**2)*(T**2)*sigma_allow)
+        d2f(3,2)= 0.0
 
-             !lower triangle
-             
-             d2f(1,1)= d*FS/(B**3)
-             d2f(2,2)= 0.0             
-             d2f(2,1)=-1.0*FS/(2.0*b**2)
+        d2f(3,1)= 0.0
 
-             !copy 
+        !copy to upper triangle
 
-             d2f(1,2)=d2f(2,1)
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
 
-          else
-             
-          print*, 'Wrong function index for this test case',fctindx
-          stop
+        d2f(1,3)=d2f(3,1)
 
-       end if !fctindx
-       
-    else if (fct.eq.11) then
-       
-       d2f(:,:)=0.0
-       
-    else
-       
-       print *,'Warning',fct
-       stop'Invalid fct for Hessian'
+     else if (fctindx.eq.2) then
 
-    end if
-      
-  end subroutine get_dff
+        !---- INEQUALITY CONSTRAINT 2
+
+        !lower triangle
+
+        d2f(1,1)= 48.0*FS*(L**2)*P/(E*T*(pi**3)*(R**5))
+        d2f(2,2)= 8.0*FS*(L**2)*P/(E*(pi*R*T)**3)
+        d2f(3,3)= 8.0*P*FS/(E*T*(pi*R)**3)
+
+        d2f(2,1)= (12.0*L**2*P*FS)/(E*pi**3*R**4*T**2)
+        d2f(3,2)= -8.0*L*P*FS/((pi**3)*E*(R**3)*(T**2))
+
+        d2f(3,1)= -(24.0*L*P*FS)/(E*pi**3*R**4*T)
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
+
+        d2f(1,3)=d2f(3,1)
+
+     else
+
+        print*, 'Wrong function index for this test case',fctindx
+        stop
+
+     end if
+
+  else if (fct.eq.10) then !cantilever beam
+
+     ! Thanks: Section 3.8 Arora 
+
+     sigma_allow= 10.0d6 !N/m2
+     M=40.0e3 !Nm
+     V=150000.0 !N
+     tau_allow= 2.0d6 !N/m2     
+     Fs=1.0
+
+     !define R,T
+
+     B=x(1)
+     D=x(2)
+
+
+     if (fctindx.eq.0) then
+
+        !---- OBJECTIVE FUNCTION
+
+        !lower triangle
+        d2f(1,1)=0.0
+        d2f(2,2)=0.0
+
+        d2f(2,1)=1.0
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+
+     else if (fctindx.eq.1) then
+
+        !---- INEQUALITY CONSTRAINT 1
+
+        d2f(1,1)= (12.0*M*fs)/((b**3)*(d**2)*sigma_allow)
+        d2f(2,2)= (36.0*M*fs)/(b*(d**4)*sigma_allow)
+
+        d2f(2,1)= (12.0*M*Fs)/((b**2)*(d**3)*sigma_allow)
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+
+     else if (fctindx.eq.2) then
+
+        !---- INEQUALITY CONSTRAINT 2
+
+        !lower triangle
+
+        d2f(1,1)= (3.0*V*fs)/((b**3)*d*tau_allow)
+        d2f(2,2)= (3.0*V*fs)/(b*(d**3)*tau_allow)
+
+        d2f(2,1)=(3.0*V*fs)/(2.0*(b**2)*(d**2)*tau_allow)
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+
+     else if (fctindx.eq.3) then
+
+        !lower triangle
+
+        d2f(1,1)= d*FS/(B**3)
+        d2f(2,2)= 0.0             
+        d2f(2,1)=-1.0*FS/(2.0*b**2)
+
+        !copy 
+
+        d2f(1,2)=d2f(2,1)
+
+     else
+
+        print*, 'Wrong function index for this test case',fctindx
+        stop
+
+     end if !fctindx
+
+  else if (fct.eq.11) then
+
+     gamma= 0.1 ! weight density lb/in3
+     L=10.0     !in  
+     pi=4.0*atan(1.0)
+
+     P=20000.0
+     theta=135.0*pi/180.0
+     E=1.0d7 !psi
+
+     tensile_sigma1_max=5000.0
+     tensile_sigma2_max=20000.0
+     tensile_sigma3_max=5000.0
+
+     comp_sigma1_max=5000.0     
+     comp_sigma2_max=20000.0
+     comp_sigma3_max=5000.0
+
+     max_u_disp=0.005
+     max_v_disp=0.005
+
+     pu=P*cos(theta)
+     pv=P*sin(theta)
+
+     if (fctindx.eq.0) then
+
+        d2f(:,:)=0.0
+
+     else  if (fctindx.eq.1) then
+
+        !lower triangle
+
+        d2f(1,1)= -(2.0*(x(2) + 2.0**(1.0/2.0)*x(3))**2.0*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(tensile_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+        d2f(2,2)=-((2.0*(x(1) + x(3))**2.0*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3 - (2.0*2.0**(1.0/2.0)*pu*(x(1) + x(3)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)/tensile_sigma1_max
+
+        d2f(3,3)=-((2.0*(x(2) + 2.0**(1.0/2.0)*x(1))**2.0*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3 - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(pu + pv))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)/tensile_sigma1_max
+
+
+        d2f(2,1)=((pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 + (2.0**(1.0/2.0)*pu*(x(2) + 2.0**(1.0/2.0)*x(3)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 - (2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(1) + x(3))*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)/tensile_sigma1_max
+
+        d2f(3,2)=((pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 + ((pu + pv)*(x(1) + x(3)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 + (2.0**(1.0/2.0)*pu*(x(2) + 2.0**(1.0/2.0)*x(1)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(1) + x(3))*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)/tensile_sigma1_max
+
+
+        d2f(3,1)=((2.0**(1.0/2.0)*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 + ((x(2) + 2.0**(1.0/2.0)*x(3))*(pu + pv))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)/tensile_sigma1_max
+
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
+
+        d2f(1,3)=d2f(3,1)
+
+     else  if (fctindx.eq.2) then
+
+        !lower triangle
+        d2f(1,1)=((2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu - pv))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 + (2.0*(x(2) + 2.0**(1.0/2.0)*x(3))**2.0*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)/tensile_sigma2_max
+
+        d2f(2,2)=(2.0*(x(1) + x(3))**2.0*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(tensile_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+        d2f(3,3)=-((2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(pu + pv))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))**2.0*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)/tensile_sigma2_max
+
+
+        d2f(2,1)=((x(1) + x(3))*(pu - pv))/(tensile_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (pv*(x(1) + x(3)) - pu*(x(1) - x(3)))/(tensile_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(1) + x(3))*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(tensile_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+        d2f(3,2)=-((pv*(x(1) + x(3)) - pu*(x(1) - x(3)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 + ((pu + pv)*(x(1) + x(3)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(1) + x(3))*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)/tensile_sigma2_max
+
+
+        d2f(3,1)=(((x(2) + 2.0**(1.0/2.0)*x(1))*(pu - pv))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 - ((x(2) + 2.0**(1.0/2.0)*x(3))*(pu + pv))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 - (2.0**(1.0/2.0)*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 + (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(2) + 2.0**(1.0/2.0)*x(3))*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)/tensile_sigma2_max
+
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
+
+        d2f(1,3)=d2f(3,1)
+     else  if (fctindx.eq.3) then
+
+        !lower triangle
+        d2f(1,1)=((2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu - pv))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 - (2.0*(x(2) + 2.0**(1.0/2.0)*x(3))**2.0*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)/tensile_sigma3_max
+
+        d2f(2,2)=-((2.0*(x(1) + x(3))**2.0*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3 - (2.0*2.0**(1.0/2.0)*pu*(x(1) + x(3)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)/tensile_sigma3_max
+
+        d2f(3,3)=-(2.0*(x(2) + 2.0**(1.0/2.0)*x(1))**2.0*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+
+        d2f(2,1)=((pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 + ((x(1) + x(3))*(pu - pv))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 + (2.0**(1.0/2.0)*pu*(x(2) + 2.0**(1.0/2.0)*x(3)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2 - (2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(1) + x(3))*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)/tensile_sigma3_max
+
+        d2f(3,2)=(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (2.0**(1.0/2.0)*pu*(x(2) + 2.0**(1.0/2.0)*x(1)))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(1) + x(3))*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+
+        d2f(3,1)=(2.0**(1.0/2.0)*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + ((x(2) + 2.0**(1.0/2.0)*x(1))*(pu - pv))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(tensile_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
+
+        d2f(1,3)=d2f(3,1)
+     else  if (fctindx.eq.4) then
+
+        !lower triangle
+        d2f(1,1)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(3))**2.0*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+        d2f(2,2)=(2.0*(x(1) + x(3))**2.0*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - (2.0*2.0**(1.0/2.0)*pu*(x(1) + x(3)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+        d2f(3,3)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(1))**2.0*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(pu + pv))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+
+        d2f(2,1)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(1) + x(3))*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - (2.0**(1.0/2.0)*pu*(x(2) + 2.0**(1.0/2.0)*x(3)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+        d2f(3,2)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(1) + x(3))*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - ((pu + pv)*(x(1) + x(3)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0**(1.0/2.0)*pu*(x(2) + 2.0**(1.0/2.0)*x(1)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+        d2f(3,1)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - ((x(2) + 2.0**(1.0/2.0)*x(3))*(pu + pv))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0**(1.0/2.0)*(pu*x(3) + pv*x(3) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma1_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
+
+        d2f(1,3)=d2f(3,1)
+     else  if (fctindx.eq.5) then
+
+        !lower triangle
+        d2f(1,1)=- (2.0*(x(2) + 2.0**(1.0/2.0)*x(3))**2.0*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - (2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu - pv))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+        d2f(2,2)=-(2.0*(x(1) + x(3))**2.0*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+        d2f(3,3)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(pu + pv))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))**2.0*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+
+        d2f(2,1)=(pv*(x(1) + x(3)) - pu*(x(1) - x(3)))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - ((x(1) + x(3))*(pu - pv))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(1) + x(3))*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+        d2f(3,2)=(pv*(x(1) + x(3)) - pu*(x(1) - x(3)))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + ((pu + pv)*(x(1) + x(3)))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(1) + x(3))*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+
+        d2f(3,1)=((x(2) + 2.0**(1.0/2.0)*x(3))*(pu + pv))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (2.0**(1.0/2.0)*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - ((x(2) + 2.0**(1.0/2.0)*x(1))*(pu - pv))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(2) + 2.0**(1.0/2.0)*x(3))*(pv*(x(1) + x(3)) - pu*(x(1) - x(3))))/(comp_sigma2_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
+
+        d2f(1,3)=d2f(3,1)
+     else  if (fctindx.eq.6) then
+
+        !lower triangle
+        d2f(1,1)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(3))**2.0*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - (2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu - pv))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+        d2f(2,2)=(2.0*(x(1) + x(3))**2.0*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - (2.0*2.0**(1.0/2.0)*pu*(x(1) + x(3)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+        d2f(3,3)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(1))**2.0*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+
+        d2f(2,1)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(1) + x(3))*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - ((x(1) + x(3))*(pu - pv))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0**(1.0/2.0)*pu*(x(2) + 2.0**(1.0/2.0)*x(3)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+        d2f(3,2)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(1) + x(3))*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - (2.0**(1.0/2.0)*pu*(x(2) + 2.0**(1.0/2.0)*x(1)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+
+
+        d2f(3,1)=(2.0*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - ((x(2) + 2.0**(1.0/2.0)*x(1))*(pu - pv))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0**(1.0/2.0)*(pu*x(1) - pv*x(1) + 2.0**(1.0/2.0)*pu*x(2)))/(comp_sigma3_max*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2)
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
+
+        d2f(1,3)=d2f(3,1)
+     else  if (fctindx.eq.7) then
+
+        !lower triangle
+        d2f(1,1)=((2.0*L*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu - pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(3))**2.0*(pu*x(1) + pu*x(3) - pv*x(1) + pv*x(3) + 2.0*2.0**(1.0/2.0)*pu*x(2)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3))/max_u_disp
+
+        d2f(2,2)=-((2.0*L*(x(1) + x(3))**2.0*(pu*x(1) + pu*x(3) - pv*x(1) + pv*x(3) + 2.0*2.0**(1.0/2.0)*pu*x(2)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - (4*2.0**(1.0/2.0)*L*pu*(x(1) + x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2))/max_u_disp
+
+        d2f(3,3)=((2.0*L*(x(2) + 2.0**(1.0/2.0)*x(1))*(pu + pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(1))**2.0*(pu*x(1) + pu*x(3) - pv*x(1) + pv*x(3) + 2.0*2.0**(1.0/2.0)*pu*x(2)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3))/max_u_disp
+
+
+        d2f(2,1)=((L*(pu*x(1) + pu*x(3) - pv*x(1) + pv*x(3) + 2.0*2.0**(1.0/2.0)*pu*x(2)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (L*(x(1) + x(3))*(pu - pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (2.0*2.0**(1.0/2.0)*L*pu*(x(2) + 2.0**(1.0/2.0)*x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(1) + x(3))*(pu*x(1) + pu*x(3) - pv*x(1) + pv*x(3) + 2.0*2.0**(1.0/2.0)*pu*x(2)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3))/max_u_disp
+
+        d2f(3,2)=((L*(pu*x(1) + pu*x(3) - pv*x(1) + pv*x(3) + 2.0*2.0**(1.0/2.0)*pu*x(2)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (L*(pu + pv)*(x(1) + x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (2.0*2.0**(1.0/2.0)*L*pu*(x(2) + 2.0**(1.0/2.0)*x(1)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(1) + x(3))*(pu*x(1) + pu*x(3) - pv*x(1) + pv*x(3) + 2.0*2.0**(1.0/2.0)*pu*x(2)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3))/max_u_disp
+
+
+        d2f(3,1)=((L*(x(2) + 2.0**(1.0/2.0)*x(1))*(pu - pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (L*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu + pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (2.0**(1.0/2.0)*L*(pu*x(1) + pu*x(3) - pv*x(1) + pv*x(3) + 2.0*2.0**(1.0/2.0)*pu*x(2)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu*x(1) + pu*x(3) - pv*x(1) + pv*x(3) + 2.0*2.0**(1.0/2.0)*pu*x(2)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3))/max_u_disp
+
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
+
+        d2f(1,3)=d2f(3,1)
+     else  if (fctindx.eq.8) then
+
+        !lower triangle
+        d2f(1,1)=((2.0*L*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu - pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(3))**2.0*(pu*x(3) - pu*x(1) + pv*x(1) + pv*x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3))/max_v_disp
+
+        d2f(2,2)=(2.0*L*(x(1) + x(3))**2.0*(pu*x(3) - pu*x(1) + pv*x(1) + pv*x(3)))/(E*max_v_disp*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+        d2f(3,3)=((2.0*L*(x(2) + 2.0**(1.0/2.0)*x(1))**2.0*(pu*x(3) - pu*x(1) + pv*x(1) + pv*x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3) - (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(1))*(pu + pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2))/max_v_disp
+
+
+        d2f(2,1)=(L*(x(1) + x(3))*(pu - pv))/(E*max_v_disp*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (L*(pu*x(3) - pu*x(1) + pv*x(1) + pv*x(3)))/(E*max_v_disp*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(3))*(x(1) + x(3))*(pu*x(3) - pu*x(1) + pv*x(1) + pv*x(3)))/(E*max_v_disp*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3)
+
+        d2f(3,2)=-((L*(pu*x(3) - pu*x(1) + pv*x(1) + pv*x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (L*(pu + pv)*(x(1) + x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(1) + x(3))*(pu*x(3) - pu*x(1) + pv*x(1) + pv*x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3))/max_v_disp
+
+
+        d2f(3,1)=((L*(x(2) + 2.0**(1.0/2.0)*x(1))*(pu - pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (2.0**(1.0/2.0)*L*(pu*x(3) - pu*x(1) + pv*x(1) + pv*x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) - (L*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu + pv))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**2) + (2.0*L*(x(2) + 2.0**(1.0/2.0)*x(1))*(x(2) + 2.0**(1.0/2.0)*x(3))*(pu*x(3) - pu*x(1) + pv*x(1) + pv*x(3)))/(E*(x(1)*x(2) + x(2)*x(3) + 2.0**(1.0/2.0)*x(1)*x(3))**3))/max_v_disp
+
+        !copy to upper triangle
+
+        d2f(1,2)=d2f(2,1)
+        d2f(2,3)=d2f(3,2)
+
+        d2f(1,3)=d2f(3,1)
+
+     else
+
+        print *,'Warning',fct
+        stop'Invalid fct for Hessian'
+
+     end if
+
+  end if
+
+end subroutine get_dff
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  subroutine gather_costfn(dim,fct,stat,npts,RN,fpcb,gpcb,hpcb)
-    use dimpce
-    implicit none
-    include "collsub.h"
+subroutine gather_costfn(dim,fct,stat,npts,RN,fpcb,gpcb,hpcb)
+  use dimpce
+  implicit none
+  include "collsub.h"
 
-    integer,intent(in)::dim,fct,stat,npts
-    integer::i,j,k,ii
-    real*8,intent(in)::RN(DIM,MAXPTS)
-    real*8::x(dim)
-    real*8::fv,gv(dim),hv(dim,dim)
+  integer,intent(in)::dim,fct,stat,npts
+  integer::i,j,k,ii
+  real*8,intent(in)::RN(DIM,MAXPTS)
+  real*8::x(dim)
+  real*8::fv,gv(dim),hv(dim,dim)
 
-    real*8,intent(out)::fpcb(MAXPTS),gpcb(DIM,MAXPTS),hpcb(dim,dim,maxpts)
-    !====================================================
-    ! Polynomial chaos sample points to file
-    !=====================================================
+  real*8,intent(out)::fpcb(MAXPTS),gpcb(DIM,MAXPTS),hpcb(dim,dim,maxpts)
+  !====================================================
+  ! Polynomial chaos sample points to file
+  !=====================================================
 
-    if (fct.ne.10) then
-       open(unit=44,file='output/outputsamplePC')
+  if (fct.ne.10) then
+     open(unit=44,file='output/outputsamplePC')
 
-    else if (fct.eq.20) then
+  else if (fct.eq.20) then
 
-       if (fctindx.eq.0) then
-          open(unit=44,file='output/tecsamp00.dat')
-       else 
-          open(unit=44,file='output/tecsamp04.dat')
-       end if
+     if (fctindx.eq.0) then
+        open(unit=44,file='output/tecsamp00.dat')
+     else 
+        open(unit=44,file='output/tecsamp04.dat')
+     end if
 
-    end if
+  end if
 
-    if (dim.eq.2) then
-       write(44,*) 'variables= "x","y","f"'
-       write(44,*) 'zone i=',npts,' datapacking=point'
+  if (dim.eq.2) then
+     write(44,*) 'variables= "x","y","f"'
+     write(44,*) 'zone i=',npts,' datapacking=point'
 
-    else if (Dim.eq.1) then
-       write(44,*) 'variables= "x","f"'
-       write(44,*) 'zone i=',npts,' datapacking=point'
-    end if
+  else if (Dim.eq.1) then
+     write(44,*) 'variables= "x","f"'
+     write(44,*) 'zone i=',npts,' datapacking=point'
+  end if
 
-    do j=1,npts
+  do j=1,npts
 
-       x(1:DIM)=RN(1:DIM,j)
-       !                 print *,'x:',x
-       call evalcostf(stat,dim,fct,x,fv,gv,hv)
-       fpcb(j)=fv                   !Store the cost function value at appropriate location
-       if (stat.gt.0) then
-          gpcb(1:dim,j)=gv(1:dim)   !Store them appropriately
-       end if
+     x(1:DIM)=RN(1:DIM,j)
+     !                 print *,'x:',x
+     call evalcostf(stat,dim,fct,x,fv,gv,hv)
+     fpcb(j)=fv                   !Store the cost function value at appropriate location
+     if (stat.gt.0) then
+        gpcb(1:dim,j)=gv(1:dim)   !Store them appropriately
+     end if
 
-       if (stat.gt.1) then
-          hpcb(1:dim,1:dim,j)=hv(1:dim,1:dim)
-       end if
+     if (stat.gt.1) then
+        hpcb(1:dim,1:dim,j)=hv(1:dim,1:dim)
+     end if
 
-       if (fct.eq.20) then
-          x(1)=x(1)*180.0/4.0/atan(1.0)   !RADINS TO degree
-       end if
+     if (fct.eq.20) then
+        x(1)=x(1)*180.0/4.0/atan(1.0)   !RADINS TO degree
+     end if
 
-       write (44,*) (x(ii),ii=1,dim),fv
-!       write (filenum,*) (x(ii),ii=1,dim),fv
+     write (44,*) (x(ii),ii=1,dim),fv
+     !       write (filenum,*) (x(ii),ii=1,dim),fv
 
-    end do ! loop over all points
+  end do ! loop over all points
 
-    close(44)
+  close(44)
 
-    return
-  end subroutine gather_costfn
+  return
+end subroutine gather_costfn
