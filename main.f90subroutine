@@ -1,10 +1,7 @@
-subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,statin,fmeanout,fvarout,fmeanprimeout,fvarprimeout)
+subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,statin,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
 
   use dimpce
-  !  use timer_mod
   implicit none
-
-  !xavgin,xstdin are unused currently, the control lies with MC.inp
 
   INCLUDE "collsub.h"
   include 'mpif.h'
@@ -15,7 +12,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
   integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
   
   !Export variables  
-  double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(dim),fvarprimeout(dim)
+  double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(dim),fvarprimeout(dim),fvardbleprimeout(dim,dim),fmeandbleprimeout(dim,dim)
   
   !indices
   integer :: i,j,k,ii,jj,kk,fuct
@@ -65,7 +62,6 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
 
-!  call MPI_START 
 
   !Settings
    
@@ -119,8 +115,8 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 !!$  end if
 
 
-  	 xavg(1:dim)=xavgin(1:dim)
-         xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
+  xavg(1:dim)=xavgin(1:dim)
+  xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
 !  xstd(1:dim)=xstdin(1:dim)
 
   do  dynamics=1,1
@@ -133,8 +129,6 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
         do  stat=statin,statin   ! 0= Function only, 1= Function + Gradient , 2= Function +Gradient +Hessian   
 
-
-!	if(id_proc.eq.0) print *, stat,fctin,fctindxin,statinitial, statfinal,orderfinal
 
 	   call solvertype(stat,os,solver)
 	   
@@ -215,19 +209,10 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
               end if
 
 
-
-              !              do fctindx=0,4,4  
-
-              !             if (fctindx.eq.4) call system('cp MCSampCFD00.dat MCSampCFD04.dat')
-
               dyncyccnt=0
               do DIMPC =orderinitial,orderfinal !order 5D requires 3003 terms
 
                  dyncyccnt=dyncyccnt+1
-
-                 ! Initialize timer
-                 !              if (id_proc.eq.0) call TimerInit()
-                 !              if (id_proc.eq.0) call TimerStart('PC')
 
                  ! Get number of terms in the expansion
 		 
@@ -394,7 +379,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
                  call montecarlo(stat,fct,DIM,dimpc,nterms,npts,ipar,xcof)
 
                  call MPI_Barrier(MPI_COMM_WORLD,ierr)
-!!$
+
 !!$                 !=======================================================
 !!$                 ! Calculate RMSE
 !!$                 !=======================================================
@@ -432,8 +417,6 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
               enddo !order
 
-              !           end do !fct indx
-
            enddo ! fct
 
         enddo ! F or FG (Stat)
@@ -444,23 +427,34 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
   call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
+!!$  if (id_proc.eq.0) then
+!!$     print *, fmean,fmeanprime(1:dim)
+!!$     print *,fvar,fvarprime(1:dim)	
+!!$  end if
+
+  ! Export out of this subroutine for optimization
+
+  ! Function values
+  fmeanout=fmean
+  fvarout=fvar  
+
+  ! Derivatives
+  fmeanprimeout(1:dim)=fmeanprime(1:dim)
+  fvarprimeout(1:dim)=fvarprime(1:dim)
+
+  ! Hessian
+  do i=1,dim
+	do j=1,dim
+	fmeandbleprimeout(i,j) = fmeandbleprime(i,j)
+	fvardbleprimeout(i,j)  = fvardbleprime(i,j)
+	end do			
+  end do
+
   if (id_proc.eq.0) then
      write(filenum,*)
      write(filenum,*)'>> Program terminated successfully'
      write(filenum,*) 
   end if
-
-!!$  if (id_proc.eq.0) then
-!!$     print *, fmean,fmeanprime(1:dim)
-!!$     print *,fvar,fvarprime(1:dim)
-!!$  end if
-
-  ! Export out of this subroutine for optimization
-
-  fmeanout=fmean
-  fvarout=fvar  
-  fmeanprimeout(1:dim)=fmeanprime(1:dim)
-  fvarprimeout(1:dim)=fvarprime(1:dim)
 
   !  call stop_all
 
@@ -703,60 +697,6 @@ subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
   end if
   return
 end subroutine getfilename
-
-!++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!!$
-!!$subroutine evalPC(ndim,dimPC,ipar,xcof,x,yhat)
-!!$
-!!$  implicit none
-!!$  include "collsub.h"
-!!$
-!!$  integer :: NDIM,DIMPC,nterms,mreg(maxdat,ndim) ! multi-index variables
-!!$  integer :: k,j,jj,kk
-!!$
-!!$  integer ::  ipar(MAXVAR)
-!!$  double precision ::  PL(NDIM,0:DIMPC),DPL(NDIM,0:DIMPC),DDPL(NDIM,0:dimpc)
-!!$  double precision ::  PL1(NDIM,0:DIMPC),DPL1(NDIM,0:DIMPC),DDPL1(NDIM,0:dimpc)
-!!$
-!!$  double precision :: x(ndim),yhat
-!!$  double precision :: xcof(MAXTRM),xcoftmp
-!!$  integer::ipartmp
-!!$  real*8::  xtmp,PLtmp(0:dimpc),DPLtmp(0:dimpc),DDPLtmp(0:dimpc)
-!!$
-!!$  call multidx(MAXDAT,NDIM,DIMPC,mreg,nterms) ! get multiindex notation for tensor procduct
-!!$
-!!$  !Initialize for safety
-!!$
-!!$  dpltmp=0.0d0
-!!$  ddpltmp=0.0d0
-!!$  pltmp=0.0d0
-!!$
-!!$  yhat = 0.0d0
-!!$  do kk=1,nterms
-!!$     xcoftmp=xcof(kk)
-!!$     do jj=1,nDIM 
-!!$
-!!$        ipartmp=ipar(jj) ! Normal or uniform
-!!$ 
-!!$        xtmp=x(jj) !location to evalutuate the orthogonal polynomials
-!!$
-!!$        call ortho(ipartmp,DIMPC,xtmp,PLtmp,dpltmp,ddpltmp) !get values and derivatives
-!!$
-!!$        ! Store it in the way it is needed
-!!$
-!!$        PL(jj,0:dimpc)=pltmp(0:dimpc) 
-!!$        DPL(jj,0:dimpc)=Dpltmp(0:dimpc)
-!!$        DDPL(jj,0:dimpc)=DDpltmp(0:dimpc)
-!!$
-!!$        xcoftmp=xcoftmp*PL(jj,mreg(kk,jj)) ! the derivatives are not used at all
-!!$
-!!$     enddo
-!!$     yhat = yhat + xcoftmp ! PC value
-!!$  end do
-!!$
-!!$  return
-!!$
-!!$end subroutine evalPC
 
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 subroutine ortho(dist,dimpc,x,pl,dpl,ddpl)
@@ -1122,6 +1062,6 @@ SUBROUTINE HERM(N,X,Y,DY,D2Y)
 !!$ end do
 
 
-
+        
         return
       end subroutine evalPC

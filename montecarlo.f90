@@ -19,14 +19,14 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   real*8  :: DS(2,NDIM),scal
   real*8  :: fpcb(MAXPTS),coll(MAXPTS,MAXVAR),PL(nDIM,0:MAXTRM),DPL(nDIM,0:MAXTRM),xcoftmp
   integer :: NMCS,nmcstmp,seed,i,j,k,readMcsamples,kk,jj
-!  real*8,intent(out) ::fvar,fmean
-!  double precision, dimension(20),intent(out) :: fmeanprime,fvarprime
-
-!  real*8::fstd!,fmeanprime,fvarprime,fstdprime
-!  real*8 :: xavg(ndim),xvar(ndim),xstd(ndim)
+  !  real*8,intent(out) ::fvar,fmean
+  !  double precision, dimension(20),intent(out) :: fmeanprime,fvarprime
+  
+  !  real*8::fstd!,fmeanprime,fvarprime,fstdprime
+  !  real*8 :: xavg(ndim),xvar(ndim),xstd(ndim)
   real*8 :: xavgtmp(ndim),xvartmp(ndim),xstdtmp(ndim)
- ! double precision, dimension(20)   :: fstdprime,xavgt,xstdt  
-
+  ! double precision, dimension(20)   :: fstdprime,xavgt,xstdt  
+  
   character*60 :: filename
   !  double precision :: MNCf(MAXNMCS)
   !  double precision :: MNCx(NDIM,MAXNMCS)
@@ -37,6 +37,9 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   integer :: ict,ictglb,ihst
   double precision :: MCm,MCmglb,MCd,MCdglb,hglb,width,pdf
   double precision, dimension(ndim):: xmin,xmax,xminglb,xmaxglb,MCmprime,MCmprimeglb,MCdprime,MCdprimeglb
+
+  real*8,dimension(ndim,ndim)::MCmdbleprimeglb,MCmdbleprime,MCddbleprimeglb,MCddbleprime
+
   double precision :: st,pst,dx,p1,p2,xmintmp,xmaxtmp,dinvnorm
   double precision :: yhat,RMSE,EI,ran
   double precision, dimension(ndim)      :: x,df,x0,Ddiff,sigma,xbar,v
@@ -239,6 +242,9 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
      MCd  = 0.d0
      MCmprime(:)=0.d0
      MCdprime(:)=0.d0
+     MCmdbleprime(:,:)=0.d0
+     MCddbleprime(:,:)=0.d0
+
      ict  = 0
 
 !!$     if (fct.eq.20.and.id_proc.eq.0) then
@@ -269,15 +275,31 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 
 
 !                print *, 'x:',x,'PC:',yhat!,'Ex:',fv ,id_proc  
-
+        
         ict    = ict + 1
         MCm    = MCm + yhat    ! for mean
         MCd    = MCd + yhat**2 ! for variance 
-
+        
       
         do j=1,ndim
            MCmprime(j) = MCmprime(j) + yhatprime(j)  !for derivative of mean
-           MCdprime(j) = MCdprime(j) + yhat*yhatprime(j)  !for derivative of variance
+           MCdprime(j) = MCdprime(j) + 2.0*yhat*yhatprime(j)  !for derivative of variance
+        end do
+
+
+        ! For hessian of mean and variance
+        
+        
+        do jj=1,ndim
+
+           do kk=1,ndim
+              
+
+              MCmdbleprime(jj,kk)=  MCmdbleprime(jj,kk) + yhatdbleprime(jj,kk) ! Mean
+              
+              MCddbleprime(jj,kk)=  MCddbleprime(jj,kk) + 2.0*(yhat*yhatdbleprime(jj,kk) + yhatprime(kk)**2)
+              
+           end do
         end do
 
         MNCf(i) = yhat
@@ -289,8 +311,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
         end if
 
      end do ! main loop for monte carlo
-
-
+     
      ! Information Sharing
      do id=0,num_proc-1
         is   = idec*id + 1
@@ -307,8 +328,22 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
         call MPI_ALLREDUCE(xmin(i),xminglb(i),1,MPI_DOUBLE_PRECISION,MPI_MIN,MPI_COMM_WORLD,ierr)
         call MPI_ALLREDUCE(xmax(i),xmaxglb(i),1,MPI_DOUBLE_PRECISION,MPI_MAX,MPI_COMM_WORLD,ierr)
         call MPI_ALLREDUCE(MCmprime(i),MCmprimeglb(i),1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,ierr)
+
         call MPI_ALLREDUCE(MCdprime(i),MCdprimeglb(i),1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,ierr)
+
      end do
+
+
+     ! Hessian
+     do i=1,ndim
+        do j=1,ndim
+           call MPI_ALLREDUCE(MCmdbleprime(i,j),MCmdbleprimeglb(i,j),1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,ierr)
+           call MPI_ALLREDUCE(MCddbleprime(i,j),MCddbleprimeglb(i,j),1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,ierr)
+
+        end do
+     end do
+     
+
 
      if(ictglb.ne.NMCS) then
         print *,ictglb,nmcs
@@ -317,11 +352,24 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 
      fmean = MCmglb / dble(ictglb)
      fvar = MCdglb / dble(ictglb) - fmean**2  
+
+     !Derivative
      do i=1,ndim
         fmeanprime(i) = MCmprimeglb(i) / dble(ictglb)
-        fvarprime(i) = 2.0 * MCdprimeglb(i) / dble(ictglb) - 2.0 * fmean * fmeanprime(i)
+        fvarprime(i) =  MCdprimeglb(i) / dble(ictglb) - 2.0 * fmean * fmeanprime(i)
      end do
 
+     !Hessian
+     
+     do i=1,ndim
+        do j=1,ndim
+
+           fmeandbleprime(i,j)=MCmdbleprimeglb(i,j)/dble(ictglb)
+           
+           fvardbleprime(i,j)=MCddbleprimeglb(i,j)/dble(ictglb) -  2.0*(fmean*fmeandbleprime(i,j) + fmeanprime(j)**2)
+
+        end do
+     end do
 
      ! Histogram
 
@@ -370,13 +418,27 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
               fmeanprime(1:ndim) = fmeanprime(1:ndim) !/(DS(2,1:ndim)-DS(1,1:ndim))
               fvarprime= fvarprime(1:ndim) !/(DS(2,1:ndim)-DS(1,1:ndim))
               write(filenum,*)
-              write(filenum,'(6x,a,5e15.5)')'>> xavg ',xavg(1:ndim)
-              write(filenum,'(6x,a,5e15.5)')'>> xstd ',xstd(1:ndim)  
               write(filenum,'(6x,a,2i4)')'>> Fct,  Function index:',fct,fctindx
               write(filenum,*)
+              write(filenum,'(6x,a,5e15.5)')'>> xavg ',xavg(1:ndim)
+              write(filenum,'(6x,a,5e15.5)')'>> xstd ',xstd(1:ndim)  
+              write(filenum,*)
               write(filenum,'(6x,a,3e15.5)')'>> Mean, Var, SD  = ',fmean,fvar,fstd
+              write(filenum,*)
               write(filenum,'(6x,a,20e15.5)')'>> Meanprime = ',fmeanprime(1:ndim)
               write(filenum,'(6x,a,20e15.5)')'>> Varprime = ',fvarprime(1:ndim)
+              write(filenum,*)
+
+              write(filenum,'(6x,a,20e15.5)')'>> Meandbleprime = '
+              do i=1,ndim
+                 write(filenum,'(8x,20e15.5)')fmeandbleprime(1:ndim,i)
+              end do
+
+              write(filenum,'(6x,a,20e15.5)')'>> Vardbleprime = '
+              do i=1,ndim
+                 write(filenum,'(8x,20e15.5)')fvardbleprime(1:ndim,i)
+              end do
+              write(filenum,*)
               write(filenum,'(6x,a,99f8.3)')'>> Range of X(min) = ',(xminglb(i),i=1,ndim)
               write(filenum,'(6x,a,99f8.3)')'>> Range of X(max) = ',(xmaxglb(i),i=1,ndim)
               write(filenum,'(6x,a,2e15.5)')'>> Ymax/min = ',ymaxglb,yminglb
@@ -506,14 +568,14 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 
 
            write(filenum,'(6x,a,3e15.5)')'Real : Mean, Var, SD',Javg(1),Jvar(1),Jstd(1)
-           write(filenum,*)
+!           write(filenum,*)
            
            write(filenum,'(6x,a,3e15.5)')'PC   : Mean, Var, SD',fmean,fvar,fstd
-           write(filenum,*)
+ !          write(filenum,*)
 
            write(filenum,'(6x,a,3e15.5)')'Error: Mean, Var, SD',abs(fmean-Javg(1)),abs(fvar-Jvar(1)),abs(fstd-Jstd(1))
 
-           write(filenum,*)
+  !         write(filenum,*)
 
            ! Stats output
            

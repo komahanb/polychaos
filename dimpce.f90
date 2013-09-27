@@ -28,6 +28,7 @@ Module dimpce
 !!$      double precision, dimension(10)   :: vCON
 !!$      double precision, dimension(2,20)   :: DS
       double precision, dimension(20)   :: xavg,xstd,fmeanprime,fvarprime,xavgt,xstdt
+      double precision,dimension(20,20)::fmeandbleprime,fvardbleprime
 !!$      double precision, dimension(1000)   :: difflocar
 !!$      character(len=1), dimension(10)   :: cCON1
 !!$      character(len=7), dimension(10)   :: cCON2
