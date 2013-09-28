@@ -194,6 +194,7 @@ subroutine get_f(dim,fct,x,f)
      f=f
 
   else if (fct.eq.8) then
+     if (dim.ne.3) stop'Wrong dimension'
 
      rho=0.2836
      sigmay=36260.0
@@ -214,11 +215,14 @@ subroutine get_f(dim,fct,x,f)
         f = p*Fs*L / (x(1)*x(3)*sigmay) - 1.0
      else if (fctindx.eq.3) then
         f = 4.0*p*Fs*L**3 / (x(1)**2*x(3)*E*pi) - 1.0
+     else
+        stop'Wrong Fct index'
      end if
 
 
 
   else if (fct.eq.9) then ! Tubular column
+       if (dim.ne.3) stop'Wrong dimension'
 
      !Thanks: Arora Section 3.7
 
@@ -261,6 +265,7 @@ subroutine get_f(dim,fct,x,f)
 
 
   else if (fct.eq.10) then ! Cantilever beam 
+       if (dim.ne.2) stop'Wrong dimension'
 
      ! Thanks: Section 3.8 Arora 
 
@@ -489,6 +494,8 @@ subroutine get_f(dim,fct,x,f)
 
 
   else if (fct.eq.8)then
+     
+     if (dim.ne.3) stop'Wrong dimension'
 
      rho=0.2836
      sigmay=36260.0
@@ -517,10 +524,13 @@ subroutine get_f(dim,fct,x,f)
         df(1) =-8.0*p*Fs*L**3 / (pi*E*x(1)**3*x(3))
         df(2) = 0.0
         df(3) =-4.0*p*Fs*L**3 / (pi*E*x(1)**2*x(3)**2)
+     else
+        stop'Wrong fct index'
      end if
 
   else if (fct.eq.9) then
-
+        
+     if (dim.ne.2) stop'Wrong dimension'
      !Thanks: Arora Section 3.7
 
      p=10.0e6               !10 MN
@@ -568,7 +578,7 @@ subroutine get_f(dim,fct,x,f)
      
 
   else if (fct.eq.10) then ! Cantilever beam 
-
+     if (dim.ne.3) stop'Wrong dimension'
      ! Thanks: Section 3.8 Arora 
 
      sigma_allow= 10.0d6 !N/m2
@@ -849,7 +859,7 @@ subroutine get_dff(DIM,fct,x,d2f)
 
   else if (fct.eq.8) then
      !       Two bar truss
-
+     if (dim.ne.3) stop'Wrong dimension'
      rho=0.2836
      sigmay=36260.0
      p=25000.0
@@ -896,7 +906,7 @@ subroutine get_dff(DIM,fct,x,d2f)
      end if
 
   else if (fct.eq.9) then
-
+     if (dim.ne.3) stop'Wrong dimension'
      ! Short column
      ! Thanks: Arora Section 3.7
 
@@ -984,7 +994,7 @@ subroutine get_dff(DIM,fct,x,d2f)
      end if
 
   else if (fct.eq.10) then !cantilever beam
-
+     if (dim.ne.2) stop'Wrong dimension'
      ! Thanks: Section 3.8 Arora 
 
      sigma_allow= 10.0d6 !N/m2
@@ -1061,7 +1071,7 @@ subroutine get_dff(DIM,fct,x,d2f)
      end if !fctindx
 
   else if (fct.eq.11) then
-
+     if (dim.ne.3) stop'Wrong dimension'
      gamma= 0.1 ! weight density lb/in3
      L=10.0     !in  
      pi=4.0*atan(1.0)

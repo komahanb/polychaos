@@ -1,4 +1,4 @@
-subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,statin,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
+subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,statin,probtype,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
 
   use dimpce
   implicit none
@@ -114,10 +114,15 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 !!$     close(10)
 !!$  end if
 
-
   xavg(1:dim)=xavgin(1:dim)
-  xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
-!  xstd(1:dim)=xstdin(1:dim)
+
+  if (probtype.eq.1) then
+    xstd(1:dim)=xstdin(1:dim)
+  else if (probtype.eq.2) then
+    xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
+  else	
+    stop"Wrong prob type"
+  end if	
 
   do  dynamics=1,1
 
