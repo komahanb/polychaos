@@ -333,9 +333,9 @@ subroutine get_f(dim,fct,x,f)
      pv=P*sin(theta)
      
      if (fctindx.gt.0) then
-        u=(L/E)*(x(1)*pu + 2*dsqrt(2.0)*x(2)*pu + x(3)*pu + x(3)*pv - x(1)*pv)/(x(1)*x(2) + dsqrt(2.0)*x(1)*x(3) + x(2)*x(3))
+        u=(L/E)*(x(1)*pu + 2*sqrt(2.0)*x(2)*pu + x(3)*pu + x(3)*pv - x(1)*pv)/(x(1)*x(2) + sqrt(2.0)*x(1)*x(3) + x(2)*x(3))
 
-        v=(L/E)*(-x(1)*pu + x(3)*pu + x(1)*pv + x(3)*pv)/(x(1)*x(2) + dsqrt(2.0)*x(1)*x(3) + x(2)*x(3))
+        v=(L/E)*(-x(1)*pu + x(3)*pu + x(1)*pv + x(3)*pv)/(x(1)*x(2) + sqrt(2.0)*x(1)*x(3) + x(2)*x(3))
 
 !!$if (loadcase.eq.2) then
 
