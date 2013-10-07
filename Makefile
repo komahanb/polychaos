@@ -6,7 +6,7 @@
 #       TARGET          #
 #########################
 
-TARGET= pc
+TARGET= pcestimate.a
 
 SUF90=f90
 SUF77=f
@@ -27,7 +27,7 @@ F77	= mpif77
 CC = gcc
 FC = ifort
 
-FFLAGS  = -r8 -O4 -openmp # -fpe3 -parallel  #-traceback #-ftrapuv -check uninit -traceback #  -g -fpe3 # -traceback -debug all
+FFLAGS  = -r8 -O4 -openmp  #-traceback #-ftrapuv -check uninit -traceback #  -g -fpe3 # -traceback -debug all
 
 # -zero -fpe0  -CB  -O0  -g3 -debug extended -ftrapuv -check all #-parallel # -check
 # -openmp #-check
@@ -47,8 +47,8 @@ OBJS =  ${SRCS:.$(SUF)=.o}
 
 all:  $(TARGET)
 
-$(TARGET): $(OBJS) Eulersolve.a libmir.a tapenade.a
-	$(F90) $(FFLAGS) -o $(TARGET) $(OBJS) Eulersolve.a libmir.a tapenade.a $(LFLAGS) -Wl,-rpath=.
+$(TARGET): $(OBJS) 
+	   ar rvs $@ $(OBJS)
 	@echo " ----------- ${TARGET} created ----------- "
 
 ######################################

@@ -11,7 +11,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,orderinitial,order
   double precision,intent(in) :: xavgin(dim),xstdin(dim)
   integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
   real*8,intent(in)::DATIN(20) ! constants and other values for objective function/constraints
-  
+!  real*8,intent(in):: sampfacin
   !Export variables  
   double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(dim),fvarprimeout(dim),fvardbleprimeout(dim,dim),fmeandbleprimeout(dim,dim)
   
@@ -62,7 +62,6 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,orderinitial,order
   integer::index,evalfunction
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
-
 
   !Settings
 
