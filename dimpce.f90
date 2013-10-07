@@ -15,5 +15,9 @@ Module dimpce
       double precision fmean,fvar,fstd
       double precision, dimension(20)   :: xavg,xstd,fmeanprime,fvarprime,xavgt,xstdt
       double precision,dimension(20,20)::fmeandbleprime,fvardbleprime
+      
+      double precision,dimension(20)::dat
+
+      logical::mainprog
 
     End Module dimpce

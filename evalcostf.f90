@@ -400,6 +400,86 @@ subroutine get_f(dim,fct,x,f)
         stop'Unsupported function index'
 
      end if
+
+  else if (fct.eq.12) then ! Threebar 6d problem
+
+     if (dim.ne.6) stop'wrong dim for this problem'
+
+     if (mainprog) then
+      ! Use these settings if the program is called from main.f90.
+      ! If PC is used as library DAT is passed as an input vector from calling program such as IPOPT
+
+        !Problem data and other constants
+        dat(1)=10.0 !height ref
+        dat(2)=1.0e7 !E
+        dat(3)=0.1 !gamma
+        dat(4)=45.0*pi/180.0
+        dat(5)=20000.0
+
+        ! Max constraint values
+
+        !Tensile
+        dat(6)=5000.0    ! psi tensile_sigma1_max=dat(6)      
+        dat(7)=20000.0    ! psi tensile_sigma2_max=dat(7)
+        dat(8)=5000.0    ! psi tensile_sigma3_max=dat(8)
+        !Compressive
+        dat(9)=5000.0    ! psi comp_sigma1_max=dat(9)
+        dat(10)=20000.0   ! psi comp_sigma2_max=dat(10)
+        dat(11)=5000.0   ! psi comp_sigma3_max=dat(11)
+        !Displacement
+        dat(12)=0.005    ! in  max_u_disp=dat(12)
+        dat(13)=0.005    ! in  max_v_disp=dat(12)
+        dat(14)=1.0      ! Factor of safety
+     end if
+
+
+     if (fctindx.eq.0) then
+
+        call threebarf(0,dat,x,F)
+
+     else if (fctindx.eq.1) then
+
+        call threebarf(1,dat,x,F)
+
+     else if (fctindx.eq.2) then
+
+      call threebarf(2,dat,x,F)
+
+     else if (fctindx.eq.3) then
+
+      call threebarf(3,dat,x,F)
+
+     else if (fctindx.eq.4) then
+
+      call threebarf(4,dat,x,F)
+
+     else if (fctindx.eq.5) then
+
+      call threebarf(5,dat,x,F)
+
+     else if (fctindx.eq.6) then
+
+      call threebarf(6,dat,x,F)
+
+     else if (fctindx.eq.7) then
+
+      call threebarf(7,dat,x,F)
+
+     else if (fctindx.eq.8) then
+
+      call threebarf(8,dat,x,F)
+
+     else
+
+        stop'wrong fctindx'
+
+     end if
+
+
+
+
+
+
   else
      print*,fct
      stop'Wrong Function number'
@@ -493,7 +573,7 @@ subroutine get_f(dim,fct,x,f)
      end do
 
 
-  else if (fct.eq.8)then
+  else if (fct.eq.8)then ! two bar truss design (markus)
      
      if (dim.ne.3) stop'Wrong dimension'
 
@@ -528,7 +608,7 @@ subroutine get_f(dim,fct,x,f)
         stop'Wrong fct index'
      end if
 
-  else if (fct.eq.9) then
+  else if (fct.eq.9) then ! Short column test problem
         
      if (dim.ne.2) stop'Wrong dimension'
      !Thanks: Arora Section 3.7
@@ -577,8 +657,9 @@ subroutine get_f(dim,fct,x,f)
      end if
      
 
-  else if (fct.eq.10) then ! Cantilever beam 
-     if (dim.ne.3) stop'Wrong dimension'
+  else if (fct.eq.10) then ! Cantilever beam test problem
+
+     if (dim.ne.2) stop'Wrong dimension'
      ! Thanks: Section 3.8 Arora 
 
      sigma_allow= 10.0d6 !N/m2
@@ -624,7 +705,9 @@ subroutine get_f(dim,fct,x,f)
 
      end if
 
-  else if (fct.eq.11) then
+  else if (fct.eq.11) then ! Threebar truss problem (3d)
+
+     if (dim.ne.3 ) stop'wrong dimension for three bar problem'
      
      gamma= 0.1 ! weight density lb/in3
      L=10.0     !in  
@@ -726,15 +809,78 @@ else
 
 stop'wrong function index for this case'
 
-
 endif
 
+else if (fct.eq.12) then
 
-  else
+   if (dim.ne.6) stop'wrong dim for this problem'
+   
+   if (mainprog) then 
+      ! Use these settings if the program is called from main.f90.
+      ! If PC is used as library DAT is passed as an input vector from calling program such as IPOPT
+      
+      !Problem data and other constants
+      dat(1)=10.0 !height ref
+      dat(2)=1.0e7 !E
+      dat(3)=0.1 !gamma
+      dat(4)=45.0*pi/180.0
+      dat(5)=20000.0
 
-     stop'Unsupported function number'
+      ! Max constraint values
 
-  end if
+      !Tensile
+      dat(6)=5000.0    ! psi tensile_sigma1_max=dat(6)      
+      dat(7)=20000.0    ! psi tensile_sigma2_max=dat(7)
+      dat(8)=5000.0    ! psi tensile_sigma3_max=dat(8)
+      !Compressive
+      dat(9)=5000.0    ! psi comp_sigma1_max=dat(9)
+      dat(10)=20000.0   ! psi comp_sigma2_max=dat(10)
+      dat(11)=5000.0   ! psi comp_sigma3_max=dat(11)
+      !Displacement
+      dat(12)=0.005    ! in  max_u_disp=dat(12)
+      dat(13)=0.005    ! in  max_v_disp=dat(12)
+      dat(14)=1.0      ! Factor of safety
+   end if
+
+   if (fctindx.eq.0) then
+      call threebardf(0,dat,x,df)
+
+   else if (fctindx.eq.1) then
+      call threebardf(1,dat,x,df)
+
+   else if (fctindx.eq.2) then
+      call threebardf(2,dat,x,df)
+
+   else if (fctindx.eq.3) then
+      call threebardf(3,dat,x,df)
+
+   else if (fctindx.eq.4) then
+      call threebardf(4,dat,x,df)
+
+   else if (fctindx.eq.5) then
+      call threebardf(5,dat,x,df)
+
+   else if (fctindx.eq.6) then
+      call threebardf(6,dat,x,df)
+
+   else if (fctindx.eq.7) then
+      call threebardf(7,dat,x,df)
+
+   else if (fctindx.eq.8) then
+      call threebardf(8,dat,x,df)
+
+   else
+
+      stop'wrong fctindx'
+
+   end if
+
+
+else
+
+   stop'Unsupported function number'
+
+end if
 
 end subroutine get_df
 
@@ -857,8 +1003,8 @@ subroutine get_dff(DIM,fct,x,d2f)
         end do
      end do
 
-  else if (fct.eq.8) then
-     !       Two bar truss
+  else if (fct.eq.8) then      !       Two bar truss
+
      if (dim.ne.3) stop'Wrong dimension'
      rho=0.2836
      sigmay=36260.0
@@ -994,6 +1140,7 @@ subroutine get_dff(DIM,fct,x,d2f)
      end if
 
   else if (fct.eq.10) then !cantilever beam
+
      if (dim.ne.2) stop'Wrong dimension'
      ! Thanks: Section 3.8 Arora 
 
@@ -1070,7 +1217,7 @@ subroutine get_dff(DIM,fct,x,d2f)
 
      end if !fctindx
 
-  else if (fct.eq.11) then
+  else if (fct.eq.11) then ! Three bar truss (3d)
      if (dim.ne.3) stop'Wrong dimension'
      gamma= 0.1 ! weight density lb/in3
      L=10.0     !in  

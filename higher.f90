@@ -281,7 +281,7 @@ subroutine RMSE_Higher(stat,ndim,fct,npts,dimPC,ipar,par,xcof)
 
         ! write to errornorm file
 
-        write(51,'(2i8,5e15.8)') dimpc,npts,errorglb,maxerrorglb, errorhatglb, errordblehatglb !, ttotal !write to file
+        write(51,'(2i8,6e15.8)') dimpc,npts,errorglb,maxerrorglb, errorhatglb, errordblehatglb !, ttotal !write to file
 
      end if
 

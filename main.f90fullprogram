@@ -7,7 +7,7 @@ program main
   include 'mpif.h'
 
   integer :: DIM
-  parameter (DIM=2)
+  parameter (DIM=6)
 
   !indices
   integer :: i,j,k,ii,jj,kk,fuct
@@ -55,21 +55,25 @@ program main
   integer::index,evalfunction
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
-
+  
   call MPI_START 
+ 
+  mainprog=.true.
 
   !Settings
   
   filenum=6 ! 6 for screen, any other number for fort.x
   
-  if(id_proc.eq.0)  then
-
+   if(id_proc.eq.0)  then
      write(filenum,*)
-     write(filenum,*) '================================================='
-     write(filenum,*) '         Non-Intrusive Polynomial Chaos          '
-     write(filenum,*) '================================================='
+     write(filenum,*) '======================================================='
+     write(filenum,*) 'Non-Intrusive Polynomial Chaos (Stochastic Collocation)'
+     write(filenum,*) '======================================================='
+     write(filenum,*) 'Author: Komahan Boopathy, University of Dayton, OH'
+     write(filenum,*) 'Email : komahan.cool@gmail.com'
+     write(filenum,*) '======================================================='
      write(filenum,*)
-     write(filenum,'(x,a,i3)')'>> Number of Processors = ',num_proc
+!     write(filenum,'(x,a,i3)')'>> Number of Processors = ',num_proc
   end if !master
 
   !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++!
@@ -109,10 +113,23 @@ program main
      close(10)
   end if
 
-do i =1,dim
-xavg(i)=1.0d0
-xstd(i)=0.25d0
-end do
+  ! Mean setup
+  do i =1,dim
+  xavg(i)=1.0d0
+  end do
+
+  probtype=1
+  
+  !variance setup 
+  if (probtype.eq.1) then
+    xstd(1:dim)=0.05
+  else if (probtype.eq.2) then
+    xstd(1:dim)=xavg(1:dim)*0.05
+  else	
+    stop"Wrong prob type"
+  end if	
+
+
   do  dynamics=1,1
 
      !===============================
@@ -121,11 +138,27 @@ end do
 
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=0,0,1   ! 0= Function only, 1= Function + Gradient , 2= Function +Gradient +Hessian   
+        do  stat=0,0,1   
+           
+           !0= Function only
+           !1= Function + Gradient
+           !2= Function +Gradient +Hessian   
 
            call solvertype(stat,os,solver)
 
-           !1: cos(x+y) 2: 1.0/(1.0+x**2+y**2) 3: x**2+y**2 4: exp(x+y) 5: x**3+y**3,6: Rosenbrock, 7:sin(3x-1.5)+cos(3y-3), 8:  Truss design, 9: Cantiliver beam(3D) 20: CFD
+           !1 : cos(x+y) (Nd)
+           !2 : 1.0/(1.0+x**2+y**2)  (Nd)
+           !3 : x**2+y**2  (Nd)
+           !4 : exp(x+y)  (Nd)
+           !5 : x**3+y**3 (Nd)
+           !6 : Rosenbrock (Nd)
+           !7 : sin(3x-1.5)+cos(3y-3) (Nd)
+           !8 : Two bar truss design (3d)
+           !9 : Short tubular column (3d)
+           !10: Cantilever beam (2d)
+           !11: Three bar truss (3d)
+           !12: Threebar truss (6d)           
+           !20: CFD
 
            do fct=1,1,1
 
@@ -213,7 +246,7 @@ end do
 
               dyncyccnt=0
 
-              do DIMPC =2,3 !order 5D requires 3003 terms
+              do DIMPC =5,5 !order 5D requires 3003 terms
 
                  dyncyccnt=dyncyccnt+1
 
@@ -397,7 +430,7 @@ end do
                     write(filenum,*)
                  end if
                  call MPI_Barrier(MPI_COMM_WORLD,ierr)
-                 call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
+                 if(casemode.eq.0)   call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
                  call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
                  !================================================================

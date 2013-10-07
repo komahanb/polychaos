@@ -23,7 +23,7 @@ orthogonal bases.
 2) SOLUTION
 ------------
 
-The linear system is solved using scdcmp or ludcmp routines from "Numercial Recipes" depending upon whether the system is overdetermined or not. Please refer to their license information if you would like to taylor the code for your purposes.
+The linear system is solved using svdcmp or ludcmp routines from "Numercial Recipes" depending upon whether the system is overdetermined or not. Please refer to their license information if you would like to tailor the code for your purposes.
 
 3) POST PROCESSING:
 --------------------

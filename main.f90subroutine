@@ -1,4 +1,4 @@
-subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,statin,probtype,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
+subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
 
   use dimpce
   implicit none
@@ -7,9 +7,10 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
   include 'mpif.h'
   
   !Input variables
-  integer,intent(in):: DIM
+  integer,intent(in):: DIM,PROBTYPEIN
   double precision,intent(in) :: xavgin(dim),xstdin(dim)
   integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
+  real*8,intent(in)::DATIN(20) ! constants and other values for objective function/constraints
   
   !Export variables  
   double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(dim),fvarprimeout(dim),fvardbleprimeout(dim,dim),fmeandbleprimeout(dim,dim)
@@ -64,17 +65,25 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
 
   !Settings
+
+  mainprog=.false.
    
-  filenum=  77 ! 6 for screen, any other number for fort.x
+  DAT=DATIN
+
+  probtype=probtypeIN
+
+  filenum=  int(DAT(20)) ! 6 for screen, any other number for fort.x
   
   if(id_proc.eq.0)  then
-
      write(filenum,*)
-     write(filenum,*) '================================================='
-     write(filenum,*) '         Non-Intrusive Polynomial Chaos          '
-     write(filenum,*) '================================================='
+     write(filenum,*) '======================================================='
+     write(filenum,*) 'Non-Intrusive Polynomial Chaos (Stochastic Collocation)'
+     write(filenum,*) '======================================================='
+     write(filenum,*) 'Author: Komahan Boopathy, University of Dayton, OH'
+     write(filenum,*) 'Email : komahan.cool@gmail.com'
+     write(filenum,*) '======================================================='
      write(filenum,*)
-     write(filenum,'(x,a,i3)')'>> Number of Processors = ',num_proc
+!     write(filenum,'(x,a,i3)')'>> Number of Processors = ',num_proc
   end if !master
 
   !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++!
@@ -132,16 +141,32 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=statin,statin   ! 0= Function only, 1= Function + Gradient , 2= Function +Gradient +Hessian   
+        do  stat=statin,statin
 
+  	   !0= Function only
+           !1= Function + Gradient
+           !2= Function +Gradient +Hessian   
 
 	   call solvertype(stat,os,solver)
 	   
-	   !1: cos(x+y) 2: 1.0/(1.0+x**2+y**2) 3: x**2+y**2 4: exp(x+y) 5: x**3+y**3,6: Rosenbrock, 7:sin(3x-1.5)+cos(3y-3), 8:  Truss design, 9: Cantiliver beam(3D) 20: CFD
 
          fctindx=fctindxin
 	
            do fct=fctin,fctin
+
+	   !1 : cos(x+y) (Nd)
+           !2 : 1.0/(1.0+x**2+y**2)  (Nd)
+           !3 : x**2+y**2  (Nd)
+           !4 : exp(x+y)  (Nd)
+           !5 : x**3+y**3 (Nd)
+           !6 : Rosenbrock (Nd)
+           !7 : sin(3x-1.5)+cos(3y-3) (Nd)
+           !8 : Two bar truss design (3d)
+           !9 : Short tubular column (3d)
+           !10: Cantilever beam (2d)
+           !11: Three bar truss (3d)
+           !12: Threebar truss (6d)           
+           !20: CFD
 
               !Domain size
               if (casemode.eq.0) then !RMSE comparisons only
@@ -457,7 +482,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,orderinitial,orderfinal,
 
   if (id_proc.eq.0) then
      write(filenum,*)
-     write(filenum,*)'>> Program terminated successfully'
+     write(filenum,*)'>> Program call was successfull'
      write(filenum,*) 
   end if
 
