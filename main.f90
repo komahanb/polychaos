@@ -46,7 +46,7 @@ program main
   ! Cost func evals
   integer::fct
   real*8:: fv,gv(DIM),hv(DIM,DIM)
-  real*8 :: x(DIM)
+  real*8 :: x(DIM),pi
 
   !!Dynamic samples
 
@@ -160,9 +160,9 @@ program main
            !12: Threebar truss (6d)           
            !20: CFD
 
-           do fct=1,1,1
+           do fct=12,12,1
 
-              fctindx=0 
+              fctindx=5
 
 !!$              if (fuct.eq.1) fct=4
 !!$              if (fuct.eq.2) fct =2
@@ -227,6 +227,26 @@ program main
 
               else if (Casemode.eq.1) then ! stats + rmse domain
 
+                 if (Fct.eq.12) then
+
+                    pi=4.0*atan(1.0)
+
+                    xavg(1:3)=1.0
+                    xstd(1:3)=0.05
+
+                    xavg(4)=45.0*pi/180.0
+                    xstd(4)=1.0*pi/180.0
+
+                    xavg(5)=90.0*pi/180.0
+                    xstd(5)=1.0*pi/180.0
+
+                    xavg(6)=135.0*pi/180.0
+                    xstd(6)=1.0*pi/180.0                   
+
+                 end if
+
+
+
                  ! statistics--> construct PC surrogate between mean and 3 SD's
                  do i=1,dim
                     par(i,1)=xavg(i)-3.0*xstd(i)                 
@@ -246,7 +266,7 @@ program main
 
               dyncyccnt=0
 
-              do DIMPC =5,5 !order 5D requires 3003 terms
+              do DIMPC =3,3 !order 5D requires 3003 terms
 
                  dyncyccnt=dyncyccnt+1
 
@@ -421,17 +441,18 @@ program main
                  !=======================================================
                  ! Calculate RMSE
                  !=======================================================
-
-                 if(id_proc.eq.0) then
-                    write(filenum,*)
-                    write(filenum,*) '================================================='
-                    write(filenum,*) '             RMSE on Surrogate                   '
-                    write(filenum,*) '================================================='
-                    write(filenum,*)
+                 if(casemode.eq.0) then
+                    if(id_proc.eq.0) then
+                       write(filenum,*)
+                       write(filenum,*) '================================================='
+                       write(filenum,*) '             RMSE on Surrogate                   '
+                       write(filenum,*) '================================================='
+                       write(filenum,*)
+                    end if
+                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
+                    call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
+                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
                  end if
-                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
-                 if(casemode.eq.0)   call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
-                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
                  !================================================================
                  ! Tecplot output to file

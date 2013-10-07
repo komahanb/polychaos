@@ -405,6 +405,8 @@ subroutine get_f(dim,fct,x,f)
 
      if (dim.ne.6) stop'wrong dim for this problem'
 
+     pi=4.0*atan(1.0)
+
      if (mainprog) then
       ! Use these settings if the program is called from main.f90.
       ! If PC is used as library DAT is passed as an input vector from calling program such as IPOPT
@@ -814,7 +816,7 @@ endif
 else if (fct.eq.12) then
 
    if (dim.ne.6) stop'wrong dim for this problem'
-   
+   pi=4.0*atan(1.0)
    if (mainprog) then 
       ! Use these settings if the program is called from main.f90.
       ! If PC is used as library DAT is passed as an input vector from calling program such as IPOPT
