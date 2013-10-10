@@ -1,4 +1,4 @@
-subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
+subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
 
   use dimpce
   implicit none
@@ -7,7 +7,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,orderinitial,order
   include 'mpif.h'
   
   !Input variables
-  integer,intent(in):: DIM,PROBTYPEIN
+  integer,intent(in):: DIM,PROBTYPEIN,OSIN
   double precision,intent(in) :: xavgin(dim),xstdin(dim)
   integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
   real*8,intent(in)::DATIN(20) ! constants and other values for objective function/constraints
@@ -138,7 +138,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,orderinitial,order
      ! Main Program
      !===============================
 
-     DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
+     DO OS=OSin,OSin ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
         do  stat=statin,statin
 
