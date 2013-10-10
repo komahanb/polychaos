@@ -7,7 +7,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
   include 'mpif.h'
   
   !Input variables
-  integer,intent(in):: DIM,PROBTYPEIN,OSIN
+  integer,intent(in):: DIM,PROBTYPEIN(20),OSIN
   double precision,intent(in) :: xavgin(dim),xstdin(dim)
   integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
   real*8,intent(in)::DATIN(20) ! constants and other values for objective function/constraints
@@ -69,7 +69,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
    
   DAT=DATIN
 
-  probtype=probtypeIN
+  probtype(1:dim)=probtypeIN(1:dim)
 
   filenum=  int(DAT(20)) ! 6 for screen, any other number for fort.x
   
@@ -101,7 +101,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
   ! 2=Hermite
 
   do j=1,DIM
-     ipar(j)=1  
+     ipar(j)=2  
   end do
 
   casemode=1 !0=RMSE only, 1=Stats
@@ -124,13 +124,16 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
 
   xavg(1:dim)=xavgin(1:dim)
 
-  if (probtype.eq.1) then
-    xstd(1:dim)=xstdin(1:dim)
-  else if (probtype.eq.2) then
-    xstd(1:dim)=xavg(1:dim)*xstdin(1:dim)
-  else	
-    stop"Wrong prob type"
-  end if	
+
+  do i=1,dim
+  if (probtype(i).eq.1) then
+  xstd(i)=xstdin(i)
+  else if (probtype(i).eq.2) then
+  xstd(i)=xavgin(i)*xstdin(i)
+  else
+  stop"Wrong problem type"
+  end if	     
+  end do
 
   do  dynamics=1,1
 

@@ -10,7 +10,7 @@ Module dimpce
       integer::fctindx
       integer::dyncyccnt
       integer::OS,evlfnc,dynamics
-      integer::probtype ! 1=fixed 2=variable 
+      integer::probtype(20) ! 1=fixed 2=variable 
 
       double precision fmean,fvar,fstd
       double precision, dimension(20)   :: xavg,xstd,fmeanprime,fvarprime,xavgt,xstdt
