@@ -1,13 +1,14 @@
 subroutine evalcostf(stat,dim,fct,x,fv,gv,hv) !hpcb to be implemented
   use dimpce
   use omp_lib
-
+  
   implicit none
-
+  
   integer ::stat,fct,dim
   real*8 ::x(DIM),fv,gv(DIM),hv(DIM,DIM)
-
+  
   !CFD
+
   integer:: flag
   real*8:: v(dim),time,temp
 
@@ -132,7 +133,7 @@ subroutine get_f(dim,fct,x,f)
   real*8::tensile_sigma1_max,tensile_sigma2_max,tensile_sigma3_max
   real*8::comp_sigma1_max,comp_sigma2_max,comp_sigma3_max
   real*8::max_u_disp,max_v_disp,theta,pu,pv,u,sigma(dim)
-  
+
 
   f=0.0d0
 
@@ -196,14 +197,37 @@ subroutine get_f(dim,fct,x,f)
   else if (fct.eq.8) then
      if (dim.ne.3) stop'Wrong dimension'
 
-     rho=0.2836
-     sigmay=36260.0
-     p=25000.0
-     L=5.0
-     E=30e6
      pi=4.0*atan(1.0)
 
-     Fs=1.0
+!!$     ! Storing variables into DAT array to passthrough
+!!$     ! Use this in your calling subprogam
+!!$     
+!!$     dat(1)=rho
+!!$     dat(2)=L
+!!$     dat(3)=E
+!!$     dat(4)=P
+!!$     dat(5)=sigmay
+!!$     dat(6)=Fs
+     
+     if (mainprog) then
+        rho=0.2836
+        sigmay=36260.0
+        p=25000.0
+        L=5.0
+        E=30e6
+        Fs=1.0
+     else
+
+        !Read variables from DAT array to use in expressions
+
+        rho=dat(1)
+        L=dat(2)
+        E=dat(3)
+        P=dat(4)
+        sigmay=dat(5)
+        Fs=dat(6)
+
+     end if
 
      if (fctindx.eq.0) then
         !---- OBJECTIVE FUNCTION
@@ -222,16 +246,43 @@ subroutine get_f(dim,fct,x,f)
 
 
   else if (fct.eq.9) then ! Tubular column
-       if (dim.ne.3) stop'Wrong dimension'
+
+     if (dim.ne.3) stop'Wrong dimension'
 
      !Thanks: Arora Section 3.7
 
-     p=10.0e6               !10 MN
-     E=207000.0               !N/mm2
-     rho=7.833e-6           !kg/m3
-     sigma_allow=248.0        !N/mm2
      pi=4.0*atan(1.0)
-     Fs=1.0
+
+     if (mainprog) then
+
+        rho=7.833e-6           !kg/m3
+        p=10.0e6               !10 MN
+        E=207000.0               !N/mm2
+        sigma_allow=248.0        !N/mm2
+        Fs=1.0
+
+     else
+
+        !Read variables from DAT array to use in expressions
+
+        rho=dat(1)
+        E=dat(2)
+        P=dat(3)
+        sigma_allow=dat(4)
+        Fs=dat(5)
+
+     end if
+
+!!$
+!!$     ! Store variables into DAT array to passthrough
+!!$     ! Use this in your calling program
+!!$     
+!!$       dat(1)=rho
+!!$       dat(2)=E
+!!$       dat(3)=P
+!!$       dat(4)=sigma_allow
+!!$       dat(5)=Fs
+
 
      !define R,T
 
@@ -253,9 +304,9 @@ subroutine get_f(dim,fct,x,f)
 
         f = 4.0*p*Fs*L**2 / (t*E*(R*pi)**3) - 1.0
 
-!     else if (fctindx.eq.3) then
+        !     else if (fctindx.eq.3) then
 
-!        f= x(1)*Fs/(32.0*x(2)) - 1.0
+        !        f= x(1)*Fs/(32.0*x(2)) - 1.0
 
      else
 
@@ -265,21 +316,39 @@ subroutine get_f(dim,fct,x,f)
 
 
   else if (fct.eq.10) then ! Cantilever beam 
-       if (dim.ne.2) stop'Wrong dimension'
+     if (dim.ne.2) stop'Wrong dimension'
 
      ! Thanks: Section 3.8 Arora 
+     if (mainprog) then
 
-     sigma_allow= 10.0d6 !N/m2
-     M=40.0d6 !Nm
-     V=150000.0 !N
-     tau_allow= 2.0d6 !N/m2     
-     Fs=1.0
+        M=40.0d6 !Nm
+        V=150000.0 !N
+        sigma_allow= 10.0d6 !N/m2
+        tau_allow= 2.0d6 !N/m2     
+        Fs=1.0
 
+     else
+
+        M=dat(1)
+        V=dat(2)
+        sigma_allow=dat(3)
+        tau_allow=dat(4)
+        Fs=dat(5)
+
+     end if
+
+!!$       !Store variables into DAT array to passthrough
+!!$       ! Use this in your calling program
+!!$       dat(1)=M
+!!$       dat(2)=V
+!!$       dat(3)=sigma_allow
+!!$       dat(4)=tau_allow
+!!$       dat(5)=Fs
+     
      !define R,T
-
+     
      B=x(1)
      D=x(2)
-!     L=x(3)
 
      if (fctindx.eq.0) then
 
@@ -299,7 +368,7 @@ subroutine get_f(dim,fct,x,f)
         ! Shear Stress constraint
 
         f=(3.0*V*fs)/(2.0*b*d*tau_allow) -1.0
-        
+
      else if (fctindx.eq.3) then
 
         f= d*FS/(2.0*b) - 1.0
@@ -311,32 +380,89 @@ subroutine get_f(dim,fct,x,f)
      end if
 
   else if (fct.eq.11) then ! Three bar truss 
-     
 
-     if(dim.ne.3) stop'Wrong dimension'
-     
-     gamma= 0.1 ! weight density lb/in3
-     L=10.0     !in  
+     if (dim.ne.3) stop'wrong dim for this problem'
+
      pi=4.0*atan(1.0)
 
-     P=20000.0
-     theta=135.0*pi/180.0
-     E=1.0d7 !psi
+     if (mainprog) then
 
-     tensile_sigma1_max=5000.0
-     tensile_sigma2_max=20000.0
-     tensile_sigma3_max=5000.0
+        !Problem data and other constants
+        L=10.0 !height ref
+        E=1.0e7 !E
+        gamma=0.1 !gamma
+        theta=135.0*pi/180.0
+        P=20000.0
 
-     comp_sigma1_max=5000.0     
-     comp_sigma2_max=20000.0
-     comp_sigma3_max=5000.0
+        ! Max constraint values
 
-     max_u_disp=0.005
-     max_v_disp=0.005
+        !Tensile
+        tensile_sigma1_max=5000.0    ! psi tensile_sigma1_max=dat(6)      
+        tensile_sigma2_max=20000.0    ! psi tensile_sigma2_max=dat(7)
+        tensile_sigma3_max=5000.0    ! psi tensile_sigma3_max=dat(8)
+        !Compressive
+        comp_sigma1_max=5000.0    ! psi comp_sigma1_max=dat(9)
+        comp_sigma2_max=20000.0   ! psi comp_sigma2_max=dat(10)
+        comp_sigma3_max=5000.0   ! psi comp_sigma3_max=dat(11)
+        !Displacement
+        max_u_disp=0.005    ! in  max_u_disp=dat(12)
+        max_v_disp=0.005    ! in  max_v_disp=dat(12)
+
+        Fs=1.0      ! Factor of safety
+
+     else
+
+        L=dat(1)
+        E=dat(2)
+        gamma=dat(3)
+        theta=dat(4)
+        P=dat(5)
+
+        ! Max constraint values
+
+        !Tensile
+        tensile_sigma1_max=dat(6)
+        tensile_sigma2_max= dat(7)
+        tensile_sigma3_max= dat(8)
+
+        !Compressive
+        comp_sigma1_max= dat(9)
+        comp_sigma2_max= dat(10)
+        comp_sigma3_max=dat(11)
+
+        !Displacement
+        max_u_disp= dat(12)
+        max_v_disp= dat(13)
+        Fs= dat(14)
+     end if
+
+!!$     ! Use this in caling program and pass to pcestimate subtoutine
+!!$     !Problem data and other constants
+!!$     dat(1)=10.0 !height ref
+!!$     dat(2)=1.0e7 !E
+!!$     dat(3)=0.1 !gamma
+!!$     dat(4)=45.0*pi/180.0
+!!$     dat(5)=20000.0
+!!$
+!!$     ! Max constraint values
+!!$
+!!$     !Tensile
+!!$     dat(6)=5000.0    ! psi tensile_sigma1_max=dat(6)      
+!!$     dat(7)=20000.0    ! psi tensile_sigma2_max=dat(7)
+!!$     dat(8)=5000.0    ! psi tensile_sigma3_max=dat(8)
+!!$     !Compressive
+!!$     dat(9)=5000.0    ! psi comp_sigma1_max=dat(9)
+!!$     dat(10)=20000.0   ! psi comp_sigma2_max=dat(10)
+!!$     dat(11)=5000.0   ! psi comp_sigma3_max=dat(11)
+!!$     !Displacement
+!!$     dat(12)=0.005    ! in  max_u_disp=dat(12)
+!!$     dat(13)=0.005    ! in  max_v_disp=dat(12)
+!!$     dat(14)=1.0      ! Factor of safety
+!!$
 
      pu=P*cos(theta)
      pv=P*sin(theta)
-     
+
      if (fctindx.gt.0) then
         u=(L/E)*(x(1)*pu + 2*sqrt(2.0)*x(2)*pu + x(3)*pu + x(3)*pv - x(1)*pv)/(x(1)*x(2) + sqrt(2.0)*x(1)*x(3) + x(2)*x(3))
 
@@ -408,8 +534,8 @@ subroutine get_f(dim,fct,x,f)
      pi=4.0*atan(1.0)
 
      if (mainprog) then
-      ! Use these settings if the program is called from main.f90.
-      ! If PC is used as library DAT is passed as an input vector from calling program such as IPOPT
+        ! Use these settings if the program is called from main.f90.
+        ! If PC is used as library DAT is passed as an input vector from calling program such as IPOPT
 
         !Problem data and other constants
         dat(1)=10.0 !height ref
@@ -445,31 +571,31 @@ subroutine get_f(dim,fct,x,f)
 
      else if (fctindx.eq.2) then
 
-      call threebarf(2,dat,x,F)
+        call threebarf(2,dat,x,F)
 
      else if (fctindx.eq.3) then
 
-      call threebarf(3,dat,x,F)
+        call threebarf(3,dat,x,F)
 
      else if (fctindx.eq.4) then
 
-      call threebarf(4,dat,x,F)
+        call threebarf(4,dat,x,F)
 
      else if (fctindx.eq.5) then
 
-      call threebarf(5,dat,x,F)
+        call threebarf(5,dat,x,F)
 
      else if (fctindx.eq.6) then
 
-      call threebarf(6,dat,x,F)
+        call threebarf(6,dat,x,F)
 
      else if (fctindx.eq.7) then
 
-      call threebarf(7,dat,x,F)
+        call threebarf(7,dat,x,F)
 
      else if (fctindx.eq.8) then
 
-      call threebarf(8,dat,x,F)
+        call threebarf(8,dat,x,F)
 
      else
 
@@ -477,17 +603,12 @@ subroutine get_f(dim,fct,x,f)
 
      end if
 
-
-
-
-
-
   else
      print*,fct
      stop'Wrong Function number'
   end if
 
-   end subroutine get_f
+end subroutine get_f
 
    subroutine get_df(dim,fct,x,df)
      use dimpce
@@ -577,16 +698,39 @@ subroutine get_f(dim,fct,x,f)
 
   else if (fct.eq.8)then ! two bar truss design (markus)
      
-     if (dim.ne.3) stop'Wrong dimension'
+  if (dim.ne.3) stop'Wrong dimension'
 
-     rho=0.2836
-     sigmay=36260.0
-     p=25000.0
-     L=5.0
-     E=30e6
      pi=4.0*atan(1.0)
 
-     Fs=1.0
+!!$     ! Storing variables into DAT array to passthrough
+!!$     ! Use this in your calling subprogam
+!!$     
+!!$     dat(1)=rho
+!!$     dat(2)=L
+!!$     dat(3)=E
+!!$     dat(4)=P
+!!$     dat(5)=sigmay
+!!$     dat(6)=Fs
+     
+     if (mainprog) then
+        rho=0.2836
+        sigmay=36260.0
+        p=25000.0
+        L=5.0
+        E=30e6
+        Fs=1.0
+     else
+
+        !Read variables from DAT array to use in expressions
+
+        rho=dat(1)
+        L=dat(2)
+        E=dat(3)
+        P=dat(4)
+        sigmay=dat(5)
+        Fs=dat(6)
+
+     end if
 
      if (fctindx.eq.0) then
         !---- OBJECTIVE FUNCTION
@@ -611,16 +755,32 @@ subroutine get_f(dim,fct,x,f)
      end if
 
   else if (fct.eq.9) then ! Short column test problem
-        
-     if (dim.ne.2) stop'Wrong dimension'
+     
+     if (dim.ne.3) stop'Wrong dimension'
+
      !Thanks: Arora Section 3.7
 
-     p=10.0e6               !10 MN
-     E=207000               !N/mm2
-     rho=7.833e-6           !kg/m3
-     sigma_allow=248        !N/mm2
      pi=4.0*atan(1.0)
-     Fs=1.0
+
+     if (mainprog) then
+
+        rho=7.833e-6           !kg/m3
+        p=10.0e6               !10 MN
+        E=207000.0               !N/mm2
+        sigma_allow=248.0        !N/mm2
+        Fs=1.0
+
+     else
+
+        !Read variables from DAT array to use in expressions
+
+        rho=dat(1)
+        E=dat(2)
+        P=dat(3)
+        sigma_allow=dat(4)
+        Fs=dat(5)
+
+     end if
 
      !define R,T
 
@@ -660,15 +820,26 @@ subroutine get_f(dim,fct,x,f)
      
 
   else if (fct.eq.10) then ! Cantilever beam test problem
-
      if (dim.ne.2) stop'Wrong dimension'
-     ! Thanks: Section 3.8 Arora 
 
-     sigma_allow= 10.0d6 !N/m2
-     M=40.0e3 !Nm
-     V=150000.0 !N
-     tau_allow= 2.0d6 !N/m2     
-     Fs=1.0
+     ! Thanks: Section 3.8 Arora 
+     if (mainprog) then
+
+        M=40.0d6 !Nm
+        V=150000.0 !N
+        sigma_allow= 10.0d6 !N/m2
+        tau_allow= 2.0d6 !N/m2     
+        Fs=1.0
+
+     else
+
+        M=dat(1)
+        V=dat(2)
+        sigma_allow=dat(3)
+        tau_allow=dat(4)
+        Fs=dat(5)
+
+     end if
 
      !define R,T
 
@@ -709,26 +880,60 @@ subroutine get_f(dim,fct,x,f)
 
   else if (fct.eq.11) then ! Threebar truss problem (3d)
 
-     if (dim.ne.3 ) stop'wrong dimension for three bar problem'
-     
-     gamma= 0.1 ! weight density lb/in3
-     L=10.0     !in  
+     if (dim.ne.3) stop'wrong dim for this problem'
+
      pi=4.0*atan(1.0)
 
-     P=20000.0
-     theta=135.0*pi/180.0
-     E=1.0d7 !psi
+     if (mainprog) then
 
-     tensile_sigma1_max=5000.0
-     tensile_sigma2_max=20000.0
-     tensile_sigma3_max=5000.0
+        !Problem data and other constants
+        L=10.0 !height ref
+        E=1.0e7 !E
+        gamma=0.1 !gamma
+        theta=135.0*pi/180.0
+        P=20000.0
 
-     comp_sigma1_max=5000.0     
-     comp_sigma2_max=20000.0
-     comp_sigma3_max=5000.0
+        ! Max constraint values
 
-     max_u_disp=0.005
-     max_v_disp=0.005
+        !Tensile
+        tensile_sigma1_max=5000.0    ! psi tensile_sigma1_max=dat(6)      
+        tensile_sigma2_max=20000.0    ! psi tensile_sigma2_max=dat(7)
+        tensile_sigma3_max=5000.0    ! psi tensile_sigma3_max=dat(8)
+        !Compressive
+        comp_sigma1_max=5000.0    ! psi comp_sigma1_max=dat(9)
+        comp_sigma2_max=20000.0   ! psi comp_sigma2_max=dat(10)
+        comp_sigma3_max=5000.0   ! psi comp_sigma3_max=dat(11)
+        !Displacement
+        max_u_disp=0.005    ! in  max_u_disp=dat(12)
+        max_v_disp=0.005    ! in  max_v_disp=dat(12)
+
+        Fs=1.0      ! Factor of safety
+
+     else
+
+        L=dat(1)
+        E=dat(2)
+        gamma=dat(3)
+        theta=dat(4)
+        P=dat(5)
+
+        ! Max constraint values
+
+        !Tensile
+        tensile_sigma1_max=dat(6)
+        tensile_sigma2_max= dat(7)
+        tensile_sigma3_max= dat(8)
+
+        !Compressive
+        comp_sigma1_max= dat(9)
+        comp_sigma2_max= dat(10)
+        comp_sigma3_max=dat(11)
+
+        !Displacement
+        max_u_disp= dat(12)
+        max_v_disp= dat(13)
+        Fs= dat(14)
+     end if
 
      pu=P*cos(theta)
      pv=P*sin(theta)
@@ -1006,16 +1211,39 @@ subroutine get_dff(DIM,fct,x,d2f)
      end do
 
   else if (fct.eq.8) then      !       Two bar truss
+  if (dim.ne.3) stop'Wrong dimension'
 
-     if (dim.ne.3) stop'Wrong dimension'
-     rho=0.2836
-     sigmay=36260.0
-     p=25000.0
-     L=5.0
-     E=30e6
      pi=4.0*atan(1.0)
 
-     Fs=1.0
+!!$     ! Storing variables into DAT array to passthrough
+!!$     ! Use this in your calling subprogam
+!!$     
+!!$     dat(1)=rho
+!!$     dat(2)=L
+!!$     dat(3)=E
+!!$     dat(4)=P
+!!$     dat(5)=sigmay
+!!$     dat(6)=Fs
+     
+     if (mainprog) then
+        rho=0.2836
+        sigmay=36260.0
+        p=25000.0
+        L=5.0
+        E=30e6
+        Fs=1.0
+     else
+
+        !Read variables from DAT array to use in expressions
+
+        rho=dat(1)
+        L=dat(2)
+        E=dat(3)
+        P=dat(4)
+        sigmay=dat(5)
+        Fs=dat(6)
+
+     end if
 
      d2f(:,:)=0.0d0
      if (fctindx.eq.0) then
@@ -1054,16 +1282,32 @@ subroutine get_dff(DIM,fct,x,d2f)
      end if
 
   else if (fct.eq.9) then
-     if (dim.ne.3) stop'Wrong dimension'
-     ! Short column
-     ! Thanks: Arora Section 3.7
 
-     p=10.0e6               !10 MN
-     E=207000               !N/mm2
-     rho=7.833e-6           !kg/m3
-     sigma_allow=248        !N/mm2
+     if (dim.ne.3) stop'Wrong dimension'
+
+     !Thanks: Arora Section 3.7
+
      pi=4.0*atan(1.0)
-     Fs=1.0
+
+     if (mainprog) then
+
+        rho=7.833e-6           !kg/m3
+        p=10.0e6               !10 MN
+        E=207000.0               !N/mm2
+        sigma_allow=248.0        !N/mm2
+        Fs=1.0
+
+     else
+
+        !Read variables from DAT array to use in expressions
+
+        rho=dat(1)
+        E=dat(2)
+        P=dat(3)
+        sigma_allow=dat(4)
+        Fs=dat(5)
+
+     end if
 
      !define R,T
 
@@ -1142,15 +1386,26 @@ subroutine get_dff(DIM,fct,x,d2f)
      end if
 
   else if (fct.eq.10) then !cantilever beam
-
      if (dim.ne.2) stop'Wrong dimension'
-     ! Thanks: Section 3.8 Arora 
 
-     sigma_allow= 10.0d6 !N/m2
-     M=40.0e3 !Nm
-     V=150000.0 !N
-     tau_allow= 2.0d6 !N/m2     
-     Fs=1.0
+     ! Thanks: Section 3.8 Arora 
+     if (mainprog) then
+
+        M=40.0d6 !Nm
+        V=150000.0 !N
+        sigma_allow= 10.0d6 !N/m2
+        tau_allow= 2.0d6 !N/m2     
+        Fs=1.0
+
+     else
+
+        M=dat(1)
+        V=dat(2)
+        sigma_allow=dat(3)
+        tau_allow=dat(4)
+        Fs=dat(5)
+
+     end if
 
      !define R,T
 
@@ -1220,25 +1475,61 @@ subroutine get_dff(DIM,fct,x,d2f)
      end if !fctindx
 
   else if (fct.eq.11) then ! Three bar truss (3d)
-     if (dim.ne.3) stop'Wrong dimension'
-     gamma= 0.1 ! weight density lb/in3
-     L=10.0     !in  
+
+     if (dim.ne.3) stop'wrong dim for this problem'
+
      pi=4.0*atan(1.0)
 
-     P=20000.0
-     theta=135.0*pi/180.0
-     E=1.0d7 !psi
+     if (mainprog) then
 
-     tensile_sigma1_max=5000.0
-     tensile_sigma2_max=20000.0
-     tensile_sigma3_max=5000.0
+        !Problem data and other constants
+        L=10.0 !height ref
+        E=1.0e7 !E
+        gamma=0.1 !gamma
+        theta=135.0*pi/180.0
+        P=20000.0
 
-     comp_sigma1_max=5000.0     
-     comp_sigma2_max=20000.0
-     comp_sigma3_max=5000.0
+        ! Max constraint values
 
-     max_u_disp=0.005
-     max_v_disp=0.005
+        !Tensile
+        tensile_sigma1_max=5000.0    ! psi tensile_sigma1_max=dat(6)      
+        tensile_sigma2_max=20000.0    ! psi tensile_sigma2_max=dat(7)
+        tensile_sigma3_max=5000.0    ! psi tensile_sigma3_max=dat(8)
+        !Compressive
+        comp_sigma1_max=5000.0    ! psi comp_sigma1_max=dat(9)
+        comp_sigma2_max=20000.0   ! psi comp_sigma2_max=dat(10)
+        comp_sigma3_max=5000.0   ! psi comp_sigma3_max=dat(11)
+        !Displacement
+        max_u_disp=0.005    ! in  max_u_disp=dat(12)
+        max_v_disp=0.005    ! in  max_v_disp=dat(12)
+
+        Fs=1.0      ! Factor of safety
+
+     else
+
+        L=dat(1)
+        E=dat(2)
+        gamma=dat(3)
+        theta=dat(4)
+        P=dat(5)
+
+        ! Max constraint values
+
+        !Tensile
+        tensile_sigma1_max=dat(6)
+        tensile_sigma2_max= dat(7)
+        tensile_sigma3_max= dat(8)
+
+        !Compressive
+        comp_sigma1_max= dat(9)
+        comp_sigma2_max= dat(10)
+        comp_sigma3_max=dat(11)
+
+        !Displacement
+        max_u_disp= dat(12)
+        max_v_disp= dat(13)
+        Fs= dat(14)
+     end if
 
      pu=P*cos(theta)
      pv=P*sin(theta)
