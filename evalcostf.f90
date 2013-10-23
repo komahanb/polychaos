@@ -1,5 +1,5 @@
 subroutine evalcostf(stat,dim,fct,x,fv,gv,hv) !hpcb to be implemented
-  use dimpce
+  use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
   use omp_lib
   
   implicit none
@@ -118,7 +118,7 @@ end subroutine evalcostf
 
 
 subroutine get_f(dim,fct,x,f)
-  use dimpce
+    use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
   implicit none
 
   integer :: fct,dim,k
@@ -611,7 +611,7 @@ subroutine get_f(dim,fct,x,f)
 end subroutine get_f
 
    subroutine get_df(dim,fct,x,df)
-     use dimpce
+       use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
      implicit none
 
   integer :: fct,dim,k
@@ -1095,7 +1095,7 @@ end subroutine get_df
 
 
 subroutine get_dff(DIM,fct,x,d2f)
-  use dimpce
+    use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
   implicit none
 
   integer :: DIM,fct,j,k
@@ -1741,7 +1741,7 @@ subroutine get_dff(DIM,fct,x,d2f)
 end subroutine get_dff
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 subroutine gather_costfn(dim,fct,stat,npts,RN,fpcb,gpcb,hpcb)
-  use dimpce
+  use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
   implicit none
   include "collsub.h"
 
