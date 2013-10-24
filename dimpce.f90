@@ -20,5 +20,6 @@ Module dimpce
       double precision,dimension(20)::dat
 
       logical::mainprog
+      integer::epiflag
 
     End Module dimpce

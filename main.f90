@@ -1,4 +1,4 @@
-subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
+subroutine PCestimate(ndimint,dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
 
   use dimpce
   implicit none
@@ -11,6 +11,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
   double precision,intent(in) :: xavgin(dim),xstdin(dim)
   integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
   real*8,intent(in)::DATIN(20) ! constants and other values for objective function/constraints
+
   !Export variables  
   double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(dim),fvarprimeout(dim),fvardbleprimeout(dim,dim),fmeandbleprimeout(dim,dim)
   
@@ -31,14 +32,12 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
   real*8 :: fpcb(MAXPTS),gpcb(DIM,MAXPTS),xcof(MAXTRM),hpcb(dim,dim,maxpts)
   integer :: ipar(MAXVAR)
 
-
   !RandomNumber 
   integer:: seed
 
   !LU Decomposition
   integer :: indx(MAXDAT)
   real*8 :: W(MAXDAT),V(MAXDAT,MAXDAT),rhsF(MAXTRM),z(MAXDAT),tmp(MAXTRM)
-
 
   !Orthogonal Polynomial related
   integer::mreg(MAXDAT,DIM)
@@ -62,10 +61,21 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
 
+  ! Mixed OUU adaptation vars
+
+  real*8::dftmp(ndimt),ftmp
+  integer::ndimint
+  
+  ! Dimension of problem
+  
+  ndimt=ndimint
+
   !Settings
 
   mainprog=.false.
-   
+
+  if (dim.ne.ndimt) epiflag=1 ! mixed uncertainties, need to  call optimization at the end
+
   DAT=DATIN
 
   probtype(1:dim)=probtypeIN(1:dim)
@@ -91,9 +101,9 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
   !============================================================
   ! Initial settings
   !============================================================
+  
 
-
-  makesamples=1 ! 0=read, 1= Make via LHS for building surrogate
+  makesamples=1 ! 0=read from file, 1= Make via LHS for building surrogate
 
   ! Choice of orthogonal basis
   ! 1=Legendre
@@ -105,17 +115,35 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
 
   casemode=1 !0=RMSE only, 1=Statistics
 
-  xavg(1:dim)=xavgin(1:dim)
+!!$  xavg(1:dim)=xavgin(1:dim)
+!!$
+!!$  do i=1,dim
+!!$     if (probtype(i).eq.1) then
+!!$        xstd(i)=xstdin(i)
+!!$     else if (probtype(i).eq.2) then
+!!$        xstd(i)=xavgin(i)*xstdin(i)
+!!$     else
+!!$        stop"Wrong problem type"
+!!$     end if
+!!$  end do
 
-  do i=1,dim
+  
+  xavgt(1:ndimt)=xavgin(1:ndimt)
+
+  do i=1,ndimt
      if (probtype(i).eq.1) then
-        xstd(i)=xstdin(i)
+        xstdt(i)=xstdin(i)
      else if (probtype(i).eq.2) then
-        xstd(i)=xavgin(i)*xstdin(i)
+        xstdt(i)=xavgin(i)*xstdin(i)
      else
         stop"Wrong problem type"
      end if
   end do
+
+  ! Storing into surrogate (used for aleatory vars)
+
+  xavg(1:DIM)=xavgt(ndimt-DIM+1:ndimt)
+  xstd(1:DIM)=xstdt(ndimt-DIM+1:ndimt)
 
   do  dynamics=1,1
 
@@ -151,7 +179,7 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
            !11: Three bar truss (3d)
            !12: Threebar truss (6d)           
            !20: CFD
-           !>20: Mixed Uncertainties, calling suboptimization program to find the worst and best case scenarios and epistemic vars are fixed at extrema, whereas the aleatory vars are sampled within the space spanned by the mean and 3*SD. The surrogate is built on aleatory vars only, with epistemic vars fixed at extrema. F(B*,A_i) is what is given to the surrogate for each corresponding training point location A_i.
+           !>20: Mixed Uncertainties, calling suboptimization program to find the worst and best case scenarios to fix the corresponsing epistemic vars at extrema, whereas the aleatory vars are sampled within the space spanned by the mean and 3*SD. The surrogate is built on aleatory vars only, with epistemic vars fixed at extrema. F(B*,A_i) is what is given to the surrogate for each corresponding training point location A_i.
 
               !Domain size
               if (casemode.eq.0) then !RMSE comparisons only
@@ -464,6 +492,33 @@ subroutine PCestimate(dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,
 	fvardbleprimeout(i,j)  = fvardbleprime(i,j)
 	end do			
   end do
+
+  fmeanout=fmean
+  fvarout=fvar
+
+  if (epiflag.eq.1) then
+
+     if (id_proc.eq.0) then
+
+        call epigrads(fct,fctindx,ndim,ndimt,xavgt,xstdt,ftmp,dftmp)
+
+        do j=1,ndimt-ndim
+
+           fmeanprimeout(j)=dftmp(j)
+           fvarprimeout(j)=ftmp*dftmp(j)
+           fvarprimeout(j)=2.0*fvarprimeout(j) - 2.0* ftmp*fmeanprimeout(j)
+
+        end do
+
+     end if
+
+    call MPI_Barrier(MPI_COMM_WORLD,ierr)
+    call MPI_BCAST(fmeanprimeout,ndimt,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
+    call MPI_BCAST(fvarprimeout,ndimt,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
+  end if
+
+  fmeanprimeout(ndimt-ndim+1:ndimt)=fmeanprime(1:ndim)
+  fvarprimeout(ndimt-ndim+1:ndimt)=fvarprime(1:ndim)
 
   if (id_proc.eq.0) then
      write(filenum,*)
