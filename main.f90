@@ -1,19 +1,19 @@
-subroutine PCestimate(ndimint,dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
+subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
 
   use dimpce
   implicit none
 
   INCLUDE "collsub.h"
   include 'mpif.h'
-  
+  integer::ndimint
   !Input variables
   integer,intent(in):: DIM,PROBTYPEIN(20),OSIN
-  double precision,intent(in) :: xavgin(dim),xstdin(dim)
+  double precision,intent(in) :: xavgin(ndimint),xstdin(ndimint)
   integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
   real*8,intent(in)::DATIN(20) ! constants and other values for objective function/constraints
 
   !Export variables  
-  double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(dim),fvarprimeout(dim),fvardbleprimeout(dim,dim),fmeandbleprimeout(dim,dim)
+  double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(ndimint),fvarprimeout(ndimint),fvardbleprimeout(ndimint,ndimint),fmeandbleprimeout(ndimint,ndimint)
   
   !indices
   integer :: i,j,k,ii,jj,kk,fuct
@@ -63,8 +63,8 @@ subroutine PCestimate(ndimint,dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 
   ! Mixed OUU adaptation vars
 
-  real*8::dftmp(ndimt),ftmp
-  integer::ndimint
+  real*8::dftmp(ndimint),ftmp
+
   
   ! Dimension of problem
   
@@ -74,7 +74,7 @@ subroutine PCestimate(ndimint,dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 
   mainprog=.false.
 
-  if (dim.ne.ndimt) epiflag=1 ! mixed uncertainties, need to  call optimization at the end
+  if (dim.ne.ndimt) OUUflag=1 ! mixed uncertainties, need to  call optimization at the end
 
   DAT=DATIN
 
@@ -481,32 +481,25 @@ subroutine PCestimate(ndimint,dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
   fmeanout=fmean
   fvarout=fvar  
 
-  ! Derivatives
-  fmeanprimeout(1:dim)=fmeanprime(1:dim)
-  fvarprimeout(1:dim)=fvarprime(1:dim)
+!!$  ! Derivatives
+!!$  fmeanprimeout(1:dim)=fmeanprime(1:dim)
+!!$  fvarprimeout(1:dim)=fvarprime(1:dim)
+!!$
 
-  ! Hessian
-  do i=1,dim
-	do j=1,dim
-	fmeandbleprimeout(i,j) = fmeandbleprime(i,j)
-	fvardbleprimeout(i,j)  = fvardbleprime(i,j)
-	end do			
-  end do
-
-  fmeanout=fmean
-  fvarout=fvar
-
-  if (epiflag.eq.1) then
+  if (OUUflag.eq.1) then
 
      if (id_proc.eq.0) then
 
-        call epigrads(fct,fctindx,ndim,ndimt,xavgt,xstdt,ftmp,dftmp)
+        call epigrads(fct-1,fctindx,dim,ndimt,xavgt,xstdt,ftmp,dftmp)
 
-        do j=1,ndimt-ndim
+        ! fct-1 because loop increases the counter
+
+        do j=1,ndimt-dim
 
            fmeanprimeout(j)=dftmp(j)
-           fvarprimeout(j)=ftmp*dftmp(j)
-           fvarprimeout(j)=2.0*fvarprimeout(j) - 2.0* ftmp*fmeanprimeout(j)
+!           fvarprimeout(j)=ftmp*dftmp(j)
+!           fvarprimeout(j)=2.0*fvarprimeout(j) - 2.0* ftmp*fmeanprimeout(j)
+           fvarprimeout(j)=0.0
 
         end do
 
@@ -517,12 +510,20 @@ subroutine PCestimate(ndimint,dim,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
     call MPI_BCAST(fvarprimeout,ndimt,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
   end if
 
-  fmeanprimeout(ndimt-ndim+1:ndimt)=fmeanprime(1:ndim)
-  fvarprimeout(ndimt-ndim+1:ndimt)=fvarprime(1:ndim)
+  fmeanprimeout(ndimt-dim+1:ndimt)=fmeanprime(1:dim)
+  fvarprimeout(ndimt-dim+1:ndimt)=fvarprime(1:dim)
+
+ ! Hessian
+  do i=1,dim
+	do j=1,dim
+	fmeandbleprimeout(i,j) = fmeandbleprime(i,j)
+	fvardbleprimeout(i,j)  = fvardbleprime(i,j)
+	end do			
+  end do
 
   if (id_proc.eq.0) then
      write(filenum,*)
-     write(filenum,*)'>> Program call was successfull'
+     write(filenum,*)'>> Program call is successful'
      write(filenum,*) 
   end if
 

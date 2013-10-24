@@ -4,7 +4,7 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
 
   implicit none
 
-  integer ::stat,fct,dim
+  integer ::stat,fct,dim,k
   real*8 ::x(DIM),fv,gv(DIM),hv(DIM,DIM)
 
   !CFD
@@ -19,16 +19,26 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
   ! Evaluate Function value and gradients and also hessian
   !======================================================
 
+  if (stat.eq.0) flag=0
+  if (stat.eq.1) flag=1
+  if (stat.eq.2) flag=3
+
+  xtmp(1:ndimt)=xavgt(1:ndimt)
+
+  do k=1,DIM
+     xtmp(ndimt-DIM+k)=x(k) !*scal+DS(1,k)
+  end do
+
   if (fct.le.19) then
 
-     call get_f(dim,fct,x(1:DIM),fv)
+     call get_f(ndimt,fct,xtmp,fv)
 
      if (stat.gt.0) then
-        call get_df(dim,fct,x(1:DIM),gv)
+        call get_df(ndimt,fct,xtmp,dftmp)
      end if
 
      if (stat.gt.1) then
-        call get_dff(dim,fct,x(1:DIM),hv)
+        call get_dff(ndimt,fct,xtmp,d2ftmp)
      end if
 
   else if (Fct.eq.20) then
@@ -39,15 +49,11 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
 
      !If ndimt.gt.ndim, you are sending in shape DV's to the Eulersolve routine. In that case the last two entries comprise of alpha, mach respectively.
 
-     if (stat.eq.0) flag=0
-     if (stat.eq.1) flag=1
-     if (stat.eq.2) flag=3
-
      CALL chdir('lowfid') ! Comment when using fine mesh
 
      call omp_set_num_threads(omp_get_max_threads())
 
-     call Eulersolve(x,dim,0,fv,gv,hv,flag,v,fctindx)
+     call Eulersolve(xtmp,ndimt,0,fv,dftmp,d2ftmp,flag,v,fctindx)
 
      CALL chdir('../') !Comment when using fine mesh
 
@@ -63,9 +69,8 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
         stop
      end if
 
-     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
-
-
+     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,8,fctindx)
+     
   else if (fct.eq.22) then !CFD
 
      gtol=1e-6
@@ -78,21 +83,19 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
         stop
      end if
 
-     !     print*,'before optimize',fctindx,fct,xtmp,ndimt,low(1:ndimt-dim),up(1:ndimt-dim)
-
      call omp_set_num_threads(omp_get_max_threads())
 
      if (fctindx.eq.0) then !what is the max possible drag? (objective function)
 
-        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
+        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,20,fctindx)
 
      else if (fctindx.eq.4) then !what is the least lift possible? (lift constraint)
 
-        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.false.,.false.,fctindx)
+        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.false.,.false.,20,fctindx)
 
      end if
 
-  else
+  else if (fct.eq.23) then
 
      gtol=1e-6
 
@@ -104,13 +107,12 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
         stop
      end if
 
-     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
+     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,12,fctindx)
 
-!!$
-!!$  else
-!!$
-!!$     write(*,*) 'Wrong fctindx in function call'
-!!$     stop
+  else
+
+     write(*,*) 'Wrong fctindx in function call'
+     stop
 
   end if
 
@@ -120,6 +122,7 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
   hv(1:DIM,1:DIM)=d2ftmp(ndimt-DIM+1:ndimt,ndimt-DIM+1:ndimt)
 
   ! Scaling back
+
 !!$  do k=1,DIM
 !!$     scal=DS(2,k)-DS(1,k)
 !!$     df(k)=df(k)*scal
@@ -130,12 +133,13 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
 !!$  end do
 
 !!$end if
+
   return
 end subroutine evalcostf
 
 
 subroutine get_f(dim,fct,x,f)
-    use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
+    use dimpce,only:fctindx,DAT,mainprog
   implicit none
 
   integer :: fct,dim,k
@@ -628,7 +632,7 @@ subroutine get_f(dim,fct,x,f)
 end subroutine get_f
 
    subroutine get_df(dim,fct,x,df)
-       use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
+     use dimpce,only:fctindx,DAT,mainprog
      implicit none
 
   integer :: fct,dim,k
@@ -1112,7 +1116,7 @@ end subroutine get_df
 
 
 subroutine get_dff(DIM,fct,x,d2f)
-    use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
+  use dimpce,only:fctindx,DAT,mainprog
   implicit none
 
   integer :: DIM,fct,j,k
@@ -1798,9 +1802,13 @@ subroutine gather_costfn(dim,fct,stat,npts,RN,fpcb,gpcb,hpcb)
   do j=1,npts
 
      x(1:DIM)=RN(1:DIM,j)
-     !                 print *,'x:',x
+!     print *,'x:',x
      call evalcostf(stat,dim,fct,x,fv,gv,hv)
      fpcb(j)=fv                   !Store the cost function value at appropriate location
+
+ !    print*,fv
+
+
      if (stat.gt.0) then
         gpcb(1:dim,j)=gv(1:dim)   !Store them appropriately
      end if
