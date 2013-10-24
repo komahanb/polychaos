@@ -1,16 +1,19 @@
-subroutine evalcostf(stat,dim,fct,x,fv,gv,hv) !hpcb to be implemented
+subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
   use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
   use omp_lib
-  
+
   implicit none
-  
+
   integer ::stat,fct,dim
   real*8 ::x(DIM),fv,gv(DIM),hv(DIM,DIM)
-  
+
   !CFD
 
   integer:: flag
-  real*8:: v(dim),time,temp
+  real*8:: time,temp
+
+  real*8 :: xtmp(ndimt),v(ndimt),dftmp(ndimt),d2ftmp(ndimt,ndimt)
+  real*8 :: gtol,low(ndimt-DIM),up(ndimt-DIM)
 
   !=======================================================
   ! Evaluate Function value and gradients and also hessian
@@ -30,9 +33,11 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv) !hpcb to be implemented
 
   else if (Fct.eq.20) then
 
-     ! Flow solver needs input 1) Angle of attack in rads and 2) Mach number
+     ! Flow solver needs input:
 
-     !print *,'Now using coarser mesh'
+     !1) Angle of attack in rads and 2) Mach number
+
+     !If ndimt.gt.ndim, you are sending in shape DV's to the Eulersolve routine. In that case the last two entries comprise of alpha, mach respectively.
 
      if (stat.eq.0) flag=0
      if (stat.eq.1) flag=1
@@ -42,77 +47,89 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv) !hpcb to be implemented
 
      call omp_set_num_threads(omp_get_max_threads())
 
-     !!     if (x(2).gt.0.75d0 .and. x(2).lt.1.15d0 ) then
-
-     !!     call Eulersolve(x,dim,0,fv,gv,hv,0,v,fctindx)
-     !        call Eulersolve(x,dim,0,fv,gv,hv,0,v,fctindx)       
-
-     !!   print *,' >> Avoiding gradients in M [0.75,1.15] '
-
-     !!        gv=0.0d0
-     !!        hv=0.0d0
-
-     !!     else
-
      call Eulersolve(x,dim,0,fv,gv,hv,flag,v,fctindx)
-
-     !!     end if
 
      CALL chdir('../') !Comment when using fine mesh
 
-     !% temp program
+  else if (fct.eq.21) then ! Two bar truss 
+
+     gtol=1e-6
+
+     low(1:ndimt-DIM)=xtmp(1:ndimt-DIM)-xstdt(1:ndimt-DIM)
+     up(1:ndimt-DIM)=xtmp(1:ndimt-DIM)+xstdt(1:ndimt-DIM)
+
+     if (flag.ge.1) then
+        write(*,*) 'Error in function call, optimization does not support gradient evalution'
+        stop
+     end if
+
+     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
+
+
+  else if (fct.eq.22) then !CFD
+
+     gtol=1e-6
+
+     low(1:ndimt-DIM)=xtmp(1:ndimt-DIM)-xstdt(1:ndimt-DIM)
+     up(1:ndimt-DIM)=xtmp(1:ndimt-DIM)+xstdt(1:ndimt-DIM)
+
+     if (flag.ge.1) then
+        write(*,*) 'Error in function call, optimization does not support gradient evalution'
+        stop
+     end if
+
+     !     print*,'before optimize',fctindx,fct,xtmp,ndimt,low(1:ndimt-dim),up(1:ndimt-dim)
+
+     call omp_set_num_threads(omp_get_max_threads())
+
+     if (fctindx.eq.0) then !what is the max possible drag? (objective function)
+
+        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
+
+     else if (fctindx.eq.4) then !what is the least lift possible? (lift constraint)
+
+        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.false.,.false.,fctindx)
+
+     end if
+
+  else
+
+     gtol=1e-6
+
+     low(1:ndimt-DIM)=xtmp(1:ndimt-DIM)-xstdt(1:ndimt-DIM)
+     up(1:ndimt-DIM)=xtmp(1:ndimt-DIM)+xstdt(1:ndimt-DIM)
+
+     if (flag.ge.1) then
+        write(*,*) 'Error in function call, optimization does not support gradient evalution'
+        stop
+     end if
+
+     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
+
 !!$
-!!$!!     if (x(2).gt.0.75d0 .and. x(2).lt.1.15d0 ) flag=0
+!!$  else
 !!$
-!!$    CALL chdir('lowfid')
-!!$     call omp_set_num_threads(omp_get_max_threads())
-!!$
-!!$     do alpha=2,2
-!!$        if (alpha.eq.1)   x(1)=0.0174532925d0 ! 1 deg
-!!$        if (alpha.eq.2)   x(1)=0.0698131701d0 ! 4 deg
-!!$
-!!$        do fctindx=4,4,4
-!!$
-!!$           if (fctindx.eq.0) then !Drag
-!!$              if (alpha.eq.1) then
-!!$                 open(unit=99,file='dragalpha1')
-!!$              else
-!!$                 open(unit=99,file='dragalpha4')
-!!$              end if
-!!$
-!!$           else if (fctindx.eq.4) then !Lift
-!!$
-!!$              if (alpha.eq.1) then
-!!$                 open(unit=99,file='liftalpha1')
-!!$              else
-!!$                 open(unit=99,file='liftalpha4')
-!!$              end if
-!!$
-!!$           end if
-!!$
-!!$         
-!!$           write(99,*) 'variables= "x","f","g1","g2"'
-!!$           write(99,*) 'zone i=',500,' datapacking=point'
-!!$
-!!$           do temp=0.5,1.5,0.002
-!!$              x(2)=temp
-!!$              print *,x,dim, v,fctindx 
-!!$!              stop
-!!$
-!!$              call Eulersolve(x,dim,0,fv,gv,hv,flag,v,fctindx)
-     !!fv=sin(x(1)+x(2))
-!!$              write(99,'(4f30.16)')x(2),fv,gv(1),gv(2)
-!!$           end do
-!!$           close(99)
-!!$           
-!!$        end do
-!!$     end do
-!!$  
-!!$     CALL chdir('../')      
-!!$     stop     
-!!$     
+!!$     write(*,*) 'Wrong fctindx in function call'
+!!$     stop
 
   end if
+
+  ! store into appropriate arrays
+
+  gv(1:DIM)=dftmp(ndimt-DIM+1:ndimt)
+  hv(1:DIM,1:DIM)=d2ftmp(ndimt-DIM+1:ndimt,ndimt-DIM+1:ndimt)
+
+  ! Scaling back
+!!$  do k=1,DIM
+!!$     scal=DS(2,k)-DS(1,k)
+!!$     df(k)=df(k)*scal
+!!$     do j=1,DIM
+!!$        scal2=DS(2,j)-DS(1,j)
+!!$        d2f(j,k)=d2f(j,k)*scal*scal2
+!!$     end do
+!!$  end do
+
+!!$end if
   return
 end subroutine evalcostf
 
