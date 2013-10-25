@@ -59,6 +59,8 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   real*8::yhatprime(ndim),yhatprimetmp
   real*8::yhatdbleprime(ndim,ndim),yhatdbleprimetmp
 
+  integer :: expensive
+
   if(ndim.gt.20) stop'Max dimensions Exceeded. Change preallocated arrays'
 
   call multidx(MAXDAT,nDIM,DIMPC,mreg,nterms) ! get multiindex notation for tensor procduct
@@ -68,13 +70,12 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   read(10,*) !(xstd(i),i=1,ndim)     
   read(10,*)
   read(10,*)
-  read(10,*) NMCS!,ndimtmp
+  read(10,*) NMCS
   read(10,*) npdf
   read(10,*) readMCsamples
   read(10,*) evlfnc
+  read(10,*) expensive
   close(10)
-
-!  print*, xavg,xstd
 
   allocate(MNCf(NMCS))
   allocate(MNCx(ndim,NMCS))
@@ -457,16 +458,16 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
         end do! dummy loop for function index (k)
 
         if (id_proc.eq.0) then
-           
-           if (fct.eq.20) then
+          
+           if (expensive.ne.1) then ! if not expensive then execute the rest
 
+           if (fct.eq.20) then
               
               if (fctindx.eq.0) then
                  open(10,file='MCCFDvalues00.dat',form='formatted',status='unknown')
               else if (fctindx.eq.4) then
                  open(10,file='MCCFDvalues04.dat',form='formatted',status='unknown')
               end if
-
            
            end if
 
@@ -614,8 +615,8 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 !!$              end if
 
            close(94)
-           
         end if
+     end if
 
         deallocate(MNCf,MNCx) 
         deallocate(HST,HSTglb) 
