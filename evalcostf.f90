@@ -83,7 +83,7 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
         stop
      end if
 
-     call omp_set_num_threads(omp_get_max_threads())
+   !  call omp_set_num_threads(omp_get_max_threads())
 
      if (fctindx.eq.0) then !what is the max possible drag? (objective function)
 

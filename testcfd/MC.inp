@@ -6,3 +6,4 @@
 30                ! # of Decomposition, Bounds for Histogram
 1		  !read MC Samples
 0		  !Evaluate exact function during MC or not (0 or 1)	
+1		  !expensive
