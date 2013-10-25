@@ -69,7 +69,7 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
         stop
      end if
 
-     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,8,fctindx)
+     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
      
   else if (fct.eq.22) then !CFD
 
@@ -87,11 +87,11 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
 
      if (fctindx.eq.0) then !what is the max possible drag? (objective function)
 
-        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,20,fctindx)
+        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
 
      else if (fctindx.eq.4) then !what is the least lift possible? (lift constraint)
 
-        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.false.,.false.,20,fctindx)
+        call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.false.,.false.,fctindx)
 
      end if
 
@@ -107,7 +107,7 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
         stop
      end if
 
-     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,12,fctindx)
+     call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
 
   else
 
