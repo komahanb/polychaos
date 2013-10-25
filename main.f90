@@ -410,18 +410,23 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
                  !================================================================
                  ! Post processing--> RMSE, Output statistics,Tecplot
                  !================================================================
-                 if(id_proc.eq.0) then
+                 
+                 if (DIMPC.eq.orderfinal) then
 
-                    write(filenum,*)
-                    write(filenum,*) '================================================='
-                    write(filenum,*) '            MONTE-CARLO on Surrogate             '
-                    write(filenum,*) '================================================='
-                    write(filenum,*)
+                    if(id_proc.eq.0) then
+
+                       write(filenum,*)
+                       write(filenum,*) '================================================='
+                       write(filenum,*) '            MONTE-CARLO on Surrogate             '
+                       write(filenum,*) '================================================='
+                       write(filenum,*)
+                    end if
+
+                    call montecarlo(stat,fct,DIM,dimpc,nterms,npts,ipar,xcof)
+
+                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
                  end if
-
-                 call montecarlo(stat,fct,DIM,dimpc,nterms,npts,ipar,xcof)
-
-                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
 !!$                 !=======================================================
 !!$                 ! Calculate RMSE
@@ -489,7 +494,7 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
   if (OUUflag.eq.1) then
 
      if (id_proc.eq.0) then
-
+        write(filenum,*)' >> Finding Epistemic Gradients'
         call epigrads(fct-1,fctindx,dim,ndimt,xavgt,xstdt,ftmp,dftmp)
 
         ! fct-1 because loop increases the counter
