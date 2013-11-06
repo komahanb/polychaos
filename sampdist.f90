@@ -69,7 +69,7 @@ subroutine sampdist(stat,DIM,DIMPC,ipar,par,makesamples,nterms,npts,fct,RN)
         call get_seed(seed)
 
         ! Generate random numbers and store in RN
-        call latin_random(dim,npts,seed,RN)
+        call latin_random(dim,npts-1,seed,RN(:,2:npts))
 
         ! Write those points to a file (sample points can be used again)
         open(30,file=filename,form='formatted',status='unknown')
