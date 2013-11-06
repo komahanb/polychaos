@@ -26,7 +26,9 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   !  real*8 :: xavg(ndim),xvar(ndim),xstd(ndim)
   real*8 :: xavgtmp(ndim),xvartmp(ndim),xstdtmp(ndim)
   ! double precision, dimension(20)   :: fstdprime,xavgt,xstdt  
-  
+  character*60 :: histname
+  character*2  :: fctindxnumber
+
   character*60 :: filename
   !  double precision :: MNCf(MAXNMCS)
   !  double precision :: MNCx(NDIM,MAXNMCS)
@@ -446,8 +448,15 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
               write(filenum,'(6x,a,2(e15.5,a))')'>> Output Histogram  [',yhmin,' :',yhmax,' ]'
 !              write(filenum,'(6x,a,i8)')'>> ictglb:',ictglb
               write(filenum,*)
+
+              histname(1:8)='HISTGidx'
+              call i_to_s(fctindx,fctindxnumber)
+              histname(9:10)=fctindxnumber
+              histname(11:14)='.dat'
+
               pdf = 0.d0
-              open(10,file='HISTG.dat',form='formatted',status='unknown')
+
+              open(10,file=histname,form='formatted',status='unknown')
               do i=1,npdf
                  pdf = pdf + HSTglb(i,3)/dble(NMCS)
                  write(10,'(4e15.5)')(HSTglb(i,1)+HSTglb(i,2))*0.5d0,HSTglb(i,3),HSTglb(i,3)/dble(NMCS),pdf
