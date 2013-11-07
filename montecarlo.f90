@@ -359,7 +359,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
      !Derivative
      do i=1,ndim
         fmeanprime(i) = MCmprimeglb(i) / dble(ictglb)
-        fvarprime(i) =  MCdprimeglb(i) / dble(ictglb) - 2.0 * fmean * fmeanprime(i)
+        fvarprime(i) = 2.0*MCdprimeglb(i) / dble(ictglb) - 2.0 * fmean * fmeanprime(i)
      end do
 
      !Hessian
