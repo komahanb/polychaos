@@ -286,7 +286,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
       
         do j=1,ndim
            MCmprime(j) = MCmprime(j) + yhatprime(j)  !for derivative of mean
-           MCdprime(j) = MCdprime(j) + 2.0*yhat*yhatprime(j)  !for derivative of variance
+           MCdprime(j) = MCdprime(j) + yhat*yhatprime(j)  !for derivative of variance
         end do
 
 
