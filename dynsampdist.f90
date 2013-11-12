@@ -35,6 +35,8 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
   real*8::diffloc
   real*8::derivdummy(ndim),dblederivdummy(ndim,ndim)
 
+  integer::npass
+  
   !========================================================
   ! Figure out how many points are required and make them
   !=========================================================
@@ -179,17 +181,20 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
      distmean=distmean/real(NTOEX)
 
      ! Pick test candidate with largest difference in values, but above distcomp distance to nearest neighbours
-
-     if (NTOEX.lt.10) then
-        distcomp=distmean 
-     else
-        distcomp=1.1*distmean !0.618
-     end if
+     
+     !    if (NTOEX.lt.10) then
+     distcomp=distmean 
+     !    else
+     !       distcomp=1.1*distmean !0.618
+     !    end if
 
 
      diffloc=0.0
 
      do ii=1,nptstoaddpercyc
+        
+        npass=0
+        do while (npass.ne.1)
 
         kp=0
         diffloctmp=0.0d0
@@ -207,40 +212,57 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
            end if
         end do
         diffloc=max(diffloc,diffloctmp)
+        
+        
+        if (kp.eq.0) then ! if no successful candidate
 
 
-        if (kp.eq.0) then
-           write (filenum,*) 'Could not find suitable test candidate just take the one with largest difference'
-           diffloctmp=0.0
-           do k=1,NTOEX
-              if ((maxftoex(k)-minftoex(k)).gt.diffloctmp) then
-                 diffloctmp=maxftoex(k)-minftoex(k)
-                 kp=k
-              end if
-           end do
+
+           write (filenum,*) '  >>No passing candidate found . . .'
+           write (filenum,*) '  >>Relaxing geometric constraint by 2 percent . . .'
+           distcomp=0.98*distcomp
+
+        else 
+
+           npass=npass+1 ! one successful candidate
+
+           write(filenum,*)
+           write(filenum,'(a,E10.2,a,i6,a,i4)') '>>Loc diff is',diffloctmp,' for test candidate',kp,' at iteration',dyncyccnt        
+           write(filenum,'(a,20F10.2)')' x = ',DTOEX(1:NDIM,kp)
+
+
         end if
-        write(filenum,*)
-        write(filenum,'(a,E10.2,a,i6,a,i4)') '>>Loc diff is',diffloctmp,' for test candidate',kp,' at iteration',dyncyccnt        
-        write(filenum,'(a,20F10.2)')' x = ',DTOEX(1:NDIM,kp)
 
-!        write(filenum,'(a,2E12.5)') Dtoex(:,kp)
+     end do! while loop execute until a passing candidate is found
 
-        ! Trick to not consider this point again
-        maxftoex(kp)=minftoex(kp)
 
-        ! Update other minimum distances
-        do k=1,NTOEX
-           if (k.ne.kp) then
-              diff2=0.0
-              do jj=1,ndim
-                 diff2=diff2+(Dtoex(jj,k)-Dtoex(jj,kp))**2
-              end do
-              diff2=SQRT(diff2)
-              if ( diff2.lt.dist(k) ) then
-                 dist(k)=diff2
-              end if
+!!$
+!!$           write (filenum,*) 'Could not find suitable test candidate just take the one with largest difference'
+!!$           diffloctmp=0.0
+!!$           do k=1,NTOEX
+!!$              if ((maxftoex(k)-minftoex(k)).gt.diffloctmp) then
+!!$                 diffloctmp=maxftoex(k)-minftoex(k)
+!!$                 kp=k
+!!$              end if
+!!$           end do
+!!$
+
+     ! Trick to not consider this point again
+     maxftoex(kp)=minftoex(kp)
+
+     ! Update other minimum distances
+     do k=1,NTOEX
+        if (k.ne.kp) then
+           diff2=0.0
+           do jj=1,ndim
+              diff2=diff2+(Dtoex(jj,k)-Dtoex(jj,kp))**2
+           end do
+           diff2=SQRT(diff2)
+           if ( diff2.lt.dist(k) ) then
+              dist(k)=diff2
            end if
-        end do
+        end if
+     end do
 
         RN(1:ndim,nptsold+ii)=Dtoex(:,kp)
 

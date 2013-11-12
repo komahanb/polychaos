@@ -6,7 +6,7 @@
 #       TARGET          #
 #########################
 
-TARGET= pcestimate.a
+TARGET= pc
 
 SUF90=f90
 SUF77=f
@@ -27,7 +27,7 @@ F77	= mpif77
 CC = gcc
 FC = ifort
 
-FFLAGS  = -r8 -O4 -openmp  #-traceback #-ftrapuv -check uninit -traceback #  -g -fpe3 # -traceback -debug all
+FFLAGS  = -r8 -O4 -openmp # -fpe3 -parallel  #-traceback #-ftrapuv -check uninit -traceback #  -g -fpe3 # -traceback -debug all
 
 # -zero -fpe0  -CB  -O0  -g3 -debug extended -ftrapuv -check all #-parallel # -check
 # -openmp #-check
@@ -41,14 +41,14 @@ LIBS = -ldl -lstdc++
 #export:
 #    ar rvs pcestimate.a *.o
 
-SRCS = dimpce.o main.o evalcostf.o higher.o LUroutines.o collsub.o srsmsub.o ludcmp.o lubksb.o svdcmp.o svbksb.o pythag.o randomroutines.o exactoutputfile.o sampdist.o dynsampdist.o setuprhs.o setupmat.o tecplot.o montecarlo.o mypoly.o mpi.o
+SRCS = dimpce.o main.o higher.o LUroutines.o collsub.o srsmsub.o ludcmp.o lubksb.o svdcmp.o svbksb.o pythag.o randomroutines.o exactoutputfile.o sampdist.o dynsampdist.o evalcostf.o threebarcost.o setuprhs.o setupmat.o tecplot.o montecarlo.o mypoly.o mpi.o
 
 OBJS =  ${SRCS:.$(SUF)=.o}
 
 all:  $(TARGET)
 
-$(TARGET): $(OBJS) 
-	   ar rvs $@ $(OBJS)
+$(TARGET): $(OBJS) Eulersolve.a libmir.a tapenade.a
+	$(F90) $(FFLAGS) -o $(TARGET) $(OBJS) Eulersolve.a libmir.a tapenade.a $(LFLAGS) -Wl,-rpath=.
 	@echo " ----------- ${TARGET} created ----------- "
 
 ######################################

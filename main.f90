@@ -1,29 +1,22 @@
-subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
-
+program main
   use dimpce
+  !  use timer_mod
   implicit none
 
   INCLUDE "collsub.h"
   include 'mpif.h'
-  integer::ndimint
-  !Input variables
-  integer,intent(in):: DIM,PROBTYPEIN(20),OSIN
-  double precision,intent(in) :: xavgin(ndimint),xstdin(ndimint)
-  integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
-  real*8,intent(in)::DATIN(20) ! constants and other values for objective function/constraints
 
-  !Export variables  
-  double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(ndimint),fvarprimeout(ndimint),fvardbleprimeout(ndimint,ndimint),fmeandbleprimeout(ndimint,ndimint)
+  integer :: DIM
+  parameter (DIM=6)
 
   !indices
   integer :: i,j,k,ii,jj,kk,fuct
-  integer::ierr
 
   !Monte Carlo
   integer::nmcs,readMCsamples
 
   !flags
-  integer :: stat,makesamples,solver
+  integer :: stat,makesamples,solver,ierr
 
   !PC vitals
   integer::DIMPC,numpc,npts,nterms
@@ -32,12 +25,14 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
   real*8 :: fpcb(MAXPTS),gpcb(DIM,MAXPTS),xcof(MAXTRM),hpcb(dim,dim,maxpts)
   integer :: ipar(MAXVAR)
 
+
   !RandomNumber 
   integer:: seed
 
   !LU Decomposition
   integer :: indx(MAXDAT)
   real*8 :: W(MAXDAT),V(MAXDAT,MAXDAT),rhsF(MAXTRM),z(MAXDAT),tmp(MAXTRM)
+
 
   !Orthogonal Polynomial related
   integer::mreg(MAXDAT,DIM)
@@ -60,29 +55,16 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
   integer::index,evalfunction
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
-
-  ! Mixed OUU adaptation vars
-
-  real*8::dftmp(ndimint),ftmp
-
-
-  ! Dimension of problem
-
-  ndimt=ndimint
+  
+  call MPI_START 
+ 
+  mainprog=.true.
 
   !Settings
-
-  mainprog=.false.
-
-  if (dim.ne.ndimt) OUUflag=1 ! mixed uncertainties, need to  call optimization at the end
-
-  DAT=DATIN
-
-  probtype(1:dim)=probtypeIN(1:dim)
-
-  filenum=  int(DAT(20)) ! 6 for screen, any other number for fort.x
-
-  if(id_proc.eq.0)  then
+  
+  filenum=6 ! 6 for screen, any other number for fort.x
+  
+   if(id_proc.eq.0)  then
      write(filenum,*)
      write(filenum,*) '======================================================='
      write(filenum,*) 'Non-Intrusive Polynomial Chaos (Stochastic Collocation)'
@@ -91,7 +73,7 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
      write(filenum,*) 'Email : komahan.cool@gmail.com'
      write(filenum,*) '======================================================='
      write(filenum,*)
-     !     write(filenum,'(x,a,i3)')'>> Number of Processors = ',num_proc
+!     write(filenum,'(x,a,i3)')'>> Number of Processors = ',num_proc
   end if !master
 
   !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++!
@@ -102,48 +84,51 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
   ! Initial settings
   !============================================================
 
-
-  makesamples=1 ! 0=read from file, 1= Make via LHS for building surrogate
+  
+  makesamples=1 ! 0=read, 1= Make via LHS for building surrogate
 
   ! Choice of orthogonal basis
   ! 1=Legendre
   ! 2=Hermite
 
   do j=1,DIM
-     ipar(j)=2  
+     ipar(j)=1  
   end do
 
-  casemode=1 !0=RMSE only, 1=Statistics
+  casemode=1 !0=RMSE only, 1=Stats+RMSE
 
-!!$  xavg(1:dim)=xavgin(1:dim)
-!!$
-!!$  do i=1,dim
-!!$     if (probtype(i).eq.1) then
-!!$        xstd(i)=xstdin(i)
-!!$     else if (probtype(i).eq.2) then
-!!$        xstd(i)=xavgin(i)*xstdin(i)
-!!$     else
-!!$        stop"Wrong problem type"
-!!$     end if
-!!$  end do
+  evlfnc=1  ! For montecarlo, should the program evaluate the exact fn (CFD)?
 
+  if (casemode.eq.1) then
+     ! This file is read again in montecarlo subroutine. Here it is needed to define the domain size when doing casemode=1(Stats)
+     open(10,file='MC.inp',form='formatted',status='old')
+!     read(10,*) (xavg(i),i=1,dim)
+!     read(10,*) (xstd(i),i=1,dim)     
+     read(10,*)
+     read(10,*)
+     read(10,*) NMCS!,ndimtmp
+     read(10,*) !npdf
+     read(10,*) readMCsamples
+     read(10,*) evlfnc
+     close(10)
+  end if
 
-  xavgt(1:ndimt)=xavgin(1:ndimt)
-
-  do i=1,ndimt
-     if (probtype(i).eq.1) then
-        xstdt(i)=xstdin(i)
-     else if (probtype(i).eq.2) then
-        xstdt(i)=xavgin(i)*xstdin(i)
-     else
-        stop"Wrong problem type"
-     end if
+  ! Mean setup
+  do i =1,dim
+  xavg(i)=1.0d0
   end do
 
-  ! Storing into surrogate (used for aleatory vars)
+  probtype(:)=1
+  
+  !variance setup 
+  if (probtype(1).eq.1) then
+    xstd(1:dim)=0.05
+  else if (probtype(1).eq.2) then
+    xstd(1:dim)=xavg(1:dim)*0.05
+  else	
+    stop"Wrong prob type"
+  end if	
 
-  xavg(1:DIM)=xavgt(ndimt-DIM+1:ndimt)
-  xstd(1:DIM)=xstdt(ndimt-DIM+1:ndimt)
 
   do  dynamics=1,1
 
@@ -151,35 +136,39 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
      ! Main Program
      !===============================
 
-     DO OS=OSin,OSin ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
+     DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=statin,statin
-
-  	   !0= Function only
+        do  stat=0,0,1   
+           
+           !0= Function only
            !1= Function + Gradient
            !2= Function +Gradient +Hessian   
 
-	   call solvertype(stat,os,solver)
+           call solvertype(stat,os,solver)
 
+           !1 : cos(x+y) (Nd)
+           !2 : 1.0/(1.0+x**2+y**2)  (Nd)
+           !3 : x**2+y**2  (Nd)
+           !4 : exp(x+y)  (Nd)
+           !5 : x**3+y**3 (Nd)
+           !6 : Rosenbrock (Nd)
+           !7 : sin(3x-1.5)+cos(3y-3) (Nd)
+           !8 : Two bar truss design (3d)
+           !9 : Short tubular column (3d)
+           !10: Cantilever beam (2d)
+           !11: Three bar truss (3d)
+           !12: Threebar truss (6d)           
+           !20: CFD
 
-           fctindx=fctindxin
+           do fct=1,1,1
 
-           do fct=fctin,fctin
+              fctindx=0 
 
-              !1 : cos(x+y) (Nd)
-              !2 : 1.0/(1.0+x**2+y**2)  (Nd)
-              !3 : x**2+y**2  (Nd)
-              !4 : exp(x+y)  (Nd)
-              !5 : x**3+y**3 (Nd)
-              !6 : Rosenbrock (Nd)
-              !7 : sin(3x-1.5)+cos(3y-3) (Nd)
-              !8 : Two bar truss design (3d)
-              !9 : Short tubular column (3d)
-              !10: Cantilever beam (2d)
-              !11: Three bar truss (3d)
-              !12: Threebar truss (6d)           
-              !20: CFD
-              !>20: Mixed Uncertainties, calling suboptimization program to find the worst and best case scenarios to fix the corresponsing epistemic vars at extrema, whereas the aleatory vars are sampled within the space spanned by the mean and 3*SD. The surrogate is built on aleatory vars only, with epistemic vars fixed at extrema. F(B*,A_i) is what is given to the surrogate for each corresponding training point location A_i.
+!!$              if (fuct.eq.1) fct=4
+!!$              if (fuct.eq.2) fct =2
+!!$              if (fuct.eq.3) fct =6
+!!$              if (fuct.eq.4) fct =10
+
 
               !Domain size
               if (casemode.eq.0) then !RMSE comparisons only
@@ -205,15 +194,15 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 
 
                  else if (Fct.eq.9) then ! Short Column
-
+                    
                     if (fctindx.gt.2.or.dim.ne.3) stop'Wrong Function Index or Dimension for this Truss test case. Please check'
                     !0=obj, 1,2,3= constraints
-
+                    
                     DO j = 1, DIM ! Figure out a best range
-
+                       
                        par(j,1)=1.0d0
                        par(j,2)=3.0d0
-
+                       
                     end do
 
 
@@ -228,12 +217,12 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
                        par(j,2)=3.0d0
 
                     end do
-
+                    
 
                  else if (fct.eq.20) then
-
+                    
                     call cfdparams(par) !? on all threads?
-
+                    
                  end if
 
               else if (Casemode.eq.1) then ! stats + rmse domain
@@ -251,16 +240,22 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 
               end if
 
+              !              do fctindx=0,4,4  
+
+              !             if (fctindx.eq.4) call system('cp MCSampCFD00.dat MCSampCFD04.dat')
 
               dyncyccnt=0
-              do DIMPC =orderinitial,orderfinal !order 5D requires 3003 terms
+
+              do DIMPC =5,5 !order 5D requires 3003 terms
 
                  dyncyccnt=dyncyccnt+1
 
+                 ! Initialize timer
+                 !              if (id_proc.eq.0) call TimerInit()
+                 !              if (id_proc.eq.0) call TimerStart('PC')
+
                  ! Get number of terms in the expansion
-
                  call combination(DIM+DIMPC,DIM,nterms)
-
                  ! Get number of points based on stat,solver,oversamp ratios
 
                  call getnpts(solver,stat,dim,nterms,OS,npts) 
@@ -410,60 +405,57 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
                  !================================================================
                  ! Post processing--> RMSE, Output statistics,Tecplot
                  !================================================================
+                 if(id_proc.eq.0) then
 
-                 if (DIMPC.eq.orderfinal) then
-
-                    if(id_proc.eq.0) then
-
-                       write(filenum,*)
-                       write(filenum,*) '================================================='
-                       write(filenum,*) '            MONTE-CARLO on Surrogate             '
-                       write(filenum,*) '================================================='
-                       write(filenum,*)
-                    end if
-
-                    call montecarlo(stat,fct,DIM,dimpc,nterms,npts,ipar,xcof)
-
-                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
+                    write(filenum,*)
+                    write(filenum,*) '================================================='
+                    write(filenum,*) '            MONTE-CARLO on Surrogate             '
+                    write(filenum,*) '================================================='
+                    write(filenum,*)
                  end if
 
-!!$                 !=======================================================
-!!$                 ! Calculate RMSE
-!!$                 !=======================================================
-!!$
-!!$                 if(id_proc.eq.0) then
-!!$                    write(filenum,*)
-!!$                    write(filenum,*) '================================================='
-!!$                    write(filenum,*) '             RMSE on Surrogate                   '
-!!$                    write(filenum,*) '================================================='
-!!$                    write(filenum,*)
-!!$                 end if
-!!$                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
-!!$                 call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
-!!$                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
-!!$
-!!$                 !================================================================
-!!$                 ! Tecplot output to file
-!!$                 !================================================================
-!!$
-!!$                 if(id_proc.eq.0) then
-!!$                    if(dim.le.2) then
-!!$                       write(filenum,*)
-!!$                       write(filenum,*) '================================================='
-!!$                       write(filenum,*) '             Tecplot Output                      '
-!!$                       write(filenum,*) '================================================='
-!!$                       write(filenum,*)
-!!$                       write(filenum,*)'>> Writing Tecplot output to file . . .'
-!!$
-!!$                       call tecplot(dim,dimpc,ipar,par,fct,npts,xcof) 
-!!$                    end if
-!!$                 end if
+                 call montecarlo(stat,fct,DIM,dimpc,nterms,npts,ipar,xcof)
+
+                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
+                 !=======================================================
+                 ! Calculate RMSE
+                 !=======================================================
+
+                 if(id_proc.eq.0) then
+                    write(filenum,*)
+                    write(filenum,*) '================================================='
+                    write(filenum,*) '             RMSE on Surrogate                   '
+                    write(filenum,*) '================================================='
+                    write(filenum,*)
+                 end if
+                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
+                 if(casemode.eq.0)   call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
+                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
+                 !================================================================
+                 ! Tecplot output to file
+                 !================================================================
+
+                 if(id_proc.eq.0) then
+                    if(dim.le.2) then
+                       write(filenum,*)
+                       write(filenum,*) '================================================='
+                       write(filenum,*) '             Tecplot Output                      '
+                       write(filenum,*) '================================================='
+                       write(filenum,*)
+                       write(filenum,*)'>> Writing Tecplot output to file . . .'
+
+                       call tecplot(dim,dimpc,ipar,par,fct,npts,xcof) 
+                    end if
+                 end if
 
                  nptsold=npts
                  ntermsold=nterms
 
               enddo !order
+
+              !           end do !fct indx
 
            enddo ! fct
 
@@ -473,71 +465,22 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 
   end do !dynamics loop
 
-  call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
-!!$  if (id_proc.eq.0) then
-!!$     print *, fmean,fmeanprime(1:dim)
-!!$     print *,fvar,fvarprime(1:dim)	
-!!$  end if
-
-  ! Export out of this subroutine for optimization
-
-  ! Function values
-  fmeanout=fmean
-  fvarout=fvar  
-
-  if (OUUflag.eq.1) then
-
-     if (id_proc.eq.0) then
-
-        call epigrads(fct,fctindx,dim,ndimt,xavgt,xstdt,ftmp,dftmp)
-
-        do j=1,ndimt-dim
-           fmeanprimeout(j)=dftmp(j)
-           fvarprimeout(j)=0.0     !ftmp*dftmp(j)
-        end do
-
-     end if
-
-  end if
-
-  
-  call MPI_Barrier(MPI_COMM_WORLD,ierr)
-  call MPI_BCAST(fmeanprimeout,ndimt,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
-  call MPI_BCAST(fvarprimeout,ndimt,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
-
-  fmeanprimeout(ndimt-dim+1:ndimt)=fmeanprime(1:dim)
-  fvarprimeout(ndimt-dim+1:ndimt)=fvarprime(1:dim)
-
-  ! Hessian
-  do i=1,dim
-     do j=1,dim
-	fmeandbleprimeout(i,j) = fmeandbleprime(i,j)
-	fvardbleprimeout(i,j)  = fvardbleprime(i,j)
-     end do
-  end do
-
   if (id_proc.eq.0) then
-!     print*,'mean:',fmeanout
-!     print*,'var:',fvarout
-!     print*,'fmeanprime:',fmeanprimeout
-!     print*,'fvarprime:',fvarprimeout
-!!$     write(filenum,*)
-!!$     write(filenum,'(E15.6)')'>> fmean:',fmeanout
-!!$     write(filenum,'(E15.6)')'>> fvar :',fvarout
-!!$     write(filenum,*)
-!!$     write(filenum,'(99E15.6)')'>> fmeanprime:',fmeanprimeout
-!!$     write(filenum,'(99E15.6)')'>> fvarprime :',fvarprimeout
-!!$     write(filenum,*)
      write(filenum,*)
-     write(filenum,*)'>> Program call is successful'
+     write(filenum,*)'>> Program terminated successfully'
      write(filenum,*) 
   end if
 
-  !  call stop_all
+!!$  if (id_proc.eq.0) then
+!!$     print *, fmean,fmeanprime(1:dim)
+!!$     print *,fvar,fvarprime(1:dim)
+!!$  end if
+
   call MPI_Barrier(MPI_COMM_WORLD,ierr)
-  return
-end subroutine PCestimate
+
+  call stop_all
+
+end program main
 
 !+======================================================================
 
@@ -692,7 +635,6 @@ subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
   implicit none  
   character*2 :: dimnumber,fctnumber,ordnumber,OSnumber,fctindxnumber
   integer ::lenc,fct,dim,stat,casemode,dimpc
-
   character*60 :: filename
 
   call i_to_s(fct,fctnumber)
@@ -776,6 +718,60 @@ subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
   end if
   return
 end subroutine getfilename
+
+!++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+!!$
+!!$subroutine evalPC(ndim,dimPC,ipar,xcof,x,yhat)
+!!$
+!!$  implicit none
+!!$  include "collsub.h"
+!!$
+!!$  integer :: NDIM,DIMPC,nterms,mreg(maxdat,ndim) ! multi-index variables
+!!$  integer :: k,j,jj,kk
+!!$
+!!$  integer ::  ipar(MAXVAR)
+!!$  double precision ::  PL(NDIM,0:DIMPC),DPL(NDIM,0:DIMPC),DDPL(NDIM,0:dimpc)
+!!$  double precision ::  PL1(NDIM,0:DIMPC),DPL1(NDIM,0:DIMPC),DDPL1(NDIM,0:dimpc)
+!!$
+!!$  double precision :: x(ndim),yhat
+!!$  double precision :: xcof(MAXTRM),xcoftmp
+!!$  integer::ipartmp
+!!$  real*8::  xtmp,PLtmp(0:dimpc),DPLtmp(0:dimpc),DDPLtmp(0:dimpc)
+!!$
+!!$  call multidx(MAXDAT,NDIM,DIMPC,mreg,nterms) ! get multiindex notation for tensor procduct
+!!$
+!!$  !Initialize for safety
+!!$
+!!$  dpltmp=0.0d0
+!!$  ddpltmp=0.0d0
+!!$  pltmp=0.0d0
+!!$
+!!$  yhat = 0.0d0
+!!$  do kk=1,nterms
+!!$     xcoftmp=xcof(kk)
+!!$     do jj=1,nDIM 
+!!$
+!!$        ipartmp=ipar(jj) ! Normal or uniform
+!!$ 
+!!$        xtmp=x(jj) !location to evalutuate the orthogonal polynomials
+!!$
+!!$        call ortho(ipartmp,DIMPC,xtmp,PLtmp,dpltmp,ddpltmp) !get values and derivatives
+!!$
+!!$        ! Store it in the way it is needed
+!!$
+!!$        PL(jj,0:dimpc)=pltmp(0:dimpc) 
+!!$        DPL(jj,0:dimpc)=Dpltmp(0:dimpc)
+!!$        DDPL(jj,0:dimpc)=DDpltmp(0:dimpc)
+!!$
+!!$        xcoftmp=xcoftmp*PL(jj,mreg(kk,jj)) ! the derivatives are not used at all
+!!$
+!!$     enddo
+!!$     yhat = yhat + xcoftmp ! PC value
+!!$  end do
+!!$
+!!$  return
+!!$
+!!$end subroutine evalPC
 
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 subroutine ortho(dist,dimpc,x,pl,dpl,ddpl)
@@ -1141,6 +1137,6 @@ SUBROUTINE HERM(N,X,Y,DY,D2Y)
 !!$ end do
 
 
-        
+
         return
       end subroutine evalPC
