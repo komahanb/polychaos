@@ -1,6 +1,6 @@
 program main
   use dimpce
-  !  use timer_mod
+
   implicit none
 
   INCLUDE "collsub.h"
@@ -55,11 +55,15 @@ program main
   integer::index,evalfunction
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
-  
+
   call MPI_START 
  
   mainprog=.true.
 
+  ndimt=dim ! If all are assumed to be aleatory variables
+
+  if (dim.ne.ndimt) OUUflag=1 ! mixed uncertainties, need to  call optimization at the end
+ 
   !Settings
   
   filenum=6 ! 6 for screen, any other number for fort.x
@@ -96,14 +100,12 @@ program main
   end do
 
   casemode=1 !0=RMSE only, 1=Stats+RMSE
-
-  evlfnc=1  ! For montecarlo, should the program evaluate the exact fn (CFD)?
-
+  
   if (casemode.eq.1) then
      ! This file is read again in montecarlo subroutine. Here it is needed to define the domain size when doing casemode=1(Stats)
      open(10,file='MC.inp',form='formatted',status='old')
-!     read(10,*) (xavg(i),i=1,dim)
-!     read(10,*) (xstd(i),i=1,dim)     
+     read(10,*) (xavg(i),i=1,dim)
+     read(10,*) (xstd(i),i=1,dim)     
      read(10,*)
      read(10,*)
      read(10,*) NMCS!,ndimtmp
@@ -113,61 +115,65 @@ program main
      close(10)
   end if
 
-  ! Mean setup
-  do i =1,dim
-  xavg(i)=1.0d0
-  end do
-
-  probtype(:)=1
+!!$  ! Mean setup
+!!$  do i =1,dim
+!!$  xavg(i)=1.0d0
+!!$  end do
   
-  !variance setup 
-  if (probtype(1).eq.1) then
-    xstd(1:dim)=0.05
-  else if (probtype(1).eq.2) then
-    xstd(1:dim)=xavg(1:dim)*0.05
-  else	
-    stop"Wrong prob type"
-  end if	
+  probtype(:)=1
 
+  do i=1,ndimt
+     if (probtype(i).eq.1) then
+        xstdt(i)=xstd(i)
+     else if (probtype(i).eq.2) then
+        xstdt(i)=xavg(i)*xstd(i)
+     else
+        stop"Wrong problem type"
+     end if
+  end do
+  
+  xavg(1:DIM)=xavgt(ndimt-DIM+1:ndimt)
+  xstd(1:DIM)=xstdt(ndimt-DIM+1:ndimt)
 
   do  dynamics=1,1
 
      !===============================
      ! Main Program
      !===============================
-
+     
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
         do  stat=0,0,1   
-           
+
            !0= Function only
            !1= Function + Gradient
            !2= Function +Gradient +Hessian   
 
            call solvertype(stat,os,solver)
 
-           !1 : cos(x+y) (Nd)
-           !2 : 1.0/(1.0+x**2+y**2)  (Nd)
-           !3 : x**2+y**2  (Nd)
-           !4 : exp(x+y)  (Nd)
-           !5 : x**3+y**3 (Nd)
-           !6 : Rosenbrock (Nd)
-           !7 : sin(3x-1.5)+cos(3y-3) (Nd)
-           !8 : Two bar truss design (3d)
-           !9 : Short tubular column (3d)
-           !10: Cantilever beam (2d)
-           !11: Three bar truss (3d)
-           !12: Threebar truss (6d)           
-           !20: CFD
+
+           fctindx=0 
 
            do fct=1,1,1
-
-              fctindx=0 
 
 !!$              if (fuct.eq.1) fct=4
 !!$              if (fuct.eq.2) fct =2
 !!$              if (fuct.eq.3) fct =6
 !!$              if (fuct.eq.4) fct =10
+              !1 : cos(x+y) (Nd)
+              !2 : 1.0/(1.0+x**2+y**2)  (Nd)
+              !3 : x**2+y**2  (Nd)
+              !4 : exp(x+y)  (Nd)
+              !5 : x**3+y**3 (Nd)
+              !6 : Rosenbrock (Nd)
+              !7 : sin(3x-1.5)+cos(3y-3) (Nd)
+              !8 : Two bar truss design (3d)
+              !9 : Short tubular column (3d)
+              !10: Cantilever beam (2d)
+              !11: Three bar truss (3d)
+              !12: Threebar truss (6d)           
+              !20: CFD
+              !>20: Mixed Uncertainties, calling suboptimization program to find the worst and best case scenarios to fix the corresponsing epistemic vars at extrema, whereas the aleatory vars are sampled within the space spanned by the mean and 3*SD. The surrogate is built on aleatory vars only, with epistemic vars fixed at extrema. F(B*,A_i) is what is given to the surrogate for each corresponding training point location A_i.
 
 
               !Domain size
@@ -240,19 +246,10 @@ program main
 
               end if
 
-              !              do fctindx=0,4,4  
-
-              !             if (fctindx.eq.4) call system('cp MCSampCFD00.dat MCSampCFD04.dat')
-
               dyncyccnt=0
-
               do DIMPC =5,5 !order 5D requires 3003 terms
 
                  dyncyccnt=dyncyccnt+1
-
-                 ! Initialize timer
-                 !              if (id_proc.eq.0) call TimerInit()
-                 !              if (id_proc.eq.0) call TimerStart('PC')
 
                  ! Get number of terms in the expansion
                  call combination(DIM+DIMPC,DIM,nterms)
@@ -454,8 +451,6 @@ program main
                  ntermsold=nterms
 
               enddo !order
-
-              !           end do !fct indx
 
            enddo ! fct
 

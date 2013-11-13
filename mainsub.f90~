@@ -1,13 +1,11 @@
 subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
-  use dimpce
 
+  use dimpce
   implicit none
 
   INCLUDE "collsub.h"
   include 'mpif.h'
-
   integer::ndimint
-
   !Input variables
   integer,intent(in):: DIM,PROBTYPEIN(20),OSIN
   double precision,intent(in) :: xavgin(ndimint),xstdin(ndimint)
@@ -93,7 +91,7 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
      write(filenum,*) 'Email : komahan.cool@gmail.com'
      write(filenum,*) '======================================================='
      write(filenum,*)
-     ! write(filenum,'(x,a,i3)')'>> Number of Processors = ',num_proc
+     !     write(filenum,'(x,a,i3)')'>> Number of Processors = ',num_proc
   end if !master
 
   !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++!
@@ -141,6 +139,8 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
         stop"Wrong problem type"
      end if
   end do
+
+  ! Storing into surrogate (used for aleatory vars)
 
   xavg(1:DIM)=xavgt(ndimt-DIM+1:ndimt)
   xstd(1:DIM)=xstdt(ndimt-DIM+1:ndimt)
@@ -473,6 +473,8 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 
   end do !dynamics loop
 
+  call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
 !!$  if (id_proc.eq.0) then
 !!$     print *, fmean,fmeanprime(1:dim)
 !!$     print *,fvar,fvarprime(1:dim)	
@@ -491,25 +493,23 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
         call epigrads(fct,fctindx,dim,ndimt,xavgt,xstdt,ftmp,dftmp)
 
         do j=1,ndimt-dim
-           fmeanprimeout(j)=dftmp(j) ! epistemic mean
-           fvarprimeout(j)=0.0       ! epistemic var assumed to be small
+           fmeanprimeout(j)=dftmp(j)
+           fvarprimeout(j)=0.0     !ftmp*dftmp(j)
         end do
 
      end if
 
   end if
+
   
   call MPI_Barrier(MPI_COMM_WORLD,ierr)
   call MPI_BCAST(fmeanprimeout,ndimt,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
   call MPI_BCAST(fvarprimeout,ndimt,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
 
-  !assembling epistemic and aleatory gradients in place
-
-  fmeanprimeout(ndimt-dim+1:ndimt)=fmeanprime(1:dim) 
+  fmeanprimeout(ndimt-dim+1:ndimt)=fmeanprime(1:dim)
   fvarprimeout(ndimt-dim+1:ndimt)=fvarprime(1:dim)
 
-  ! Hessian (need to be worked on)
-  
+  ! Hessian
   do i=1,dim
      do j=1,dim
 	fmeandbleprimeout(i,j) = fmeandbleprime(i,j)
@@ -533,6 +533,8 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
      write(filenum,*)'>> Program call is successful'
      write(filenum,*) 
   end if
+
+  !  call stop_all
   call MPI_Barrier(MPI_COMM_WORLD,ierr)
   return
 end subroutine PCestimate
