@@ -31,26 +31,79 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
   real*8,intent(inout):: fpcb(MAXPTS),gpcb(NDIM,MAXPTS),hpcb(NDIM,NDIM,maxpts)
   real*8,intent(in):: xcof(MAXTRM)
 
-
+  
   real*8::diffloc
   real*8::derivdummy(ndim),dblederivdummy(ndim,ndim)
 
   integer::npass
-  
-  !========================================================
-  ! Figure out how many points are required and make them
-  !=========================================================
+
+  if (lhsdyn) then
+
+  !==========================================
+  ! LHS - DYNAMIC TRAINING POINT SELECTION 
+  !==========================================
+
+     if (id_proc.eq.0) then
+
+        write(filenum,*) '>> [Picking points dynamically for LHS]' 
+
+      
+        call get_seed(nseed)
+        call latin_random(ndim,nptstoaddpercyc,nseed,Dtoex) 
+
+        do j=1,ndim
+           do i =1,nptstoaddpercyc
+              dtoex(j,i)=par(j,1)+(par(j,2)-par(j,1))*DTOEX(j,i) !Scale the test candidates to the domain
+           end do
+        end do
+
+
+        do ii=1,nptstoaddpercyc
+     
+           RN(1:ndim,nptsold+ii)=Dtoex(:,ii)
+           x(1:ndim)=Dtoex(1:ndim,ii)
+
+           call evalcostf(stat,ndim,fct,x,fv,gv,hv)
+           fpcb(nptsold+ii)=fv                   !Store the cost function value at appropriate location
+           if (stat.gt.0) then
+              gpcb(1:ndim,nptsold+ii)=gv(1:ndim)   !Store them appropriately
+           end if
+
+           if (stat.gt.1) then
+              hpcb(1:ndim,1:ndim,nptsold+ii)=hv(1:ndim,1:ndim)
+           end if
+
+        end do !! ii loop
+
+     end if
+
+     call MPI_Barrier(MPI_COMM_WORLD,ierr)           
+     call MPI_BCAST(RN(:,:),ndim*maxout,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)  
+     call MPI_BCAST(fpcb,maxpts,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr) 
+     call MPI_BCAST(gpcb,ndim*maxpts,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr) 
+     call MPI_BCAST(hpcb,ndim*ndim*maxpts,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr) 
+
+     goto 888
+     return
+  end if
+
+
+  !==========================================
+  ! DYNAMIC TRAINING POINT SELECTION WITH MIR
+  !==========================================
+   
   !  if (abs(nptsold-npts).lt.nptstoaddpercyc) npts=npts+nptstoaddpercyc
   !  if (abs(nptsold-npts).lt.ndim) npts=npts+nptstoaddpercyc
 
-  call mirtunableparams(fct,ndim,nptsold,ncp,taylororder,NTOEX)
+  call mirtunableparams(fct,ndim,nptsold,ncp,taylororder)
   !  print *,nptsold, ncp
 
-  NTOEX=int(nptstoaddpercyc*100/ndim)!int(1000*num_proc/ndim)
+  NTOEX=int(nptstoaddpercyc*500)!int(1000*num_proc/ndim)
 
   !  if (stat.gt.0) NTOEX=int(NTOEX)
+  !  NTOEX=5000*NDIM
 
-  if (NTOEX.gt.20000) NTOEX=20000
+  if (NTOEX.gt.20000) NTOEX=25000
 
   !  if (stat.eq.2)  NTOEX=int(NTOEX*nDIM*nDIM)
 
@@ -300,6 +353,8 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
   call MPI_BCAST(gpcb,ndim*maxpts,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr) 
   call MPI_BCAST(hpcb,ndim*ndim*maxpts,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr) 
 
+  goto 888
+
   !1 ) Assume that the model is built with a particular order say 3, [x,f(x)] are already in a file named sampleandvalues.dat (for now lets forget about center and borders)
 
   !2 ) Now for order 4  we want to choose nptstoaddpercyc points to samplepoints.dat in this subroutine and pass it as RNF
@@ -317,6 +372,7 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
 !!$  call MPI_Barrier(MPI_COMM_WORLD,ierr)!slaves wait until master arrives
 !!$  call stop_all
 
+888 continue
 
   if (id_proc.eq.0 ) then
 
@@ -389,10 +445,10 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
 end subroutine dynsampdist
 !++++++++++++++++++++++++++++++++++++++++
 
-    subroutine mirtunableparams(fct,ndim,nhs,ncp,taylororder,NTOEX)
+    subroutine mirtunableparams(fct,ndim,nhs,ncp,taylororder)
       implicit none
       integer,INTENT(IN)::fct,ndim,nhs
-      INTEGER,INTENT(OUT)::NCP,NTOEX,TAYLORORDER
+      INTEGER,INTENT(OUT)::NCP,TAYLORORDER
       
       !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
       !                 EXP
@@ -424,7 +480,7 @@ end subroutine dynsampdist
            NCP=20!+5*ndim
            tAYLORORDER=5
         end if
-        NTOEX=(30-ndim)*NCP
+
      end if
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!    
 !                COS
@@ -455,7 +511,7 @@ end subroutine dynsampdist
            NCP=20
            tAYLORORDER=5
         end if
-NTOEX=(30-ndim)*NCP
+
      end if
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
 !               RUNGE
@@ -487,7 +543,7 @@ NTOEX=(30-ndim)*NCP
            NCP=20
            tAYLORORDER=5
         end if
-NTOEX=(30-ndim)*NCP
+
      end if
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
 !           ROSENBROCK    
@@ -518,7 +574,7 @@ NTOEX=(30-ndim)*NCP
            NCP=70
            tAYLORORDER=5
         end if
-NTOEX=(30-ndim)*NCP
+
      end if
 !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
 !                      CFD   
@@ -551,7 +607,7 @@ NTOEX=(30-ndim)*NCP
            Taylororder=7
            
         end if
-        NTOEX=(30-ndim)*NCP
+
 
      else
 
@@ -581,13 +637,11 @@ NTOEX=(30-ndim)*NCP
            NCP=20
            tAYLORORDER=5
         end if
-        NTOEX=(30-ndim)*NCP
 
 
      end if ! end of CFD 
 
-
-
+     return
    end subroutine mirtunableparams
 
    subroutine knn(SC,sample,knnptr,ndim,nhs,NCP)

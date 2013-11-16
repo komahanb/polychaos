@@ -7,7 +7,7 @@ program main
   include 'mpif.h'
 
   integer :: DIM
-  parameter (DIM=6)
+  parameter (DIM=2)
 
   !indices
   integer :: i,j,k,ii,jj,kk,fuct
@@ -55,7 +55,7 @@ program main
   integer::index,evalfunction
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
-
+  integer::ctest
   call MPI_START 
  
   mainprog=.true.
@@ -99,7 +99,7 @@ program main
      ipar(j)=1  
   end do
 
-  casemode=1 !0=RMSE only, 1=Stats+RMSE
+  casemode=0 !0=RMSE only, 1=Stats+RMSE
   
   if (casemode.eq.1) then
      ! This file is read again in montecarlo subroutine. Here it is needed to define the domain size when doing casemode=1(Stats)
@@ -135,7 +135,20 @@ program main
   xavg(1:DIM)=xavgt(ndimt-DIM+1:ndimt)
   xstd(1:DIM)=xstdt(ndimt-DIM+1:ndimt)
 
-  do  dynamics=1,1
+!  do  dynamics=1,1
+
+  do  ctest=1,3
+     
+     if (ctest.eq.1) dynamics=0
+     if (ctest.eq.2) then
+        dynamics=1
+        lhsdyn=.true.
+     end if
+     if (ctest.eq.3) then
+        dynamics=1
+        lhsdyn=.false. !mirdyn is true
+     end if
+
 
      !===============================
      ! Main Program
@@ -143,7 +156,7 @@ program main
      
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=0,0,1   
+        do  stat=0,2 
 
            !0= Function only
            !1= Function + Gradient
@@ -247,7 +260,7 @@ program main
               end if
 
               dyncyccnt=0
-              do DIMPC =5,5 !order 5D requires 3003 terms
+              do DIMPC =2,10 !order 5D requires 3003 terms
 
                  dyncyccnt=dyncyccnt+1
 
@@ -402,33 +415,35 @@ program main
                  !================================================================
                  ! Post processing--> RMSE, Output statistics,Tecplot
                  !================================================================
-                 if(id_proc.eq.0) then
+                 if (casemode.eq.1) then
+                    if(id_proc.eq.0) then
 
-                    write(filenum,*)
-                    write(filenum,*) '================================================='
-                    write(filenum,*) '            MONTE-CARLO on Surrogate             '
-                    write(filenum,*) '================================================='
-                    write(filenum,*)
+                       write(filenum,*)
+                       write(filenum,*) '================================================='
+                       write(filenum,*) '            MONTE-CARLO on Surrogate             '
+                       write(filenum,*) '================================================='
+                       write(filenum,*)
+                    end if
+
+                    call montecarlo(stat,fct,DIM,dimpc,nterms,npts,ipar,xcof)
+
+                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
                  end if
-
-                 call montecarlo(stat,fct,DIM,dimpc,nterms,npts,ipar,xcof)
-
-                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
-
                  !=======================================================
                  ! Calculate RMSE
                  !=======================================================
-
-                 if(id_proc.eq.0) then
-                    write(filenum,*)
-                    write(filenum,*) '================================================='
-                    write(filenum,*) '             RMSE on Surrogate                   '
-                    write(filenum,*) '================================================='
-                    write(filenum,*)
+                 if(casemode.eq.0) then
+                    if(id_proc.eq.0) then
+                       write(filenum,*)
+                       write(filenum,*) '================================================='
+                       write(filenum,*) '             RMSE on Surrogate                   '
+                       write(filenum,*) '================================================='
+                       write(filenum,*)
+                    end if
+!                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
+                    call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
+                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
                  end if
-                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
-                 if(casemode.eq.0)   call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
-                 call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
                  !================================================================
                  ! Tecplot output to file
@@ -626,7 +641,7 @@ end subroutine i_to_s
 
 
 subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
-  use dimpce,only:OS,fctindx,dynamics
+  use dimpce,only:OS,fctindx,dynamics,lhsdyn
   implicit none  
   character*2 :: dimnumber,fctnumber,ordnumber,OSnumber,fctindxnumber
   integer ::lenc,fct,dim,stat,casemode,dimpc
@@ -709,6 +724,7 @@ subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
   end if
   if  (dynamics.eq.1) then
      filename(lenc+1:lenc+6)='mirdyn'
+     if (lhsdyn)  filename(lenc+1:lenc+6)='lhsdyn'
      lenc=lenc+6
   end if
   return

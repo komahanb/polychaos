@@ -19,7 +19,7 @@ Module dimpce
       
       double precision,dimension(20)::dat
 
-      logical::mainprog
+      logical::mainprog,lhsdyn
       integer::OUUflag
 
     End Module dimpce
