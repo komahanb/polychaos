@@ -21,5 +21,8 @@ Module dimpce
 
       logical::mainprog,lhsdyn
       integer::OUUflag
-
+      double precision,allocatable,dimension(:,:,:)::rmsemat
+      character*60 :: outfile
+      integer::loopcounter,runnum
+      integer :: randomflag
     End Module dimpce

@@ -55,27 +55,78 @@ subroutine sampdist(stat,DIM,DIMPC,ipar,par,makesamples,nterms,npts,fct,RN)
   call getfilename(dim,fct,dimpc,stat,55,filename)
 
   if (makesamples.eq.1) then !
-     
-     ! force center of the domain
-        do j=1,dim
-           RN(j,1)=0.5d0
-        end do
-        
-        nptstmp=1 ! (center of the domain)
-
-        write(filenum,*)'>> Including center of the domain'
+ 
+!        nptstmp=1 ! (center of the domain)
 
         ! Initialize Random number generators with system time 
-        call get_seed(seed)
 
+!        call get_seed(seed)
         ! Generate random numbers and store in RN
-        call latin_random(dim,npts-1,seed,RN(:,2:npts))
+ !       call latin_random(dim,npts-1,seed,RN(:,2:npts))
+
+        if (randomflag.eq.1) then
+
+           write(filenum,*)'>> Initial Sample Points by Latin Hypercube'
+           write(filenum,*)'>> Including center of the domain'
+           
+           ! force center of the domain
+           do j=1,dim
+              RN(j,1)=0.5d0
+           end do
+
+           call get_seed(seed)
+           call latin_random(dim,npts-1,seed,RN(:,2:npts))       
+
+        else if (randomflag.eq.2) then
+
+           write(filenum,*)'>> Initial Sample Points by NIEDER Sequence'
+           call get_seed(seed)
+           call nieder(seed,dim,npts,RN(:,1:npts))
+           !                 print*,sample(:,1:nhs-nhstmp)
+           !                 stop    
+        else if (randomflag.eq.3) then
+
+           write(filenum,*)'>> Initial Sample Points by Halton Sequence'
+           call halton_real(dim,npts,RN(:,1:npts))
+           !                print*,sample(:,1:nhs-nhstmp)
+           !                stop
+        else if (randomflag.eq.4) then
+
+           write(filenum,*)'>> Initial Sample Points by Hammersley Sequence'
+           call hammersley_real(dim,npts,RN(:,1:npts))
+           !                 print*,sample(:,1:nhs-nhstmp)
+           !                stop
+
+        else if (randomflag.eq.5) then
+
+           write(filenum,*)'>> Initial Sample Points by Sobol Sequence'
+           call get_seed(seed)
+           call sobol_real(seed,dim,npts,RN(:,1:npts))
+           !                 print*,sample(:,1:nhs-nhstmp)
+           !                stop
+
+        else if (randomflag.eq.6) then
+
+           write(filenum,*)'>> Initial Sample Points by Faure Sequence'
+           call get_seed(seed)
+           call faure_real(seed,dim,npts,RN(:,1:npts))
+           !                print*,sample(:,1:nhs-nhstmp)
+           !                stop
+
+        else !if (randomflag.eq.6) then
+
+           write(filenum,*)'>> Initial Sample Points by Which Sequence'
+           print*,"Cool.. Please go ahead and implement"
+           stop
+
+        end if
+
 
         ! Write those points to a file (sample points can be used again)
         open(30,file=filename,form='formatted',status='unknown')
         write(30,*)(RN(:,i),i=1,npts)
         close(30)
-        
+
         write(filenum,'(2a)')' >> Training points are written to file :',filename
 
   else ! read from the file

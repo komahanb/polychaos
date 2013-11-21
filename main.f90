@@ -62,7 +62,7 @@ program main
 
   ndimt=dim ! If all are assumed to be aleatory variables
 
-  if (dim.ne.ndimt) OUUflag=1 ! mixed uncertainties, need to  call optimization at the end
+  if (dim.ne.ndimt) OUUflag=1 ! mixed uncertainties, need to  call optimization at the end, not used in mainprog though.
  
   !Settings
   
@@ -135,18 +135,33 @@ program main
   xavg(1:DIM)=xavgt(ndimt-DIM+1:ndimt)
   xstd(1:DIM)=xstdt(ndimt-DIM+1:ndimt)
 
-!  do  dynamics=1,1
+  !  do  dynamics=1,1
+  
+  do  ctest=3,3
 
-  do  ctest=1,3
-     
-     if (ctest.eq.1) dynamics=0
+     if (ctest.eq.1) then
+
+        dynamics=0
+
+        !1=LHS,
+        !2=Nieder
+        !3=Halton
+        !4=Hammersley
+        !5=Sobol
+        !6=Faure
+
+        randomflag=1
+
+     end if
      if (ctest.eq.2) then
         dynamics=1
         lhsdyn=.true.
+        randomflag=1
      end if
      if (ctest.eq.3) then
         dynamics=1
         lhsdyn=.false. !mirdyn is true
+        randomflag=1
      end if
 
 
@@ -156,7 +171,7 @@ program main
      
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=0,2 
+        do  stat=0,0 
 
            !0= Function only
            !1= Function + Gradient
@@ -167,7 +182,7 @@ program main
 
            fctindx=0 
 
-           do fct=1,1,1
+           do fct=4,4,1
 
 !!$              if (fuct.eq.1) fct=4
 !!$              if (fuct.eq.2) fct =2
@@ -641,7 +656,7 @@ end subroutine i_to_s
 
 
 subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
-  use dimpce,only:OS,fctindx,dynamics,lhsdyn
+  use dimpce,only:OS,fctindx,dynamics,lhsdyn,randomflag
   implicit none  
   character*2 :: dimnumber,fctnumber,ordnumber,OSnumber,fctindxnumber
   integer ::lenc,fct,dim,stat,casemode,dimpc
@@ -718,6 +733,34 @@ subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
   else if (stat.eq.0) then
      filename(lenc+1:lenc+1)='F'
      lenc=lenc+1 
+
+     if (randomflag.eq.2) then
+
+        filename(lenc+1:lenc+1)='2'
+        lenc=lenc+1 
+
+     else if (randomflag.eq.3) then
+
+        filename(lenc+1:lenc+1)='3'
+        lenc=lenc+1 
+
+     else  if (randomflag.eq.4) then
+
+        filename(lenc+1:lenc+1)='4'
+        lenc=lenc+1 
+
+     else if (randomflag.eq.5) then
+
+        filename(lenc+1:lenc+1)='5'
+        lenc=lenc+1 
+
+     else if (randomflag.eq.6) then
+
+        filename(lenc+1:lenc+1)='6'
+        lenc=lenc+1 
+     end if
+
+
   else
      print *, 'Wrong value in hstat'
      stop'Wrong value in stat'
