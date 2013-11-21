@@ -138,7 +138,7 @@ program main
 
   !  do  dynamics=1,1
   
-  do  ctest=3,3
+  do  ctest=1,1
 
      if (ctest.eq.1) then
 
@@ -172,7 +172,7 @@ program main
      
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=0,1 
+        do  stat=0,0 
 
            !0= Function only
            !1= Function + Gradient
@@ -183,7 +183,7 @@ program main
 
            fctindx=0 
 
-           do fct=3,4,1
+           do fct=4,4,1
 
 !!$              if (fuct.eq.1) fct=4
 !!$              if (fuct.eq.2) fct =2
@@ -286,7 +286,7 @@ program main
               end if
 
               dyncyccnt=0
-              do DIMPC =2,3 !order 5D requires 3003 terms
+              do DIMPC =2,10 !order 5D requires 3003 terms
                  dyncyccnt=dyncyccnt+1
 
                  ! Get number of terms in the expansion
