@@ -23,7 +23,7 @@ program main
   real*8 :: coll(MAXPTS,DIM),par(DIM,MAXPAR)
   real*8 :: RN(DIM,MAXPTS),DS(2,DIM)
   real*8 :: fpcb(MAXPTS),gpcb(DIM,MAXPTS),xcof(MAXTRM),hpcb(dim,dim,maxpts)
-  integer :: ipar(MAXVAR)
+  integer:: ipar(MAXVAR)
 
 
   !RandomNumber 
@@ -55,7 +55,8 @@ program main
   integer::index,evalfunction
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
-  integer::ctest
+  integer::ctest,nruns
+  integer::jjj
   call MPI_START 
  
   mainprog=.true.
@@ -171,7 +172,7 @@ program main
      
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=0,0 
+        do  stat=0,1 
 
            !0= Function only
            !1= Function + Gradient
@@ -182,7 +183,7 @@ program main
 
            fctindx=0 
 
-           do fct=4,4,1
+           do fct=3,4,1
 
 !!$              if (fuct.eq.1) fct=4
 !!$              if (fuct.eq.2) fct =2
@@ -203,6 +204,16 @@ program main
               !20: CFD
               !>20: Mixed Uncertainties, calling suboptimization program to find the worst and best case scenarios to fix the corresponsing epistemic vars at extrema, whereas the aleatory vars are sampled within the space spanned by the mean and 3*SD. The surrogate is built on aleatory vars only, with epistemic vars fixed at extrema. F(B*,A_i) is what is given to the surrogate for each corresponding training point location A_i.
 
+              nruns=2
+
+              !                    if (nruns.gt.1) then
+              if (id_proc.eq.0) allocate(rmsemat(nruns,1000,2))
+              ! 1000 data points , RMSE only, mean +sd, 
+              !                   end if
+
+              runnum=0
+              do jjj=1,nruns
+                 runnum=runnum+1
 
               !Domain size
               if (casemode.eq.0) then !RMSE comparisons only
@@ -275,8 +286,7 @@ program main
               end if
 
               dyncyccnt=0
-              do DIMPC =2,10 !order 5D requires 3003 terms
-
+              do DIMPC =2,3 !order 5D requires 3003 terms
                  dyncyccnt=dyncyccnt+1
 
                  ! Get number of terms in the expansion
@@ -472,38 +482,55 @@ program main
                        write(filenum,*) '================================================='
                        write(filenum,*)
                        write(filenum,*)'>> Writing Tecplot output to file . . .'
-
                        call tecplot(dim,dimpc,ipar,par,fct,npts,xcof) 
                     end if
                  end if
-
+                 
                  nptsold=npts
                  ntermsold=nterms
 
-              enddo !order
+              end do !norder
 
-           enddo ! fct
+           enddo !nruns
 
-        enddo ! F or FG (Stat)
+           if (id_proc.eq.0) then
+!!$
+!!$                 do i=1,nruns
+!!$                    do j=1,loopcounter
+!!$                       print*,rmsemat(i,j,:)
+!!$                    end do
+!!$                 end do
 
-     end do !Oversamp loop
+              call matrix_process(nruns)
 
-  end do !dynamics loop
+              deallocate(rmsemat)
 
-  if (id_proc.eq.0) then
-     write(filenum,*)
-     write(filenum,*)'>> Program terminated successfully'
-     write(filenum,*) 
-  end if
+           end if
+
+           call MPI_Barrier(MPI_COMM_WORLD,ierr)              
+
+        enddo ! fct
+
+     enddo ! F or FG (Stat)
+
+  end do !Oversamp loop
+
+end do !dynamics loop
+
+if (id_proc.eq.0) then
+   write(filenum,*)
+   write(filenum,*)'>> Program terminated successfully'
+   write(filenum,*) 
+end if
 
 !!$  if (id_proc.eq.0) then
 !!$     print *, fmean,fmeanprime(1:dim)
 !!$     print *,fvar,fvarprime(1:dim)
 !!$  end if
 
-  call MPI_Barrier(MPI_COMM_WORLD,ierr)
+call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-  call stop_all
+call stop_all
 
 end program main
 

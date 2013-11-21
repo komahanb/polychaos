@@ -53,6 +53,7 @@ subroutine RMSE_Higher(stat,ndim,fct,npts,dimPC,ipar,par,xcof)
 
      call getfilename(ndim,fct,dimpc,stat,0,filename)
 
+     outfile(:)=filename(:)
 
      if (dyncyccnt.eq.1)  then
 
@@ -271,17 +272,19 @@ subroutine RMSE_Higher(stat,ndim,fct,npts,dimPC,ipar,par,xcof)
 !!$
 !!$     if(idyy.lt.0.or.idyy.ge.num_proc) stop'idyy'
 !!$     call MPI_BCAST(xy(1),ndim,MPI_DOUBLE_PRECISION,idyy,MPI_COMM_WORLD,ierr)
-
+     
      if(id_proc.eq.0)then
 
         write(filenum,*)
-
         write(filenum,'(6x,a,e20.10)') '>> RMSE compared to Analytical function = ',errorglb
         write(filenum,*)
 
         ! write to errornorm file
-
         write(51,'(2i8,6e15.8)') dimpc,npts,errorglb,maxerrorglb, errorhatglb, errordblehatglb !, ttotal !write to file
+
+        rmsemat(runnum,dyncyccnt,1)=npts
+        rmsemat(runnum,dyncyccnt,2)=errorglb
+        outfile=filename
 
      end if
 

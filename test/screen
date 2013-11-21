@@ -6,6 +6,641 @@
  Email : komahan.cool@gmail.com
  =======================================================
  
+ nextloop
+ nextloop1
+ 
+ =================================================
+          Summary of function requirements        
+ =================================================
+ 
+ nextloop
+ nextloop1
+ >> Number of Function evals needed :          12
+ 
+ >> Initial Sample Points by Latin Hypercube
+ >> Including center of the domain
+ >> Training points are written to file :samp/sampdim02ord02Rat02Fmirdyn                             
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):           6
+  >> Number of rows    in the matrix  (numpc):          12
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           3
+     >> Setting up the RHS with Function evals . . .
+     >> Number of RHS entries :          12
+ 
+           1  0.000000000000000E+000
+           2  0.873379108777835     
+           3   1.70616929567573     
+           4   3.24418324317796     
+           5   5.92523894709259     
+           6   1.81698494915606     
+           7  0.381915324004078     
+           8  0.481230766202882     
+           9   3.58554864586156     
+          10   1.59146577878840     
+          11   4.86887833506333     
+          12   4.30511301848293     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.666666666666666     
+           2  9.367506770274758E-017
+           3 -2.029626466892864E-016
+           4  0.666666666666666     
+           5 -1.166601537594403E-015
+           6  0.666666666666667     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :            6
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      1276      2550 ] for Processor  1
+           >> [      5101      6375 ] for Processor  4
+           >> [         1      1275 ] for Processor  0
+           >> [      3826      5100 ] for Processor  3
+           >> [      7651      8925 ] for Processor  6
+           >> [      2551      3825 ] for Processor  2
+           >> [      8926     10201 ] for Processor  7
+           >> [      6376      7650 ] for Processor  5
+ 
+      >> RMSE compared to Analytical function =     0.2309294596E-14
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+         Dynamic Point Selection                  
+ =================================================
+ 
+  >> NPTS to add this cycle:           8
+ >> Number of test candidates        4000
+           >> [         1       500 ] for Processor  0
+           >> [      3001      3500 ] for Processor  6
+           >> [      2001      2500 ] for Processor  4
+           >> [       501      1000 ] for Processor  1
+           >> [      3501      4000 ] for Processor  7
+           >> [      1501      2000 ] for Processor  3
+           >> [      1001      1500 ] for Processor  2
+           >> [      2501      3000 ] for Processor  5
+ 
+>>Loc diff is  0.37E+01 for test candidate  1294 at iteration   2
+ x =       1.91     -1.98
+ 
+>>Loc diff is  0.37E+01 for test candidate   822 at iteration   2
+ x =      -2.00      2.00
+ 
+>>Loc diff is  0.28E+01 for test candidate  1480 at iteration   2
+ x =       1.11     -1.99
+ 
+>>Loc diff is  0.20E+01 for test candidate   713 at iteration   2
+ x =       0.52     -1.97
+ 
+>>Loc diff is  0.16E+01 for test candidate  2371 at iteration   2
+ x =      -0.07     -1.97
+ 
+>>Loc diff is  0.14E+01 for test candidate   549 at iteration   2
+ x =       1.54     -1.51
+ 
+>>Loc diff is  0.14E+01 for test candidate  3233 at iteration   2
+ x =      -1.96      0.02
+ 
+>>Loc diff is  0.13E+01 for test candidate   341 at iteration   2
+ x =      -1.30      1.95
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):          10
+  >> Number of rows    in the matrix  (numpc):          20
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           3
+     >> Setting up the RHS with Function evals . . .
+     >> Number of RHS entries :          20
+ 
+           1  0.000000000000000E+000
+           2  0.873379108777835     
+           3   1.70616929567573     
+           4   3.24418324317796     
+           5   5.92523894709259     
+           6   1.81698494915606     
+           7  0.381915324004078     
+           8  0.481230766202882     
+           9   3.58554864586156     
+          10   1.59146577878840     
+          11   4.86887833506333     
+          12   4.30511301848293     
+          13   7.59528118708038     
+          14   7.98806383944649     
+          15   5.19086205713332     
+          16   4.15653488344062     
+          17   3.89167310208002     
+          18   4.66286531882069     
+          19   3.85532306908647     
+          20   5.48459044598044     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.666666666666667     
+           2 -1.873501354054952E-015
+           3 -5.065392549852277E-016
+           4  0.666666666666667     
+           5  8.349983031397112E-016
+           6  0.666666666666666     
+           7  3.786033986319381E-016
+           8  2.287666583944414E-016
+           9 -1.010476424756490E-016
+          10 -1.734723475976807E-016
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :           10
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      2551      3825 ] for Processor  2
+           >> [      7651      8925 ] for Processor  6
+           >> [      3826      5100 ] for Processor  3
+           >> [      8926     10201 ] for Processor  7
+           >> [         1      1275 ] for Processor  0
+           >> [      5101      6375 ] for Processor  4
+           >> [      1276      2550 ] for Processor  1
+           >> [      6376      7650 ] for Processor  5
+ 
+      >> RMSE compared to Analytical function =     0.2294222830E-14
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+          Summary of function requirements        
+ =================================================
+ 
+ >> Number of Function evals needed :          12
+ 
+ >> Initial Sample Points by Latin Hypercube
+ >> Including center of the domain
+ >> Training points are written to file :samp/sampdim02ord02Rat02Fmirdyn                             
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):           6
+  >> Number of rows    in the matrix  (numpc):          12
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           3
+     >> Setting up the RHS with Function evals . . .
+     >> Number of RHS entries :          12
+ 
+           1  0.000000000000000E+000
+           2   5.10155667969132     
+           3   2.74551787538729     
+           4   2.58872935368776     
+           5   4.70256912320040     
+           6  0.210633865578937     
+           7   7.38837990720456     
+           8  8.042864035242747E-002
+           9  0.416148314913752     
+          10   3.35644657477194     
+          11   2.18783830148082     
+          12   1.35967695355541     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.666666666666666     
+           2 -5.559788740505667E-016
+           3 -8.711564455921028E-017
+           4  0.666666666666667     
+           5  2.133709875451473E-016
+           6  0.666666666666667     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :            6
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      7651      8925 ] for Processor  6
+           >> [      1276      2550 ] for Processor  1
+           >> [      5101      6375 ] for Processor  4
+           >> [         1      1275 ] for Processor  0
+           >> [      2551      3825 ] for Processor  2
+           >> [      3826      5100 ] for Processor  3
+           >> [      8926     10201 ] for Processor  7
+           >> [      6376      7650 ] for Processor  5
+ 
+      >> RMSE compared to Analytical function =     0.1859198556E-14
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+         Dynamic Point Selection                  
+ =================================================
+ 
+  >> NPTS to add this cycle:           8
+ >> Number of test candidates        4000
+           >> [         1       500 ] for Processor  0
+           >> [      1001      1500 ] for Processor  2
+           >> [       501      1000 ] for Processor  1
+           >> [      1501      2000 ] for Processor  3
+           >> [      3001      3500 ] for Processor  6
+           >> [      3501      4000 ] for Processor  7
+           >> [      2001      2500 ] for Processor  4
+           >> [      2501      3000 ] for Processor  5
+ 
+>>Loc diff is  0.58E+01 for test candidate   433 at iteration   2
+ x =      -1.99     -1.96
+ 
+>>Loc diff is  0.41E+01 for test candidate   583 at iteration   2
+ x =       1.98     -2.00
+ 
+>>Loc diff is  0.33E+01 for test candidate  3413 at iteration   2
+ x =      -1.97     -1.23
+ 
+>>Loc diff is  0.31E+01 for test candidate  3962 at iteration   2
+ x =      -1.33     -1.93
+ 
+>>Loc diff is  0.27E+01 for test candidate  3515 at iteration   2
+ x =       1.96     -1.17
+ 
+>>Loc diff is  0.19E+01 for test candidate   805 at iteration   2
+ x =       1.98     -0.48
+ 
+>>Loc diff is  0.17E+01 for test candidate  1305 at iteration   2
+ x =      -1.99     -0.55
+ 
+>>Loc diff is  0.15E+01 for test candidate  3897 at iteration   2
+ x =      -1.97      0.19
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):          10
+  >> Number of rows    in the matrix  (numpc):          20
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           3
+     >> Setting up the RHS with Function evals . . .
+     >> Number of RHS entries :          20
+ 
+           1  0.000000000000000E+000
+           2   5.10155667969132     
+           3   2.74551787538729     
+           4   2.58872935368776     
+           5   4.70256912320040     
+           6  0.210633865578937     
+           7   7.38837990720456     
+           8  8.042864035242747E-002
+           9  0.416148314913752     
+          10   3.35644657477194     
+          11   2.18783830148082     
+          12   1.35967695355541     
+          13   7.81662194725311     
+          14   7.91142280572374     
+          15   5.38587620694959     
+          16   5.47819473088257     
+          17   5.21047253605898     
+          18   4.16719477910193     
+          19   4.24372339073535     
+          20   3.89995764654176     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.666666666666665     
+           2 -1.137978600240785E-015
+           3 -8.673617379884035E-016
+           4  0.666666666666666     
+           5  3.720981855970251E-016
+           6  0.666666666666667     
+           7 -4.007211229506424E-016
+           8 -4.258746133523061E-016
+           9  6.895525817007808E-016
+          10  2.918672248330978E-016
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :           10
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      1276      2550 ] for Processor  1
+           >> [      3826      5100 ] for Processor  3
+           >> [      7651      8925 ] for Processor  6
+           >> [      2551      3825 ] for Processor  2
+           >> [      6376      7650 ] for Processor  5
+           >> [      8926     10201 ] for Processor  7
+           >> [         1      1275 ] for Processor  0
+           >> [      5101      6375 ] for Processor  4
+ 
+      >> RMSE compared to Analytical function =     0.5193182868E-14
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ nextloop
+ nextloop1
+ 
+ =================================================
+          Summary of function requirements        
+ =================================================
+ 
+ >> Number of Function evals needed :          12
+ 
+ >> Initial Sample Points by Latin Hypercube
+ >> Including center of the domain
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ nextloop
+ >> Training points are written to file :samp/sampdim02ord02Rat02Fmirdyn                             
+ nextloop
+ nextloop1
+ nextloop1
+ nextloop
+ nextloop
+ nextloop1
+ nextloop1
+ nextloop
+ nextloop1
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):           6
+  >> Number of rows    in the matrix  (numpc):          12
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           4
+     >> Setting up the RHS with Function evals . . .
+     >> Number of RHS entries :          12
+ 
+           1   1.00000000000000     
+           2   25.1328227973610     
+           3  0.228073309890455     
+           4  0.461497463830707     
+           5   1.81385272448270     
+           6   4.95028248378766     
+           7  8.228786056277107E-002
+           8  0.230025363258074     
+           9   1.32576431206484     
+          10  0.182763889417821     
+          11   3.70699269099577     
+          12   1.68188020189576     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.568711591485349     
+           2   2.35663364752836     
+           3   2.80958680174632     
+           4  0.860763479705923     
+           5   2.68937689092875     
+           6   1.37549145362976     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :            6
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [         1      1275 ] for Processor  0
+           >> [      2551      3825 ] for Processor  2
+           >> [      1276      2550 ] for Processor  1
+           >> [      5101      6375 ] for Processor  4
+           >> [      3826      5100 ] for Processor  3
+           >> [      8926     10201 ] for Processor  7
+           >> [      6376      7650 ] for Processor  5
+           >> [      7651      8925 ] for Processor  6
+ 
+      >> RMSE compared to Analytical function =     0.2726511942E+01
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+         Dynamic Point Selection                  
+ =================================================
+ 
+  >> NPTS to add this cycle:           8
+ >> Number of test candidates        4000
+           >> [         1       500 ] for Processor  0
+           >> [      1001      1500 ] for Processor  2
+           >> [       501      1000 ] for Processor  1
+           >> [      1501      2000 ] for Processor  3
+           >> [      2001      2500 ] for Processor  4
+           >> [      2501      3000 ] for Processor  5
+           >> [      3001      3500 ] for Processor  6
+           >> [      3501      4000 ] for Processor  7
+ 
+>>Loc diff is  0.12E+02 for test candidate  1408 at iteration   2
+ x =      -2.00     -1.93
+ 
+>>Loc diff is  0.98E+01 for test candidate  1959 at iteration   2
+ x =       0.28      1.97
+ 
+>>Loc diff is  0.91E+01 for test candidate  3936 at iteration   2
+ x =      -0.25      2.00
+ 
+>>Loc diff is  0.87E+01 for test candidate   407 at iteration   2
+ x =      -1.42     -1.97
+ 
+>>Loc diff is  0.69E+01 for test candidate  2123 at iteration   2
+ x =       0.80      1.97
+ 
+>>Loc diff is  0.67E+01 for test candidate  1129 at iteration   2
+ x =      -1.89     -1.39
+ 
+>>Loc diff is  0.57E+01 for test candidate  3922 at iteration   2
+ x =      -0.83      1.97
+ 
+>>Loc diff is  0.53E+01 for test candidate  2790 at iteration   2
+ x =      -0.90     -1.94
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):          10
+  >> Number of rows    in the matrix  (numpc):          20
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           4
+     >> Setting up the RHS with Function evals . . .
+     >> Number of RHS entries :          20
+ 
+           1   1.00000000000000     
+           2   25.1328227973610     
+           3  0.228073309890455     
+           4  0.461497463830707     
+           5   1.81385272448270     
+           6   4.95028248378766     
+           7  8.228786056277107E-002
+           8  0.230025363258074     
+           9   1.32576431206484     
+          10  0.182763889417821     
+          11   3.70699269099577     
+          12   1.68188020189576     
+          13  1.978602426939744E-002
+          14   9.43051396113004     
+          15   5.76336584820293     
+          16  3.351737212990637E-002
+          17   16.0154462770525     
+          18  3.752676760440627E-002
+          19   3.10647193867964     
+          20  5.870599563055134E-002
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.964394837197609     
+           2   1.57820734510574     
+           3   1.94921039966814     
+           4  0.860366650362948     
+           5   2.31185729321575     
+           6  0.693744807396336     
+           7  0.102370584535837     
+           8  0.534747626516777     
+           9  0.457596174123530     
+          10  5.781728821724499E-003
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :           10
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [         1      1275 ] for Processor  0
+           >> [      2551      3825 ] for Processor  2
+           >> [      6376      7650 ] for Processor  5
+           >> [      1276      2550 ] for Processor  1
+           >> [      3826      5100 ] for Processor  3
+           >> [      8926     10201 ] for Processor  7
+           >> [      7651      8925 ] for Processor  6
+           >> [      5101      6375 ] for Processor  4
+ 
+      >> RMSE compared to Analytical function =     0.1242637843E+01
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
  
  =================================================
           Summary of function requirements        
@@ -35,29 +670,29 @@
      >> Number of RHS entries :          12
  
            1   1.00000000000000     
-           2  0.786721919209196     
-           3   2.00000977350976     
-           4  7.754933909525276E-002
-           5  0.630295652631988     
-           6   1.89146950819724     
-           7   3.00517464012213     
-           8   11.3899391771794     
-           9   1.42619179205341     
-          10   4.59672983062511     
-          11  2.947657375135435E-002
-          12  0.997728435729567     
+           2  0.593319338419817     
+           3   1.20421786165690     
+           4  3.703249014425666E-002
+           5   4.63487626425691     
+           6   2.29207578933135     
+           7  0.157691664402334     
+           8  0.927397195601307     
+           9  0.539153422798330     
+          10   4.01463958494779     
+          11  0.785060043572054     
+          12   9.42449044152688     
  
  =================================================
              Solve Linear System                  
  =================================================
  
  >> Solving for the coefficients . . . 
-           1   1.35905523247370     
-           2   2.27288956048488     
-           3   2.22962018889150     
-           4  0.172994185214848     
-           5   1.35463353542517     
-           6  0.538930577137402     
+           1   1.59717377168143     
+           2   1.84048825089687     
+           3   1.97245863574492     
+           4  0.221624334685611     
+           5   1.10652146220006     
+           6  0.379742587111436     
  >> Coeffs are succesfully determined . . .
  >> Number of coefficients :            6
  
@@ -69,16 +704,16 @@
  
       >> RMSE on        10201  points . . .
  
-           >> [      2551      3825 ] for Processor  2
-           >> [      1276      2550 ] for Processor  1
-           >> [      5101      6375 ] for Processor  4
            >> [         1      1275 ] for Processor  0
+           >> [      1276      2550 ] for Processor  1
+           >> [      3826      5100 ] for Processor  3
            >> [      6376      7650 ] for Processor  5
            >> [      8926     10201 ] for Processor  7
-           >> [      3826      5100 ] for Processor  3
+           >> [      5101      6375 ] for Processor  4
+           >> [      2551      3825 ] for Processor  2
            >> [      7651      8925 ] for Processor  6
  
-      >> RMSE compared to Analytical function =     0.3072051678E+01
+      >> RMSE compared to Analytical function =     0.3394812188E+01
  
  
  =================================================
@@ -94,37 +729,37 @@
   >> NPTS to add this cycle:           8
  >> Number of test candidates        4000
            >> [         1       500 ] for Processor  0
-           >> [      1001      1500 ] for Processor  2
-           >> [      2501      3000 ] for Processor  5
-           >> [      3501      4000 ] for Processor  7
            >> [       501      1000 ] for Processor  1
-           >> [      2001      2500 ] for Processor  4
            >> [      1501      2000 ] for Processor  3
+           >> [      2001      2500 ] for Processor  4
+           >> [      3501      4000 ] for Processor  7
+           >> [      2501      3000 ] for Processor  5
+           >> [      1001      1500 ] for Processor  2
            >> [      3001      3500 ] for Processor  6
  
->>Loc diff is  0.57E+01 for test candidate  1273 at iteration   2
- x =       1.97      1.95
+>>Loc diff is  0.46E+01 for test candidate  1476 at iteration   2
+ x =       1.99      1.80
  
->>Loc diff is  0.29E+01 for test candidate   719 at iteration   2
- x =       1.97      1.19
+>>Loc diff is  0.31E+01 for test candidate  1279 at iteration   2
+ x =       1.98      1.17
  
->>Loc diff is  0.28E+01 for test candidate  2306 at iteration   2
- x =      -0.23      1.97
+>>Loc diff is  0.22E+01 for test candidate  1844 at iteration   2
+ x =       1.39      1.99
  
->>Loc diff is  0.28E+01 for test candidate  1159 at iteration   2
- x =      -2.00      0.44
+>>Loc diff is  0.14E+01 for test candidate  2474 at iteration   2
+ x =      -1.97      0.33
  
->>Loc diff is  0.25E+01 for test candidate  1618 at iteration   2
- x =      -1.98     -0.19
+>>Loc diff is  0.13E+01 for test candidate   508 at iteration   2
+ x =       1.92      0.59
  
->>Loc diff is  0.23E+01 for test candidate  1920 at iteration   2
- x =      -1.99      1.32
+>>Loc diff is  0.12E+01 for test candidate   540 at iteration   2
+ x =      -1.80     -0.26
  
->>Loc diff is  0.21E+01 for test candidate  1587 at iteration   2
- x =       1.92      0.50
+>>Loc diff is  0.93E+00 for test candidate  1271 at iteration   2
+ x =      -1.02      1.93
  
->>Loc diff is  0.20E+01 for test candidate    69 at iteration   2
- x =      -0.09      1.41
+>>Loc diff is  0.89E+00 for test candidate  2659 at iteration   2
+ x =       1.02      1.08
  
  =================================================
          Matrix Setup & Pseudo-Inverse            
@@ -144,41 +779,640 @@
      >> Number of RHS entries :          20
  
            1   1.00000000000000     
-           2  0.786721919209196     
-           3   2.00000977350976     
-           4  7.754933909525276E-002
-           5  0.630295652631988     
-           6   1.89146950819724     
-           7   3.00517464012213     
-           8   11.3899391771794     
-           9   1.42619179205341     
-          10   4.59672983062511     
-          11  2.947657375135435E-002
-          12  0.997728435729567     
-          13   50.5943078343082     
-          14   23.4283388800648     
-          15   5.70017578280773     
-          16  0.209902355501421     
-          17  0.114121931657495     
-          18  0.512469882686619     
-          19   11.2243230538896     
-          20   3.73814461871238     
+           2  0.593319338419817     
+           3   1.20421786165690     
+           4  3.703249014425666E-002
+           5   4.63487626425691     
+           6   2.29207578933135     
+           7  0.157691664402334     
+           8  0.927397195601307     
+           9  0.539153422798330     
+          10   4.01463958494779     
+          11  0.785060043572054     
+          12   9.42449044152688     
+          13   44.4249558113574     
+          14   23.3051371042893     
+          15   29.2450503128825     
+          16  0.193950582442530     
+          17   12.2774987967007     
+          18  0.128033777967215     
+          19   2.49360574470206     
+          20   8.16522398311029     
  
  =================================================
              Solve Linear System                  
  =================================================
  
  >> Solving for the coefficients . . . 
-           1   1.16877845167183     
-           2 -1.865179124081967E-002
-           3 -0.943666901060683     
-           4  0.800109233231741     
-           5   2.68036330332754     
-           6  0.924257370575150     
-           7  0.231528303047853     
-           8  0.897838734189130     
-           9  0.939250483675934     
-          10  0.430372825510136     
+           1   1.41587720201333     
+           2 -0.551942297742111     
+           3  -1.19307281021927     
+           4  0.683649070140557     
+           5   2.61097774640684     
+           6  0.643046939594247     
+           7  0.345800682652026     
+           8  0.926123295335133     
+           9  0.865387027968567     
+          10  0.451217291387130     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :           10
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      1276      2550 ] for Processor  1
+           >> [         1      1275 ] for Processor  0
+           >> [      2551      3825 ] for Processor  2
+           >> [      5101      6375 ] for Processor  4
+           >> [      8926     10201 ] for Processor  7
+           >> [      3826      5100 ] for Processor  3
+           >> [      6376      7650 ] for Processor  5
+           >> [      7651      8925 ] for Processor  6
+ 
+      >> RMSE compared to Analytical function =     0.1898709165E+01
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ nextloop
+ nextloop1
+ 
+ =================================================
+          Summary of function requirements        
+ =================================================
+ 
+ >> Number of Function evals needed :           4
+ >> Number of Gradient evals needed :           4
+ >> Equivalent Function evals needed :          12
+ 
+ >> Initial Sample Points by Latin Hypercube
+ >> Including center of the domain
+ nextloop
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ >> Training points are written to file :samp/sampdim02ord02Rat02FGmirdyn                            
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ nextloop1
+ nextloop
+ nextloop1
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+ nextloop
+ nextloop1
+  >> Number of columns in the matrix (nterms):           6
+  >> Number of rows    in the matrix  (numpc):          12
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           3
+     >> Setting up the RHS with Func+Grad evals . . .
+     >> Number of RHS entries :          12
+ 
+           1  0.000000000000000E+000
+           2  0.000000000000000E+000
+           3  0.000000000000000E+000
+           4   3.49447206847808     
+           5 -0.628690175421178     
+           6   3.68546292034545     
+           7  0.658019805211456     
+           8   1.60422232137381     
+           9  0.241970999195894     
+          10   4.10640256162136     
+          11  -3.16877776350034     
+          12  -2.52674845048556     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.666666666666666     
+           2  3.747002708109903E-016
+           3 -3.885780586188048E-016
+           4  0.666666666666667     
+           5 -9.020562075079397E-017
+           6  0.666666666666667     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :            6
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [         1      1275 ] for Processor  0
+           >> [      1276      2550 ] for Processor  1
+           >> [      2551      3825 ] for Processor  2
+           >> [      6376      7650 ] for Processor  5
+           >> [      7651      8925 ] for Processor  6
+           >> [      8926     10201 ] for Processor  7
+           >> [      3826      5100 ] for Processor  3
+           >> [      5101      6375 ] for Processor  4
+ 
+      >> RMSE compared to Analytical function =     0.1682416537E-14
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+         Dynamic Point Selection                  
+ =================================================
+ 
+  >> NPTS to add this cycle:           3
+ >> Number of test candidates        1500
+           >> [       375       561 ] for Processor  2
+           >> [       936      1122 ] for Processor  5
+           >> [      1123      1309 ] for Processor  6
+           >> [       562       748 ] for Processor  3
+           >> [      1310      1500 ] for Processor  7
+           >> [       188       374 ] for Processor  1
+           >> [         1       187 ] for Processor  0
+           >> [       749       935 ] for Processor  4
+ 
+>>Loc diff is  0.60E+01 for test candidate   288 at iteration   2
+ x =       1.91     -1.99
+ 
+>>Loc diff is  0.42E+01 for test candidate  1464 at iteration   2
+ x =       1.99      1.95
+ 
+>>Loc diff is  0.27E+01 for test candidate   530 at iteration   2
+ x =       0.69     -2.00
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):          10
+  >> Number of rows    in the matrix  (numpc):          21
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           3
+     >> Setting up the RHS with Func+Grad evals . . .
+     >> Number of RHS entries :          21
+ 
+           1  0.000000000000000E+000
+           2  0.000000000000000E+000
+           3  0.000000000000000E+000
+           4   3.49447206847808     
+           5 -0.628690175421178     
+           6   3.68546292034545     
+           7  0.658019805211456     
+           8   1.60422232137381     
+           9  0.241970999195894     
+          10   4.10640256162136     
+          11  -3.16877776350034     
+          12  -2.52674845048556     
+          13   7.59716570189086     
+          14   3.81183799770136     
+          15  -3.98227998599339     
+          16   7.78740280278679     
+          17   3.98951512284088     
+          18   3.90299632279754     
+          19   4.46715131813741     
+          20   1.38586940889745     
+          21  -3.99349111104956     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.666666666666667     
+           2  5.030698080332741E-017
+           3 -3.885780586188048E-016
+           4  0.666666666666667     
+           5 -6.340414304695230E-016
+           6  0.666666666666667     
+           7  1.602450810933576E-016
+           8  3.846749307978570E-016
+           9 -3.350184712980209E-016
+          10  4.597017211338539E-017
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :           10
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      2551      3825 ] for Processor  2
+           >> [      3826      5100 ] for Processor  3
+           >> [         1      1275 ] for Processor  0
+           >> [      1276      2550 ] for Processor  1
+           >> [      5101      6375 ] for Processor  4
+           >> [      6376      7650 ] for Processor  5
+           >> [      7651      8925 ] for Processor  6
+           >> [      8926     10201 ] for Processor  7
+ 
+      >> RMSE compared to Analytical function =     0.2678866903E-14
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+          Summary of function requirements        
+ =================================================
+ 
+ >> Number of Function evals needed :           4
+ >> Number of Gradient evals needed :           4
+ >> Equivalent Function evals needed :          12
+ 
+ >> Initial Sample Points by Latin Hypercube
+ >> Including center of the domain
+ >> Training points are written to file :samp/sampdim02ord02Rat02FGmirdyn                            
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):           6
+  >> Number of rows    in the matrix  (numpc):          12
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           3
+     >> Setting up the RHS with Func+Grad evals . . .
+     >> Number of RHS entries :          12
+ 
+           1  0.000000000000000E+000
+           2  0.000000000000000E+000
+           3  0.000000000000000E+000
+           4   1.42000582946675     
+           5 -0.363097897019740     
+           6  -2.35545817943067     
+           7   4.13697175881282     
+           8   1.41364564998287     
+           9   3.81437976760781     
+          10   3.38202413209826     
+          11  -3.52422733336912     
+          12  -1.05257694784136     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.666666666666668     
+           2  7.632783294297951E-016
+           3  3.469446951953614E-018
+           4  0.666666666666667     
+           5 -2.775557561562891E-016
+           6  0.666666666666667     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :            6
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [         1      1275 ] for Processor  0
+           >> [      2551      3825 ] for Processor  2
+           >> [      7651      8925 ] for Processor  6
+           >> [      6376      7650 ] for Processor  5
+           >> [      1276      2550 ] for Processor  1
+           >> [      3826      5100 ] for Processor  3
+           >> [      5101      6375 ] for Processor  4
+           >> [      8926     10201 ] for Processor  7
+ 
+      >> RMSE compared to Analytical function =     0.2389218914E-14
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+         Dynamic Point Selection                  
+ =================================================
+ 
+  >> NPTS to add this cycle:           3
+ >> Number of test candidates        1500
+           >> [         1       187 ] for Processor  0
+           >> [       375       561 ] for Processor  2
+           >> [       749       935 ] for Processor  4
+           >> [      1123      1309 ] for Processor  6
+           >> [       936      1122 ] for Processor  5
+           >> [       562       748 ] for Processor  3
+           >> [      1310      1500 ] for Processor  7
+           >> [       188       374 ] for Processor  1
+ 
+>>Loc diff is  0.58E+01 for test candidate   386 at iteration   2
+ x =       1.96     -1.97
+ 
+>>Loc diff is  0.43E+01 for test candidate   381 at iteration   2
+ x =      -1.99      1.90
+ 
+>>Loc diff is  0.34E+01 for test candidate   853 at iteration   2
+ x =       1.96     -0.87
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):          10
+  >> Number of rows    in the matrix  (numpc):          21
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           3
+     >> Setting up the RHS with Func+Grad evals . . .
+     >> Number of RHS entries :          21
+ 
+           1  0.000000000000000E+000
+           2  0.000000000000000E+000
+           3  0.000000000000000E+000
+           4   1.42000582946675     
+           5 -0.363097897019740     
+           6  -2.35545817943067     
+           7   4.13697175881282     
+           8   1.41364564998287     
+           9   3.81437976760781     
+          10   3.38202413209826     
+          11  -3.52422733336912     
+          12  -1.05257694784136     
+          13   7.71971131751171     
+          14   3.91403966484910     
+          15  -3.94450741817465     
+          16   7.58460362045163     
+          17  -3.98219913691208     
+          18   3.80532580941280     
+          19   4.61505050418004     
+          20   3.92796166167268     
+          21  -1.74106840794661     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.666666666666666     
+           2  6.383782391594650E-016
+           3  1.179611963664229E-015
+           4  0.666666666666668     
+           5 -1.144917494144693E-016
+           6  0.666666666666667     
+           7 -2.576064361825559E-016
+           8 -3.833738881908744E-016
+           9  1.301042606982605E-016
+          10 -3.495467804093266E-016
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :           10
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [         1      1275 ] for Processor  0
+           >> [      1276      2550 ] for Processor  1
+           >> [      3826      5100 ] for Processor  3
+           >> [      5101      6375 ] for Processor  4
+           >> [      8926     10201 ] for Processor  7
+           >> [      6376      7650 ] for Processor  5
+           >> [      7651      8925 ] for Processor  6
+           >> [      2551      3825 ] for Processor  2
+ 
+      >> RMSE compared to Analytical function =     0.3026957731E-14
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ nextloop
+ nextloop
+ nextloop
+ nextloop
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ nextloop
+ nextloop1
+ nextloop1
+ nextloop
+ nextloop1
+ nextloop1
+ nextloop1
+ nextloop1
+ 
+ =================================================
+          Summary of function requirements        
+ =================================================
+ 
+ >> Number of Function evals needed :           4
+ >> Number of Gradient evals needed :           4
+ >> Equivalent Function evals needed :          12
+ 
+ >> Initial Sample Points by Latin Hypercube
+ >> Including center of the domain
+ >> Training points are written to file :samp/sampdim02ord02Rat02FGmirdyn                            
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):           6
+  >> Number of rows    in the matrix  (numpc):          12
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           4
+     >> Setting up the RHS with Func+Grad evals . . .
+     >> Number of RHS entries :          12
+ 
+           1   1.00000000000000     
+           2   1.00000000000000     
+           3   1.00000000000000     
+           4  6.079899454431182E-002
+           5  6.079899454431182E-002
+           6  6.079899454431182E-002
+           7   3.82159978132211     
+           8   3.82159978132211     
+           9   3.82159978132211     
+          10   7.09459377801462     
+          11   7.09459377801462     
+          12   7.09459377801462     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1  0.915887729803197     
+           2   2.24582910084091     
+           3   2.27246606844059     
+           4  0.321100123517738     
+           5   1.45442232600401     
+           6  0.534260790227774     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :            6
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      1276      2550 ] for Processor  1
+           >> [      3826      5100 ] for Processor  3
+           >> [      5101      6375 ] for Processor  4
+           >> [      8926     10201 ] for Processor  7
+           >> [      7651      8925 ] for Processor  6
+           >> [      6376      7650 ] for Processor  5
+           >> [      2551      3825 ] for Processor  2
+           >> [         1      1275 ] for Processor  0
+ 
+      >> RMSE compared to Analytical function =     0.3006779125E+01
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+         Dynamic Point Selection                  
+ =================================================
+ 
+  >> NPTS to add this cycle:           3
+ >> Number of test candidates        1500
+           >> [         1       187 ] for Processor  0
+           >> [       375       561 ] for Processor  2
+           >> [       562       748 ] for Processor  3
+           >> [       188       374 ] for Processor  1
+           >> [       936      1122 ] for Processor  5
+           >> [      1123      1309 ] for Processor  6
+           >> [       749       935 ] for Processor  4
+           >> [      1310      1500 ] for Processor  7
+ 
+>>Loc diff is  0.53E+01 for test candidate   195 at iteration   2
+ x =       1.91      1.96
+ 
+>>Loc diff is  0.27E+01 for test candidate   700 at iteration   2
+ x =       1.95      0.90
+ 
+>>Loc diff is  0.23E+01 for test candidate   670 at iteration   2
+ x =      -1.97      0.60
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):          10
+  >> Number of rows    in the matrix  (numpc):          21
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           4
+     >> Setting up the RHS with Func+Grad evals . . .
+     >> Number of RHS entries :          21
+ 
+           1   1.00000000000000     
+           2   1.00000000000000     
+           3   1.00000000000000     
+           4  6.079899454431182E-002
+           5  6.079899454431182E-002
+           6  6.079899454431182E-002
+           7   3.82159978132211     
+           8   3.82159978132211     
+           9   3.82159978132211     
+          10   7.09459377801462     
+          11   7.09459377801462     
+          12   7.09459377801462     
+          13   47.8840874730187     
+          14   47.8840874730187     
+          15   47.8840874730187     
+          16   17.1706372304149     
+          17   17.1706372304149     
+          18   17.1706372304149     
+          19  0.252739449907544     
+          20  0.252739449907544     
+          21  0.252739449907544     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1 -4.668847087268803E-002
+           2 -0.728780509116665     
+           3  -2.81742948128652     
+           4  0.870101404398812     
+           5   2.72702863658141     
+           6   1.36714068374161     
+           7  0.257610920955546     
+           8   1.39956297659138     
+           9   1.34276681762672     
+          10  0.335190890445009     
  >> Coeffs are succesfully determined . . .
  >> Number of coefficients :           10
  
@@ -192,14 +1426,96 @@
  
            >> [         1      1275 ] for Processor  0
            >> [      2551      3825 ] for Processor  2
+           >> [      1276      2550 ] for Processor  1
+           >> [      5101      6375 ] for Processor  4
            >> [      6376      7650 ] for Processor  5
            >> [      7651      8925 ] for Processor  6
            >> [      3826      5100 ] for Processor  3
-           >> [      5101      6375 ] for Processor  4
            >> [      8926     10201 ] for Processor  7
-           >> [      1276      2550 ] for Processor  1
  
-      >> RMSE compared to Analytical function =     0.1825466324E+01
+      >> RMSE compared to Analytical function =     0.3497631117E+01
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+          Summary of function requirements        
+ =================================================
+ 
+ >> Number of Function evals needed :           4
+ >> Number of Gradient evals needed :           4
+ >> Equivalent Function evals needed :          12
+ 
+ >> Initial Sample Points by Latin Hypercube
+ >> Including center of the domain
+ >> Training points are written to file :samp/sampdim02ord02Rat02FGmirdyn                            
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):           6
+  >> Number of rows    in the matrix  (numpc):          12
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           4
+     >> Setting up the RHS with Func+Grad evals . . .
+     >> Number of RHS entries :          12
+ 
+           1   1.00000000000000     
+           2   1.00000000000000     
+           3   1.00000000000000     
+           4   5.47134272055073     
+           5   5.47134272055073     
+           6   5.47134272055073     
+           7   3.43545091593085     
+           8   3.43545091593085     
+           9   3.43545091593085     
+          10  4.955186866933651E-002
+          11  4.955186866933651E-002
+          12  4.955186866933651E-002
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1   1.04856787682456     
+           2   2.07153338856675     
+           3   2.14633335870544     
+           4  0.370437746401561     
+           5   1.22031756312305     
+           6  0.248749716369142     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :            6
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      2551      3825 ] for Processor  2
+           >> [      1276      2550 ] for Processor  1
+           >> [         1      1275 ] for Processor  0
+           >> [      7651      8925 ] for Processor  6
+           >> [      3826      5100 ] for Processor  3
+           >> [      8926     10201 ] for Processor  7
+           >> [      5101      6375 ] for Processor  4
+           >> [      6376      7650 ] for Processor  5
+ 
+      >> RMSE compared to Analytical function =     0.3376426861E+01
  
  
  =================================================
@@ -212,53 +1528,32 @@
          Dynamic Point Selection                  
  =================================================
  
-  >> NPTS to add this cycle:          10
- >> Number of test candidates        5000
-           >> [         1       625 ] for Processor  0
-           >> [      1251      1875 ] for Processor  2
-           >> [       626      1250 ] for Processor  1
-           >> [      1876      2500 ] for Processor  3
-           >> [      2501      3125 ] for Processor  4
-           >> [      3126      3750 ] for Processor  5
-           >> [      3751      4375 ] for Processor  6
-           >> [      4376      5000 ] for Processor  7
+  >> NPTS to add this cycle:           3
+ >> Number of test candidates        1500
+           >> [         1       187 ] for Processor  0
+           >> [       375       561 ] for Processor  2
+           >> [       936      1122 ] for Processor  5
+           >> [       562       748 ] for Processor  3
+           >> [      1310      1500 ] for Processor  7
+           >> [       188       374 ] for Processor  1
+           >> [       749       935 ] for Processor  4
+           >> [      1123      1309 ] for Processor  6
  
->>Loc diff is  0.50E+01 for test candidate  1524 at iteration   3
- x =       0.66      2.00
+>>Loc diff is  0.57E+01 for test candidate  1374 at iteration   2
+ x =       1.86      1.91
  
->>Loc diff is  0.39E+01 for test candidate  4182 at iteration   3
- x =      -1.03     -0.99
+>>Loc diff is  0.31E+01 for test candidate   349 at iteration   2
+ x =       1.89     -1.96
  
->>Loc diff is  0.37E+01 for test candidate  2888 at iteration   3
- x =      -1.46     -0.78
- 
->>Loc diff is  0.37E+01 for test candidate  3274 at iteration   3
- x =      -0.64     -1.29
- 
->>Loc diff is  0.35E+01 for test candidate  3763 at iteration   3
- x =      -1.56     -1.99
- 
->>Loc diff is  0.32E+01 for test candidate  2554 at iteration   3
- x =      -0.58     -0.83
- 
->>Loc diff is  0.31E+01 for test candidate  1365 at iteration   3
- x =      -1.00     -0.52
- 
->>Loc diff is  0.30E+01 for test candidate  2777 at iteration   3
- x =      -0.16     -1.27
- 
->>Loc diff is  0.30E+01 for test candidate  2039 at iteration   3
- x =      -1.51     -0.29
- 
->>Loc diff is  0.29E+01 for test candidate  2862 at iteration   3
- x =      -1.40     -1.30
+>>Loc diff is  0.23E+01 for test candidate  1268 at iteration   2
+ x =       0.75     -1.93
  
  =================================================
          Matrix Setup & Pseudo-Inverse            
  =================================================
  
-  >> Number of columns in the matrix (nterms):          15
-  >> Number of rows    in the matrix  (numpc):          30
+  >> Number of columns in the matrix (nterms):          10
+  >> Number of rows    in the matrix  (numpc):          21
      >> Solver : SV Decomposition
      >> Finding Pseudo-Inverse of the matrix . . . 
  
@@ -267,62 +1562,48 @@
  =================================================
  
  >> Cost Function Number :           4
-     >> Setting up the RHS with Function evals . . .
-     >> Number of RHS entries :          30
+     >> Setting up the RHS with Func+Grad evals . . .
+     >> Number of RHS entries :          21
  
            1   1.00000000000000     
-           2  0.786721919209196     
-           3   2.00000977350976     
-           4  7.754933909525276E-002
-           5  0.630295652631988     
-           6   1.89146950819724     
-           7   3.00517464012213     
-           8   11.3899391771794     
-           9   1.42619179205341     
-          10   4.59672983062511     
-          11  2.947657375135435E-002
-          12  0.997728435729567     
-          13   50.5943078343082     
-          14   23.4283388800648     
-          15   5.70017578280773     
-          16  0.209902355501421     
-          17  0.114121931657495     
-          18  0.512469882686619     
-          19   11.2243230538896     
-          20   3.73814461871238     
-          21   14.3131033143019     
-          22  0.132744468624753     
-          23  0.106394484459041     
-          24  0.144236436189479     
-          25  2.889367547660850E-002
-          26  0.243796025708786     
-          27  0.219266335393329     
-          28  0.237941089016775     
-          29  0.165888410327452     
-          30  6.711176976634438E-002
+           2   1.00000000000000     
+           3   1.00000000000000     
+           4   5.47134272055073     
+           5   5.47134272055073     
+           6   5.47134272055073     
+           7   3.43545091593085     
+           8   3.43545091593085     
+           9   3.43545091593085     
+          10  4.955186866933651E-002
+          11  4.955186866933651E-002
+          12  4.955186866933651E-002
+          13   43.3930077367470     
+          14   43.3930077367470     
+          15   43.3930077367470     
+          16  0.928163078420709     
+          17  0.928163078420709     
+          18  0.928163078420709     
+          19  0.306381720570074     
+          20  0.306381720570074     
+          21  0.306381720570074     
  
  =================================================
              Solve Linear System                  
  =================================================
  
  >> Solving for the coefficients . . . 
-           1   1.39592455325422     
-           2  0.646226695410080     
-           3  0.799142480014618     
-           4  0.381863606524244     
-           5  0.590957515925126     
-           6  0.352650101203088     
-           7  0.174016034015191     
-           8  0.713459638996084     
-           9  0.828317881252579     
-          10  0.151036626841000     
-          11  1.235250931079419E-002
-          12  0.169065612252640     
-          13  0.232416360284676     
-          14  0.150676510892633     
-          15  2.577679025498590E-002
+           1 -0.609602385497299     
+           2 -0.754633881311648     
+           3  -1.44920568039026     
+           4   1.37773193060343     
+           5   3.11742350438772     
+           6   1.13552028666083     
+           7  0.267358957360837     
+           8   1.11212619041234     
+           9   1.17898658884488     
+          10  0.391266841677414     
  >> Coeffs are succesfully determined . . .
- >> Number of coefficients :           15
+ >> Number of coefficients :           10
  
  
  =================================================
@@ -332,1477 +1613,16 @@
  
       >> RMSE on        10201  points . . .
  
-           >> [      7651      8925 ] for Processor  6
-           >> [      6376      7650 ] for Processor  5
            >> [      1276      2550 ] for Processor  1
-           >> [         1      1275 ] for Processor  0
-           >> [      5101      6375 ] for Processor  4
-           >> [      2551      3825 ] for Processor  2
-           >> [      8926     10201 ] for Processor  7
-           >> [      3826      5100 ] for Processor  3
- 
-      >> RMSE compared to Analytical function =     0.6495874764E+00
- 
- 
- =================================================
-              Tecplot Output                      
- =================================================
- 
- >> Writing Tecplot output to file . . .
- 
- =================================================
-         Dynamic Point Selection                  
- =================================================
- 
-  >> NPTS to add this cycle:          12
- >> Number of test candidates        6000
-           >> [         1       750 ] for Processor  0
-           >> [      1501      2250 ] for Processor  2
-           >> [       751      1500 ] for Processor  1
-           >> [      5251      6000 ] for Processor  7
-           >> [      2251      3000 ] for Processor  3
-           >> [      3001      3750 ] for Processor  4
-           >> [      3751      4500 ] for Processor  5
-           >> [      4501      5250 ] for Processor  6
- 
->>Loc diff is  0.18E+01 for test candidate  3997 at iteration   4
- x =       1.56      1.93
- 
->>Loc diff is  0.16E+01 for test candidate  1884 at iteration   4
- x =       1.09     -2.00
- 
->>Loc diff is  0.14E+01 for test candidate  1109 at iteration   4
- x =       1.47     -1.98
- 
->>Loc diff is  0.14E+01 for test candidate  4992 at iteration   4
- x =       1.88     -1.99
- 
->>Loc diff is  0.13E+01 for test candidate  1347 at iteration   4
- x =       0.70     -1.96
- 
->>Loc diff is  0.11E+01 for test candidate  5376 at iteration   4
- x =       1.07      0.25
- 
->>Loc diff is  0.11E+01 for test candidate   174 at iteration   4
- x =       0.95     -1.64
- 
->>Loc diff is  0.98E+00 for test candidate   674 at iteration   4
- x =       0.55     -1.57
- 
->>Loc diff is  0.98E+00 for test candidate  1350 at iteration   4
- x =       0.75      0.51
- 
->>Loc diff is  0.92E+00 for test candidate   337 at iteration   4
- x =       1.35     -1.56
- 
->>Loc diff is  0.91E+00 for test candidate  5522 at iteration   4
- x =       0.60      0.89
- 
->>Loc diff is  0.90E+00 for test candidate  3425 at iteration   4
- x =      -1.99      1.99
- 
- =================================================
-         Matrix Setup & Pseudo-Inverse            
- =================================================
- 
-  >> Number of columns in the matrix (nterms):          21
-  >> Number of rows    in the matrix  (numpc):          42
-     >> Solver : SV Decomposition
-     >> Finding Pseudo-Inverse of the matrix . . . 
- 
- =================================================
-                 RHS Setup                        
- =================================================
- 
- >> Cost Function Number :           4
-     >> Setting up the RHS with Function evals . . .
-     >> Number of RHS entries :          42
- 
-           1   1.00000000000000     
-           2  0.786721919209196     
-           3   2.00000977350976     
-           4  7.754933909525276E-002
-           5  0.630295652631988     
-           6   1.89146950819724     
-           7   3.00517464012213     
-           8   11.3899391771794     
-           9   1.42619179205341     
-          10   4.59672983062511     
-          11  2.947657375135435E-002
-          12  0.997728435729567     
-          13   50.5943078343082     
-          14   23.4283388800648     
-          15   5.70017578280773     
-          16  0.209902355501421     
-          17  0.114121931657495     
-          18  0.512469882686619     
-          19   11.2243230538896     
-          20   3.73814461871238     
-          21   14.3131033143019     
-          22  0.132744468624753     
-          23  0.106394484459041     
-          24  0.144236436189479     
-          25  2.889367547660850E-002
-          26  0.243796025708786     
-          27  0.219266335393329     
-          28  0.237941089016775     
-          29  0.165888410327452     
-          30  6.711176976634438E-002
-          31   33.0326477771997     
-          32  0.402425395016643     
-          33  0.601032196262469     
-          34  0.890392649818886     
-          35  0.283764522960008     
-          36   3.75232698515348     
-          37  0.502449308524962     
-          38  0.359527088246305     
-          39   3.53964905524225     
-          40  0.812631268995257     
-          41   4.46197023025288     
-          42  0.994231545514443     
- 
- =================================================
-             Solve Linear System                  
- =================================================
- 
- >> Solving for the coefficients . . . 
-           1   1.44894160257486     
-           2   1.45097880181403     
-           3   1.27088071605780     
-           4  0.295931885879874     
-           5  0.971626845447697     
-           6  0.333022127383735     
-           7  1.725900800148389E-002
-           8  0.267959437629868     
-           9  0.248327425289954     
-          10  9.292344523677946E-002
-          11  2.537445002044756E-002
-          12  0.129510697287695     
-          13  0.203293190428296     
-          14  0.128272113682667     
-          15  2.166175917727997E-002
-          16  5.659530028193218E-003
-          17  2.308325824637887E-002
-          18  4.637351469667738E-002
-          19  4.481708163832524E-002
-          20  2.373545940438478E-002
-          21  4.692466175969332E-004
- >> Coeffs are succesfully determined . . .
- >> Number of coefficients :           21
- 
- 
- =================================================
-              RMSE on Surrogate                   
- =================================================
- 
- 
-      >> RMSE on        10201  points . . .
- 
            >> [      2551      3825 ] for Processor  2
            >> [      7651      8925 ] for Processor  6
-           >> [         1      1275 ] for Processor  0
-           >> [      5101      6375 ] for Processor  4
-           >> [      8926     10201 ] for Processor  7
-           >> [      3826      5100 ] for Processor  3
-           >> [      6376      7650 ] for Processor  5
-           >> [      1276      2550 ] for Processor  1
- 
-      >> RMSE compared to Analytical function =     0.1656175527E+00
- 
- 
- =================================================
-              Tecplot Output                      
- =================================================
- 
- >> Writing Tecplot output to file . . .
- 
- =================================================
-         Dynamic Point Selection                  
- =================================================
- 
-  >> NPTS to add this cycle:          14
- >> Number of test candidates        7000
-           >> [         1       875 ] for Processor  0
-           >> [      1751      2625 ] for Processor  2
-           >> [       876      1750 ] for Processor  1
-           >> [      2626      3500 ] for Processor  3
-           >> [      4376      5250 ] for Processor  5
-           >> [      6126      7000 ] for Processor  7
-           >> [      5251      6125 ] for Processor  6
-           >> [      3501      4375 ] for Processor  4
- 
->>Loc diff is  0.89E+00 for test candidate  3814 at iteration   5
- x =       1.60      0.91
- 
->>Loc diff is  0.76E+00 for test candidate  5165 at iteration   5
- x =       1.61      0.59
- 
->>Loc diff is  0.70E+00 for test candidate  1538 at iteration   5
- x =       1.26      2.00
- 
->>Loc diff is  0.66E+00 for test candidate  5580 at iteration   5
- x =       1.58      1.25
- 
->>Loc diff is  0.62E+00 for test candidate  6559 at iteration   5
- x =       1.32      0.73
- 
->>Loc diff is  0.60E+00 for test candidate  1607 at iteration   5
- x =       1.88      1.64
- 
->>Loc diff is  0.52E+00 for test candidate  1944 at iteration   5
- x =       1.97     -0.35
- 
->>Loc diff is  0.51E+00 for test candidate  4149 at iteration   5
- x =       1.31      1.08
- 
->>Loc diff is  0.40E+00 for test candidate  6083 at iteration   5
- x =       1.57      1.56
- 
->>Loc diff is  0.39E+00 for test candidate  2889 at iteration   5
- x =       1.99      0.84
- 
->>Loc diff is  0.38E+00 for test candidate  2556 at iteration   5
- x =      -1.85     -1.07
- 
->>Loc diff is  0.37E+00 for test candidate  5593 at iteration   5
- x =       1.63      0.26
- 
->>Loc diff is  0.34E+00 for test candidate  5062 at iteration   5
- x =       0.68     -0.36
- 
->>Loc diff is  0.34E+00 for test candidate  4735 at iteration   5
- x =       0.99      0.92
- 
- =================================================
-         Matrix Setup & Pseudo-Inverse            
- =================================================
- 
-  >> Number of columns in the matrix (nterms):          28
-  >> Number of rows    in the matrix  (numpc):          56
-     >> Solver : SV Decomposition
-     >> Finding Pseudo-Inverse of the matrix . . . 
- 
- =================================================
-                 RHS Setup                        
- =================================================
- 
- >> Cost Function Number :           4
-     >> Setting up the RHS with Function evals . . .
-     >> Number of RHS entries :          56
- 
-           1   1.00000000000000     
-           2  0.786721919209196     
-           3   2.00000977350976     
-           4  7.754933909525276E-002
-           5  0.630295652631988     
-           6   1.89146950819724     
-           7   3.00517464012213     
-           8   11.3899391771794     
-           9   1.42619179205341     
-          10   4.59672983062511     
-          11  2.947657375135435E-002
-          12  0.997728435729567     
-          13   50.5943078343082     
-          14   23.4283388800648     
-          15   5.70017578280773     
-          16  0.209902355501421     
-          17  0.114121931657495     
-          18  0.512469882686619     
-          19   11.2243230538896     
-          20   3.73814461871238     
-          21   14.3131033143019     
-          22  0.132744468624753     
-          23  0.106394484459041     
-          24  0.144236436189479     
-          25  2.889367547660850E-002
-          26  0.243796025708786     
-          27  0.219266335393329     
-          28  0.237941089016775     
-          29  0.165888410327452     
-          30  6.711176976634438E-002
-          31   33.0326477771997     
-          32  0.402425395016643     
-          33  0.601032196262469     
-          34  0.890392649818886     
-          35  0.283764522960008     
-          36   3.75232698515348     
-          37  0.502449308524962     
-          38  0.359527088246305     
-          39   3.53964905524225     
-          40  0.812631268995257     
-          41   4.46197023025288     
-          42  0.994231545514443     
-          43   12.3422447058377     
-          44   8.99068050847231     
-          45   26.0287385386720     
-          46   16.8955899640039     
-          47   7.82349808524420     
-          48   33.8770038969193     
-          49   5.05643279190911     
-          50   10.9041614477801     
-          51   22.8429648187035     
-          52   16.8891793892261     
-          53  5.393222216600582E-002
-          54   6.62897652299390     
-          55   1.38718533434148     
-          56   6.75088308753149     
- 
- =================================================
-             Solve Linear System                  
- =================================================
- 
- >> Solving for the coefficients . . . 
-           1   1.36083825557460     
-           2   1.34191631875629     
-           3   1.31315819288906     
-           4  0.419982557887010     
-           5   1.29514047327805     
-           6  0.436057201952396     
-           7  6.843258408064334E-002
-           8  0.353340614217395     
-           9  0.345629217436990     
-          10  7.399522419594776E-002
-          11  1.512041130138731E-002
-          12  5.293036672883479E-002
-          13  0.100800433935792     
-          14  5.144065095818190E-002
-          15  9.653521851375659E-003
-          16  2.217589342563874E-003
-          17  1.624203303120821E-002
-          18  3.745886219524365E-002
-          19  3.740332219919346E-002
-          20  1.676261519824027E-002
-          21  1.941041997630130E-003
-          22 -1.604029301080349E-004
-          23  2.750535973110562E-003
-          24  6.483686241144327E-003
-          25  8.738620220923161E-003
-          26  5.882158693295973E-003
-          27  2.765479746163490E-003
-          28  2.069883759247969E-004
- >> Coeffs are succesfully determined . . .
- >> Number of coefficients :           28
- 
- 
- =================================================
-              RMSE on Surrogate                   
- =================================================
- 
- 
-      >> RMSE on        10201  points . . .
- 
-           >> [         1      1275 ] for Processor  0
-           >> [      3826      5100 ] for Processor  3
-           >> [      8926     10201 ] for Processor  7
-           >> [      5101      6375 ] for Processor  4
-           >> [      1276      2550 ] for Processor  1
-           >> [      6376      7650 ] for Processor  5
-           >> [      2551      3825 ] for Processor  2
-           >> [      7651      8925 ] for Processor  6
- 
-      >> RMSE compared to Analytical function =     0.4670912975E-01
- 
- 
- =================================================
-              Tecplot Output                      
- =================================================
- 
- >> Writing Tecplot output to file . . .
- 
- =================================================
-         Dynamic Point Selection                  
- =================================================
- 
-  >> NPTS to add this cycle:          16
- >> Number of test candidates        8000
-           >> [         1      1000 ] for Processor  0
-           >> [      1001      2000 ] for Processor  1
-           >> [      4001      5000 ] for Processor  4
-           >> [      5001      6000 ] for Processor  5
-           >> [      6001      7000 ] for Processor  6
-           >> [      2001      3000 ] for Processor  2
-           >> [      7001      8000 ] for Processor  7
-           >> [      3001      4000 ] for Processor  3
- 
->>Loc diff is  0.47E+00 for test candidate  1739 at iteration   6
- x =      -1.98     -1.91
- 
->>Loc diff is  0.14E+00 for test candidate  2853 at iteration   6
- x =       2.00     -1.48
- 
->>Loc diff is  0.13E+00 for test candidate  2712 at iteration   6
- x =       0.98      1.87
- 
->>Loc diff is  0.13E+00 for test candidate  4208 at iteration   6
- x =       2.00     -1.21
- 
->>Loc diff is  0.12E+00 for test candidate  1775 at iteration   6
- x =      -1.26     -1.88
- 
->>Loc diff is  0.12E+00 for test candidate  3882 at iteration   6
- x =       0.48      1.74
- 
->>Loc diff is  0.11E+00 for test candidate  4805 at iteration   6
- x =      -1.49     -1.71
- 
->>Loc diff is  0.10E+00 for test candidate  5900 at iteration   6
- x =      -0.94      0.53
- 
->>Loc diff is  0.97E-01 for test candidate  5803 at iteration   6
- x =      -0.70      0.35
- 
->>Loc diff is  0.95E-01 for test candidate  3788 at iteration   6
- x =      -0.98     -1.95
- 
->>Loc diff is  0.95E-01 for test candidate  4823 at iteration   6
- x =       1.24      1.71
- 
->>Loc diff is  0.90E-01 for test candidate  5388 at iteration   6
- x =      -1.14      0.76
- 
->>Loc diff is  0.80E-01 for test candidate  4316 at iteration   6
- x =      -0.92      0.18
- 
->>Loc diff is  0.80E-01 for test candidate  4793 at iteration   6
- x =      -1.71     -1.40
- 
->>Loc diff is  0.79E-01 for test candidate  2863 at iteration   6
- x =      -0.61      0.07
- 
->>Loc diff is  0.78E-01 for test candidate  4775 at iteration   6
- x =      -0.85      0.82
- 
- =================================================
-         Matrix Setup & Pseudo-Inverse            
- =================================================
- 
-  >> Number of columns in the matrix (nterms):          36
-  >> Number of rows    in the matrix  (numpc):          72
-     >> Solver : SV Decomposition
-     >> Finding Pseudo-Inverse of the matrix . . . 
- 
- =================================================
-                 RHS Setup                        
- =================================================
- 
- >> Cost Function Number :           4
-     >> Setting up the RHS with Function evals . . .
-     >> Number of RHS entries :          72
- 
-           1   1.00000000000000     
-           2  0.786721919209196     
-           3   2.00000977350976     
-           4  7.754933909525276E-002
-           5  0.630295652631988     
-           6   1.89146950819724     
-           7   3.00517464012213     
-           8   11.3899391771794     
-           9   1.42619179205341     
-          10   4.59672983062511     
-          11  2.947657375135435E-002
-          12  0.997728435729567     
-          13   50.5943078343082     
-          14   23.4283388800648     
-          15   5.70017578280773     
-          16  0.209902355501421     
-          17  0.114121931657495     
-          18  0.512469882686619     
-          19   11.2243230538896     
-          20   3.73814461871238     
-          21   14.3131033143019     
-          22  0.132744468624753     
-          23  0.106394484459041     
-          24  0.144236436189479     
-          25  2.889367547660850E-002
-          26  0.243796025708786     
-          27  0.219266335393329     
-          28  0.237941089016775     
-          29  0.165888410327452     
-          30  6.711176976634438E-002
-          31   33.0326477771997     
-          32  0.402425395016643     
-          33  0.601032196262469     
-          34  0.890392649818886     
-          35  0.283764522960008     
-          36   3.75232698515348     
-          37  0.502449308524962     
-          38  0.359527088246305     
-          39   3.53964905524225     
-          40  0.812631268995257     
-          41   4.46197023025288     
-          42  0.994231545514443     
-          43   12.3422447058377     
-          44   8.99068050847231     
-          45   26.0287385386720     
-          46   16.8955899640039     
-          47   7.82349808524420     
-          48   33.8770038969193     
-          49   5.05643279190911     
-          50   10.9041614477801     
-          51   22.8429648187035     
-          52   16.8891793892261     
-          53  5.393222216600582E-002
-          54   6.62897652299390     
-          55   1.38718533434148     
-          56   6.75088308753149     
-          57  2.046971127589420E-002
-          58   1.67530531339078     
-          59   17.2971116709581     
-          60   2.20287768303706     
-          61  4.313904152051742E-002
-          62   9.18454303754776     
-          63  4.075001265193007E-002
-          64  0.661437224992814     
-          65  0.704212464200172     
-          66  5.365794205349106E-002
-          67   19.0761153364270     
-          68  0.682128212475176     
-          69  0.477199048294310     
-          70  4.442867652095669E-002
-          71  0.580179446969053     
-          72  0.962864637916308     
- 
- =================================================
-             Solve Linear System                  
- =================================================
- 
- >> Solving for the coefficients . . . 
-           1   1.37912132874822     
-           2   1.29244122905313     
-           3   1.29115735029474     
-           4  0.429645235126979     
-           5   1.23775285871311     
-           6  0.426031706840096     
-           7  8.366977875483489E-002
-           8  0.403604874485745     
-           9  0.405901712032154     
-          10  8.601118848567524E-002
-          11  9.515753643673915E-003
-          12  6.776788935668965E-002
-          13  0.114875446743932     
-          14  6.978556419132835E-002
-          15  1.030841113152332E-002
-          16  1.382448911567975E-003
-          17  9.847030135511052E-003
-          18  2.184927427169725E-002
-          19  2.165779468090515E-002
-          20  9.268296789255602E-003
-          21  1.011399163952625E-003
-          22  2.400533099854558E-004
-          23  2.026501058774017E-003
-          24  5.310017668530765E-003
-          25  7.141846295669949E-003
-          26  5.164958934223179E-003
-          27  1.840120628205287E-003
-          28  2.001731681869783E-004
-          29 -1.962489164762183E-006
-          30  1.457304815598277E-004
-          31  5.966544620182985E-004
-          32  1.056254082181717E-003
-          33  1.081861159660832E-003
-          34  6.380941195090811E-004
-          35  1.773525130024703E-004
-          36  1.312527177831221E-005
- >> Coeffs are succesfully determined . . .
- >> Number of coefficients :           36
- 
- 
- =================================================
-              RMSE on Surrogate                   
- =================================================
- 
- 
-      >> RMSE on        10201  points . . .
- 
-           >> [      2551      3825 ] for Processor  2
-           >> [      7651      8925 ] for Processor  6
-           >> [      5101      6375 ] for Processor  4
-           >> [      8926     10201 ] for Processor  7
-           >> [      3826      5100 ] for Processor  3
-           >> [      6376      7650 ] for Processor  5
-           >> [         1      1275 ] for Processor  0
-           >> [      1276      2550 ] for Processor  1
- 
-      >> RMSE compared to Analytical function =     0.9109501081E-02
- 
- 
- =================================================
-              Tecplot Output                      
- =================================================
- 
- >> Writing Tecplot output to file . . .
- 
- =================================================
-         Dynamic Point Selection                  
- =================================================
- 
-  >> NPTS to add this cycle:          18
- >> Number of test candidates        9000
-           >> [      2251      3375 ] for Processor  2
-           >> [      6751      7875 ] for Processor  6
-           >> [      1126      2250 ] for Processor  1
-           >> [      5626      6750 ] for Processor  5
-           >> [      7876      9000 ] for Processor  7
-           >> [      4501      5625 ] for Processor  4
-           >> [      3376      4500 ] for Processor  3
-           >> [         1      1125 ] for Processor  0
- 
->>Loc diff is  0.76E-01 for test candidate  4468 at iteration   7
- x =      -0.34      1.74
- 
->>Loc diff is  0.66E-01 for test candidate  2248 at iteration   7
- x =      -0.52      1.89
- 
->>Loc diff is  0.60E-01 for test candidate   509 at iteration   7
- x =       2.00     -0.04
- 
->>Loc diff is  0.57E-01 for test candidate  6159 at iteration   7
- x =      -0.56      1.66
- 
->>Loc diff is  0.45E-01 for test candidate  8414 at iteration   7
- x =      -1.99     -1.41
- 
->>Loc diff is  0.44E-01 for test candidate  6833 at iteration   7
- x =      -0.86      1.64
- 
->>Loc diff is  0.40E-01 for test candidate  1516 at iteration   7
- x =      -0.37      1.49
- 
->>Loc diff is  0.38E-01 for test candidate  1299 at iteration   7
- x =      -1.17      1.71
- 
->>Loc diff is  0.35E-01 for test candidate  7476 at iteration   7
- x =       0.12      1.22
- 
->>Loc diff is  0.33E-01 for test candidate  4006 at iteration   7
- x =       0.38      1.95
- 
->>Loc diff is  0.30E-01 for test candidate  1880 at iteration   7
- x =      -1.55      1.99
- 
->>Loc diff is  0.30E-01 for test candidate  7573 at iteration   7
- x =       2.00      0.25
- 
->>Loc diff is  0.29E-01 for test candidate  6455 at iteration   7
- x =       0.34      1.35
- 
->>Loc diff is  0.28E-01 for test candidate  8926 at iteration   7
- x =      -1.41      1.70
- 
->>Loc diff is  0.27E-01 for test candidate  8454 at iteration   7
- x =       0.58      1.20
- 
->>Loc diff is  0.25E-01 for test candidate   808 at iteration   7
- x =      -0.78      1.99
- 
->>Loc diff is  0.23E-01 for test candidate  1760 at iteration   7
- x =      -1.02      1.47
- 
->>Loc diff is  0.23E-01 for test candidate  4799 at iteration   7
- x =       0.33      1.11
- 
- =================================================
-         Matrix Setup & Pseudo-Inverse            
- =================================================
- 
-  >> Number of columns in the matrix (nterms):          45
-  >> Number of rows    in the matrix  (numpc):          90
-     >> Solver : SV Decomposition
-     >> Finding Pseudo-Inverse of the matrix . . . 
- 
- =================================================
-                 RHS Setup                        
- =================================================
- 
- >> Cost Function Number :           4
-     >> Setting up the RHS with Function evals . . .
-     >> Number of RHS entries :          90
- 
-           1   1.00000000000000     
-           2  0.786721919209196     
-           3   2.00000977350976     
-           4  7.754933909525276E-002
-           5  0.630295652631988     
-           6   1.89146950819724     
-           7   3.00517464012213     
-           8   11.3899391771794     
-           9   1.42619179205341     
-          10   4.59672983062511     
-          11  2.947657375135435E-002
-          12  0.997728435729567     
-          13   50.5943078343082     
-          14   23.4283388800648     
-          15   5.70017578280773     
-          16  0.209902355501421     
-          17  0.114121931657495     
-          18  0.512469882686619     
-          19   11.2243230538896     
-          20   3.73814461871238     
-          21   14.3131033143019     
-          22  0.132744468624753     
-          23  0.106394484459041     
-          24  0.144236436189479     
-          25  2.889367547660850E-002
-          26  0.243796025708786     
-          27  0.219266335393329     
-          28  0.237941089016775     
-          29  0.165888410327452     
-          30  6.711176976634438E-002
-          31   33.0326477771997     
-          32  0.402425395016643     
-          33  0.601032196262469     
-          34  0.890392649818886     
-          35  0.283764522960008     
-          36   3.75232698515348     
-          37  0.502449308524962     
-          38  0.359527088246305     
-          39   3.53964905524225     
-          40  0.812631268995257     
-          41   4.46197023025288     
-          42  0.994231545514443     
-          43   12.3422447058377     
-          44   8.99068050847231     
-          45   26.0287385386720     
-          46   16.8955899640039     
-          47   7.82349808524420     
-          48   33.8770038969193     
-          49   5.05643279190911     
-          50   10.9041614477801     
-          51   22.8429648187035     
-          52   16.8891793892261     
-          53  5.393222216600582E-002
-          54   6.62897652299390     
-          55   1.38718533434148     
-          56   6.75088308753149     
-          57  2.046971127589420E-002
-          58   1.67530531339078     
-          59   17.2971116709581     
-          60   2.20287768303706     
-          61  4.313904152051742E-002
-          62   9.18454303754776     
-          63  4.075001265193007E-002
-          64  0.661437224992814     
-          65  0.704212464200172     
-          66  5.365794205349106E-002
-          67   19.0761153364270     
-          68  0.682128212475176     
-          69  0.477199048294310     
-          70  4.442867652095669E-002
-          71  0.580179446969053     
-          72  0.962864637916308     
-          73   4.06472921307712     
-          74   3.94103709782491     
-          75   7.10261469214330     
-          76   2.99602085528060     
-          77  3.316114047519921E-002
-          78   2.19509293813471     
-          79   3.06632216509417     
-          80   1.71685403877948     
-          81   3.79704056682618     
-          82   10.2375285482696     
-          83   1.55996237066132     
-          84   9.45043155970226     
-          85   5.43677734458915     
-          86   1.34103621872581     
-          87   5.93927614745119     
-          88   3.35539666324582     
-          89   1.57277528127361     
-          90   4.22807971128077     
- 
- =================================================
-             Solve Linear System                  
- =================================================
- 
- >> Solving for the coefficients . . . 
-           1   1.38076684531901     
-           2   1.29606945204023     
-           3   1.29400247357865     
-           4  0.420239935891741     
-           5   1.21711023134223     
-           6  0.421602359218193     
-           7  8.366021436667720E-002
-           8  0.400104100678787     
-           9  0.399757672153605     
-          10  8.404096562405268E-002
-          11  1.195529160529810E-002
-          12  7.876566867102065E-002
-          13  0.128714938319188     
-          14  7.795168211290544E-002
-          15  1.161808058192112E-002
-          16  1.152717880683356E-003
-          17  9.887791771875768E-003
-          18  2.307734452145850E-002
-          19  2.299131004587799E-002
-          20  9.941003258998896E-003
-          21  1.229658149511171E-003
-          22  6.363297133046408E-005
-          23  1.044080085570007E-003
-          24  3.320202867444808E-003
-          25  4.663961953155933E-003
-          26  3.440102350788786E-003
-          27  1.202990764240752E-003
-          28  8.150463699282138E-005
-          29  1.519605308634519E-005
-          30  1.719341623328352E-004
-          31  5.682632453893317E-004
-          32  9.882069533777332E-004
-          33  9.873616060968953E-004
-          34  5.711463866323462E-004
-          35  1.666409368287668E-004
-          36  7.438636750327181E-006
-          37  3.517061406681715E-006
-          38  1.652368807827614E-005
-          39  5.117396434944953E-005
-          40  1.074763506493573E-004
-          41  1.333280042427214E-004
-          42  1.019572801534069E-004
-          43  4.329915726865993E-005
-          44  9.191337635456974E-006
-          45  3.550781301127966E-006
- >> Coeffs are succesfully determined . . .
- >> Number of coefficients :           45
- 
- 
- =================================================
-              RMSE on Surrogate                   
- =================================================
- 
- 
-      >> RMSE on        10201  points . . .
- 
-           >> [      2551      3825 ] for Processor  2
-           >> [      6376      7650 ] for Processor  5
-           >> [      5101      6375 ] for Processor  4
-           >> [      1276      2550 ] for Processor  1
-           >> [         1      1275 ] for Processor  0
-           >> [      7651      8925 ] for Processor  6
-           >> [      8926     10201 ] for Processor  7
-           >> [      3826      5100 ] for Processor  3
- 
-      >> RMSE compared to Analytical function =     0.2133764574E-02
- 
- 
- =================================================
-              Tecplot Output                      
- =================================================
- 
- >> Writing Tecplot output to file . . .
- 
- =================================================
-         Dynamic Point Selection                  
- =================================================
- 
-  >> NPTS to add this cycle:          20
- >> Number of test candidates       10000
-           >> [         1      1250 ] for Processor  0
-           >> [      3751      5000 ] for Processor  3
-           >> [      6251      7500 ] for Processor  5
-           >> [      7501      8750 ] for Processor  6
-           >> [      2501      3750 ] for Processor  2
-           >> [      5001      6250 ] for Processor  4
-           >> [      8751     10000 ] for Processor  7
-           >> [      1251      2500 ] for Processor  1
- 
->>Loc diff is  0.43E-01 for test candidate  5865 at iteration   8
- x =       1.96      1.41
- 
->>Loc diff is  0.21E-01 for test candidate  9808 at iteration   8
- x =       1.81     -0.54
- 
->>Loc diff is  0.20E-01 for test candidate  8355 at iteration   8
- x =       1.22      1.40
- 
->>Loc diff is  0.20E-01 for test candidate  2196 at iteration   8
- x =       1.14     -0.49
- 
->>Loc diff is  0.19E-01 for test candidate  8432 at iteration   8
- x =       0.49     -0.92
- 
->>Loc diff is  0.17E-01 for test candidate  9428 at iteration   8
- x =       0.64     -1.09
- 
->>Loc diff is  0.17E-01 for test candidate  4879 at iteration   8
- x =       1.25     -0.17
- 
->>Loc diff is  0.17E-01 for test candidate  1860 at iteration   8
- x =       1.78      1.04
- 
->>Loc diff is  0.16E-01 for test candidate   969 at iteration   8
- x =       1.60     -0.47
- 
->>Loc diff is  0.16E-01 for test candidate  5067 at iteration   8
- x =       1.74     -0.30
- 
->>Loc diff is  0.15E-01 for test candidate  9013 at iteration   8
- x =       0.98     -0.34
- 
->>Loc diff is  0.15E-01 for test candidate  7773 at iteration   8
- x =       1.40     -0.40
- 
->>Loc diff is  0.14E-01 for test candidate  6372 at iteration   8
- x =       0.91      0.10
- 
->>Loc diff is  0.14E-01 for test candidate  6591 at iteration   8
- x =       0.45     -0.71
- 
->>Loc diff is  0.13E-01 for test candidate   828 at iteration   8
- x =       0.69     -0.83
- 
->>Loc diff is  0.12E-01 for test candidate  4184 at iteration   8
- x =       1.05     -0.06
- 
->>Loc diff is  0.12E-01 for test candidate  7723 at iteration   8
- x =       0.72     -1.31
- 
->>Loc diff is  0.12E-01 for test candidate  3228 at iteration   8
- x =       0.66      0.30
- 
->>Loc diff is  0.12E-01 for test candidate   792 at iteration   8
- x =       0.52      0.49
- 
->>Loc diff is  0.11E-01 for test candidate  7533 at iteration   8
- x =       1.32     -0.61
- 
- =================================================
-         Matrix Setup & Pseudo-Inverse            
- =================================================
- 
-  >> Number of columns in the matrix (nterms):          55
-  >> Number of rows    in the matrix  (numpc):         110
-     >> Solver : SV Decomposition
-     >> Finding Pseudo-Inverse of the matrix . . . 
- 
- =================================================
-                 RHS Setup                        
- =================================================
- 
- >> Cost Function Number :           4
-     >> Setting up the RHS with Function evals . . .
-     >> Number of RHS entries :         110
- 
-           1   1.00000000000000     
-           2  0.786721919209196     
-           3   2.00000977350976     
-           4  7.754933909525276E-002
-           5  0.630295652631988     
-           6   1.89146950819724     
-           7   3.00517464012213     
-           8   11.3899391771794     
-           9   1.42619179205341     
-          10   4.59672983062511     
-          11  2.947657375135435E-002
-          12  0.997728435729567     
-          13   50.5943078343082     
-          14   23.4283388800648     
-          15   5.70017578280773     
-          16  0.209902355501421     
-          17  0.114121931657495     
-          18  0.512469882686619     
-          19   11.2243230538896     
-          20   3.73814461871238     
-          21   14.3131033143019     
-          22  0.132744468624753     
-          23  0.106394484459041     
-          24  0.144236436189479     
-          25  2.889367547660850E-002
-          26  0.243796025708786     
-          27  0.219266335393329     
-          28  0.237941089016775     
-          29  0.165888410327452     
-          30  6.711176976634438E-002
-          31   33.0326477771997     
-          32  0.402425395016643     
-          33  0.601032196262469     
-          34  0.890392649818886     
-          35  0.283764522960008     
-          36   3.75232698515348     
-          37  0.502449308524962     
-          38  0.359527088246305     
-          39   3.53964905524225     
-          40  0.812631268995257     
-          41   4.46197023025288     
-          42  0.994231545514443     
-          43   12.3422447058377     
-          44   8.99068050847231     
-          45   26.0287385386720     
-          46   16.8955899640039     
-          47   7.82349808524420     
-          48   33.8770038969193     
-          49   5.05643279190911     
-          50   10.9041614477801     
-          51   22.8429648187035     
-          52   16.8891793892261     
-          53  5.393222216600582E-002
-          54   6.62897652299390     
-          55   1.38718533434148     
-          56   6.75088308753149     
-          57  2.046971127589420E-002
-          58   1.67530531339078     
-          59   17.2971116709581     
-          60   2.20287768303706     
-          61  4.313904152051742E-002
-          62   9.18454303754776     
-          63  4.075001265193007E-002
-          64  0.661437224992814     
-          65  0.704212464200172     
-          66  5.365794205349106E-002
-          67   19.0761153364270     
-          68  0.682128212475176     
-          69  0.477199048294310     
-          70  4.442867652095669E-002
-          71  0.580179446969053     
-          72  0.962864637916308     
-          73   4.06472921307712     
-          74   3.94103709782491     
-          75   7.10261469214330     
-          76   2.99602085528060     
-          77  3.316114047519921E-002
-          78   2.19509293813471     
-          79   3.06632216509417     
-          80   1.71685403877948     
-          81   3.79704056682618     
-          82   10.2375285482696     
-          83   1.55996237066132     
-          84   9.45043155970226     
-          85   5.43677734458915     
-          86   1.34103621872581     
-          87   5.93927614745119     
-          88   3.35539666324582     
-          89   1.57277528127361     
-          90   4.22807971128077     
-          91   29.1041011166520     
-          92   3.59480976755480     
-          93   13.6863492269522     
-          94   1.90887083999259     
-          95  0.645808421935984     
-          96  0.633817586181344     
-          97   2.95994340346356     
-          98   16.6904191428309     
-          99   3.09276365276417     
-         100   4.19572063626658     
-         101   1.89232828305287     
-         102   2.72382856980050     
-         103   2.75637495523189     
-         104  0.773499414564688     
-         105  0.871136741455927     
-         106   2.68359082320117     
-         107  0.555123007540307     
-         108   2.59733197981071     
-         109   2.73679152725250     
-         110   2.04754908979521     
- 
- =================================================
-             Solve Linear System                  
- =================================================
- 
- >> Solving for the coefficients . . . 
-           1   1.38110236447241     
-           2   1.29716927839364     
-           3   1.29733279030066     
-           4  0.420309591923455     
-           5   1.21737711415917     
-           6  0.420371659434875     
-           7  8.268968423293677E-002
-           8  0.394406389673859     
-           9  0.394401277410432     
-          10  8.264129546653533E-002
-          11  1.173678491905759E-002
-          12  7.838237273461124E-002
-          13  0.128924997182188     
-          14  7.832926365975172E-002
-          15  1.178875496608578E-002
-          16  1.340985354066574E-003
-          17  1.109299143849005E-002
-          18  2.540797722908298E-002
-          19  2.546963313267901E-002
-          20  1.115558085394571E-002
-          21  1.312115823854862E-003
-          22  1.233086392026577E-004
-          23  1.107369724886534E-003
-          24  3.331990936075805E-003
-          25  4.666271893106143E-003
-          26  3.346714375775116E-003
-          27  1.127330336340078E-003
-          28  1.097441781218143E-004
-          29  3.623069127253308E-007
-          30  1.038512012394277E-004
-          31  3.734955000047370E-004
-          32  6.571158723837974E-004
-          33  6.539932924192353E-004
-          34  3.620530603696384E-004
-          35  9.232166895657603E-005
-          36  7.253229038971172E-006
-          37  2.117579436429698E-008
-          38  1.344093133002646E-005
-          39  5.037725000201397E-005
-          40  1.050088885324471E-004
-          41  1.331120859850906E-004
-          42  1.052316699407697E-004
-          43  4.967261235399665E-005
-          44  1.213543328789460E-005
-          45  7.012220916055624E-007
-          46  4.598200746248020E-007
-          47  7.206454425993974E-007
-          48  3.506744072449789E-006
-          49  9.294681468094195E-006
-          50  1.469743676847182E-005
-          51  1.517879965918836E-005
-          52  9.835563981941862E-006
-          53  3.830819623231631E-006
-          54  1.239437101225258E-006
-          55  1.224233772329254E-007
- >> Coeffs are succesfully determined . . .
- >> Number of coefficients :           55
- 
- 
- =================================================
-              RMSE on Surrogate                   
- =================================================
- 
- 
-      >> RMSE on        10201  points . . .
- 
-           >> [         1      1275 ] for Processor  0
-           >> [      2551      3825 ] for Processor  2
-           >> [      8926     10201 ] for Processor  7
            >> [      3826      5100 ] for Processor  3
            >> [      5101      6375 ] for Processor  4
-           >> [      7651      8925 ] for Processor  6
-           >> [      6376      7650 ] for Processor  5
-           >> [      1276      2550 ] for Processor  1
- 
-      >> RMSE compared to Analytical function =     0.3906406795E-03
- 
- 
- =================================================
-              Tecplot Output                      
- =================================================
- 
- >> Writing Tecplot output to file . . .
- 
- =================================================
-         Dynamic Point Selection                  
- =================================================
- 
-  >> NPTS to add this cycle:          22
- >> Number of test candidates       11000
-           >> [      1376      2750 ] for Processor  1
-           >> [      6876      8250 ] for Processor  5
-           >> [      8251      9625 ] for Processor  6
-           >> [      9626     11000 ] for Processor  7
-           >> [      2751      4125 ] for Processor  2
-           >> [         1      1375 ] for Processor  0
-           >> [      4126      5500 ] for Processor  3
-           >> [      5501      6875 ] for Processor  4
- 
->>Loc diff is  0.41E-01 for test candidate   281 at iteration   9
- x =       1.78      1.92
- 
->>Loc diff is  0.14E-01 for test candidate  7880 at iteration   9
- x =      -0.32      0.72
- 
->>Loc diff is  0.13E-01 for test candidate  5932 at iteration   9
- x =      -0.41      0.90
- 
->>Loc diff is  0.95E-02 for test candidate  7032 at iteration   9
- x =       0.15      1.86
- 
->>Loc diff is  0.92E-02 for test candidate  8603 at iteration   9
- x =       0.95      1.19
- 
->>Loc diff is  0.92E-02 for test candidate  3224 at iteration   9
- x =      -0.55      1.05
- 
->>Loc diff is  0.69E-02 for test candidate  6817 at iteration   9
- x =       1.50      1.74
- 
->>Loc diff is  0.69E-02 for test candidate  2735 at iteration   9
- x =       0.20      0.15
- 
->>Loc diff is  0.68E-02 for test candidate  5712 at iteration   9
- x =      -0.17      0.60
- 
->>Loc diff is  0.60E-02 for test candidate  6061 at iteration   9
- x =      -1.75      0.56
- 
->>Loc diff is  0.59E-02 for test candidate  5889 at iteration   9
- x =       0.03      1.71
- 
->>Loc diff is  0.56E-02 for test candidate  4263 at iteration   9
- x =      -0.22      1.16
- 
->>Loc diff is  0.55E-02 for test candidate  2749 at iteration   9
- x =       1.78     -1.72
- 
->>Loc diff is  0.55E-02 for test candidate  7905 at iteration   9
- x =      -0.49      0.61
- 
->>Loc diff is  0.53E-02 for test candidate  6195 at iteration   9
- x =       0.05      0.39
- 
->>Loc diff is  0.53E-02 for test candidate  4538 at iteration   9
- x =      -1.61      0.99
- 
->>Loc diff is  0.51E-02 for test candidate  2798 at iteration   9
- x =      -1.87      0.74
- 
->>Loc diff is  0.51E-02 for test candidate  6253 at iteration   9
- x =      -0.02      1.99
- 
->>Loc diff is  0.49E-02 for test candidate  6110 at iteration   9
- x =      -0.59      0.83
- 
->>Loc diff is  0.48E-02 for test candidate  3041 at iteration   9
- x =      -0.04      1.03
- 
->>Loc diff is  0.47E-02 for test candidate   737 at iteration   9
- x =       1.45      0.17
- 
->>Loc diff is  0.47E-02 for test candidate  2640 at iteration   9
- x =      -0.04      0.83
- 
- =================================================
-         Matrix Setup & Pseudo-Inverse            
- =================================================
- 
-  >> Number of columns in the matrix (nterms):          66
-  >> Number of rows    in the matrix  (numpc):         132
-     >> Solver : SV Decomposition
-     >> Finding Pseudo-Inverse of the matrix . . . 
- 
- =================================================
-                 RHS Setup                        
- =================================================
- 
- >> Cost Function Number :           4
-     >> Setting up the RHS with Function evals . . .
-     >> Number of RHS entries :         132
- 
-           1   1.00000000000000     
-           2  0.786721919209196     
-           3   2.00000977350976     
-           4  7.754933909525276E-002
-           5  0.630295652631988     
-           6   1.89146950819724     
-           7   3.00517464012213     
-           8   11.3899391771794     
-           9   1.42619179205341     
-          10   4.59672983062511     
-          11  2.947657375135435E-002
-          12  0.997728435729567     
-          13   50.5943078343082     
-          14   23.4283388800648     
-          15   5.70017578280773     
-          16  0.209902355501421     
-          17  0.114121931657495     
-          18  0.512469882686619     
-          19   11.2243230538896     
-          20   3.73814461871238     
-          21   14.3131033143019     
-          22  0.132744468624753     
-          23  0.106394484459041     
-          24  0.144236436189479     
-          25  2.889367547660850E-002
-          26  0.243796025708786     
-          27  0.219266335393329     
-          28  0.237941089016775     
-          29  0.165888410327452     
-          30  6.711176976634438E-002
-          31   33.0326477771997     
-          32  0.402425395016643     
-          33  0.601032196262469     
-          34  0.890392649818886     
-          35  0.283764522960008     
-          36   3.75232698515348     
-          37  0.502449308524962     
-          38  0.359527088246305     
-          39   3.53964905524225     
-          40  0.812631268995257     
-          41   4.46197023025288     
-          42  0.994231545514443     
-          43   12.3422447058377     
-          44   8.99068050847231     
-          45   26.0287385386720     
-          46   16.8955899640039     
-          47   7.82349808524420     
-          48   33.8770038969193     
-          49   5.05643279190911     
-          50   10.9041614477801     
-          51   22.8429648187035     
-          52   16.8891793892261     
-          53  5.393222216600582E-002
-          54   6.62897652299390     
-          55   1.38718533434148     
-          56   6.75088308753149     
-          57  2.046971127589420E-002
-          58   1.67530531339078     
-          59   17.2971116709581     
-          60   2.20287768303706     
-          61  4.313904152051742E-002
-          62   9.18454303754776     
-          63  4.075001265193007E-002
-          64  0.661437224992814     
-          65  0.704212464200172     
-          66  5.365794205349106E-002
-          67   19.0761153364270     
-          68  0.682128212475176     
-          69  0.477199048294310     
-          70  4.442867652095669E-002
-          71  0.580179446969053     
-          72  0.962864637916308     
-          73   4.06472921307712     
-          74   3.94103709782491     
-          75   7.10261469214330     
-          76   2.99602085528060     
-          77  3.316114047519921E-002
-          78   2.19509293813471     
-          79   3.06632216509417     
-          80   1.71685403877948     
-          81   3.79704056682618     
-          82   10.2375285482696     
-          83   1.55996237066132     
-          84   9.45043155970226     
-          85   5.43677734458915     
-          86   1.34103621872581     
-          87   5.93927614745119     
-          88   3.35539666324582     
-          89   1.57277528127361     
-          90   4.22807971128077     
-          91   29.1041011166520     
-          92   3.59480976755480     
-          93   13.6863492269522     
-          94   1.90887083999259     
-          95  0.645808421935984     
-          96  0.633817586181344     
-          97   2.95994340346356     
-          98   16.6904191428309     
-          99   3.09276365276417     
-         100   4.19572063626658     
-         101   1.89232828305287     
-         102   2.72382856980050     
-         103   2.75637495523189     
-         104  0.773499414564688     
-         105  0.871136741455927     
-         106   2.68359082320117     
-         107  0.555123007540307     
-         108   2.59733197981071     
-         109   2.73679152725250     
-         110   2.04754908979521     
-         111   40.4103975445524     
-         112   1.49511266758523     
-         113   1.63781134273882     
-         114   7.44828651590598     
-         115   8.54339848078556     
-         116   1.64379785158745     
-         117   25.4145601965086     
-         118   1.41683388844800     
-         119   1.54118844986369     
-         120  0.304401374767040     
-         121   5.68717617194828     
-         122   2.55936720841460     
-         123   1.05775172041870     
-         124   1.13332614478777     
-         125   1.55454523546105     
-         126  0.536403301567327     
-         127  0.322248916288063     
-         128   7.15194632240355     
-         129   1.27193730288811     
-         130   2.68722694743433     
-         131   5.08010788044017     
-         132   2.21347308102240     
- 
- =================================================
-             Solve Linear System                  
- =================================================
- 
- >> Solving for the coefficients . . . 
-           1   1.38109770261630     
-           2   1.29699732463899     
-           3   1.29698930665326     
-           4  0.420524465033873     
-           5   1.21802247181089     
-           6  0.420499991600523     
-           7  8.274635251847171E-002
-           8  0.394796640508034     
-           9  0.394814992441595     
-          10  8.277635928156887E-002
-          11  1.169253321519875E-002
-          12  7.771506152684439E-002
-          13  0.127961351911842     
-          14  7.775472298069694E-002
-          15  1.172748005506477E-002
-          16  1.308531161862334E-003
-          17  1.105288420258371E-002
-          18  2.533488394290129E-002
-          19  2.531579171887693E-002
-          20  1.104339308772798E-002
-          21  1.305184373655177E-003
-          22  1.238197190195340E-004
-          23  1.231240893306248E-003
-          24  3.591012646438601E-003
-          25  4.984422407069916E-003
-          26  3.578544166136416E-003
-          27  1.209149398731605E-003
-          28  1.098222362410604E-004
-          29  7.665932222213237E-006
-          30  1.029826147814612E-004
-          31  3.684529190490691E-004
-          32  6.693845637890068E-004
-          33  6.717048901733210E-004
-          34  3.758540774023644E-004
-          35  1.046457151198107E-004
-          36  7.381105506229204E-006
-          37 -3.605341663312880E-007
-          38  5.906554318245121E-006
-          39  3.297471642758185E-005
-          40  7.448952139080537E-005
-          41  9.473076521257760E-005
-          42  7.464699947938594E-005
-          43  3.507610454398674E-005
-          44  8.975852210526629E-006
-          45  1.439580025083706E-006
-          46  6.144998494167343E-008
-          47  8.108517329955551E-007
-          48  4.070924733668811E-006
-          49  9.386715235669171E-006
-          50  1.418317513881589E-005
-          51  1.414891276814281E-005
-          52  9.247762429009609E-006
-          53  3.667976311625593E-006
-          54  7.190311625748622E-007
-          55  8.568296913879761E-008
-          56  4.241586885863325E-008
-          57  1.443982205626291E-007
-          58  2.773440042620549E-007
-          59  6.589557308636124E-007
-          60  1.291416682285683E-006
-          61  1.599353273525920E-006
-          62  1.297164785904292E-006
-          63  6.306449936530476E-007
-          64  1.679761308729263E-007
-          65  2.337215274514171E-008
-          66 -2.716233471727119E-008
- >> Coeffs are succesfully determined . . .
- >> Number of coefficients :           66
- 
- 
- =================================================
-              RMSE on Surrogate                   
- =================================================
- 
- 
-      >> RMSE on        10201  points . . .
- 
-           >> [      6376      7650 ] for Processor  5
-           >> [      2551      3825 ] for Processor  2
-           >> [      7651      8925 ] for Processor  6
-           >> [      1276      2550 ] for Processor  1
-           >> [         1      1275 ] for Processor  0
-           >> [      5101      6375 ] for Processor  4
-           >> [      3826      5100 ] for Processor  3
            >> [      8926     10201 ] for Processor  7
+           >> [      6376      7650 ] for Processor  5
+           >> [         1      1275 ] for Processor  0
  
-      >> RMSE compared to Analytical function =     0.7689326560E-04
+      >> RMSE compared to Analytical function =     0.2780982981E+01
  
  
  =================================================

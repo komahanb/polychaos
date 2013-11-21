@@ -138,7 +138,7 @@ end subroutine make_bound
 !!$end subroutine make_bound1
 
 subroutine  matrix_process(nruns)
-  use dimpce,only:rmsemat,loopcounter,outfile
+  use dimpce,only:rmsemat,dyncyccnt,outfile
   implicit none
 
   real*8::vec(nruns)
@@ -146,20 +146,19 @@ subroutine  matrix_process(nruns)
   real*8::bnd(2)
   integer::i,j,k,nruns
 
-  nrows=loopcounter
+  nrows=dyncyccnt
   bnd(:)=0.0
 
+  outfile(6:10)='AvgPC'
+  open(63,file=outfile,form='formatted',status='unknown')
+  write(63,'(3a)') 'NPOINTS   ','   MeanRMSE   ','   BOUND'
 
-  outfile(1:4)='AVKR'
-  open(23,file='norm/'//outfile,form='formatted',status='unknown')
-  write(23,'(3a)') 'NPOINTS   ','   MeanRMSE   ','   BOUND'
-  
   do i=1,nrows !nrows
      vec=rmsemat(1:nruns,i,2)
      call make_bound(nruns,vec,1.0,bnd)
-     write(23,'(i8,2e15.8)')int(rmsemat(1,i,1)),bnd(1),bnd(2)
+    write(63,'(i8,2e15.8)')int(rmsemat(1,i,1)),bnd(1),bnd(2)
   end do
-  close(23)
+  close(63)
 
   return
 end subroutine matrix_process

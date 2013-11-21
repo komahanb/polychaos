@@ -23,6 +23,6 @@ Module dimpce
       integer::OUUflag
       double precision,allocatable,dimension(:,:,:)::rmsemat
       character*60 :: outfile
-      integer::loopcounter,runnum
+      integer::runnum
       integer :: randomflag
     End Module dimpce
