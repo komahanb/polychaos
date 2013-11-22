@@ -138,9 +138,9 @@ program main
 
   !  do  dynamics=1,1
   
-  do  ctest=1,1
+  do  ctest=2,3
 
-     if (ctest.eq.1) then
+     if (ctest.eq.2) then
 
         dynamics=0
 
@@ -154,7 +154,7 @@ program main
         randomflag=1
 
      end if
-     if (ctest.eq.2) then
+     if (ctest.eq.1) then
         dynamics=1
         lhsdyn=.true.
         randomflag=1
@@ -172,7 +172,7 @@ program main
      
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=0,0 
+        do  stat=0,2 
 
            !0= Function only
            !1= Function + Gradient
@@ -183,12 +183,13 @@ program main
 
            fctindx=0 
 
-           do fct=4,4,1
-
-!!$              if (fuct.eq.1) fct=4
-!!$              if (fuct.eq.2) fct =2
-!!$              if (fuct.eq.3) fct =6
+           do fuct=1,3,1
+              
+              if (fuct.eq.1) fct=4
+              if (fuct.eq.2) fct =2
+              if (fuct.eq.3) fct =6
 !!$              if (fuct.eq.4) fct =10
+
               !1 : cos(x+y) (Nd)
               !2 : 1.0/(1.0+x**2+y**2)  (Nd)
               !3 : x**2+y**2  (Nd)
@@ -204,7 +205,7 @@ program main
               !20: CFD
               !>20: Mixed Uncertainties, calling suboptimization program to find the worst and best case scenarios to fix the corresponsing epistemic vars at extrema, whereas the aleatory vars are sampled within the space spanned by the mean and 3*SD. The surrogate is built on aleatory vars only, with epistemic vars fixed at extrema. F(B*,A_i) is what is given to the surrogate for each corresponding training point location A_i.
 
-              nruns=2
+              nruns=10
 
               !                    if (nruns.gt.1) then
               if (id_proc.eq.0) allocate(rmsemat(nruns,1000,2))
