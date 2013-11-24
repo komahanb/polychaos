@@ -287,7 +287,7 @@ program main
               end if
 
               dyncyccnt=0
-              do DIMPC =2,10 !order 5D requires 3003 terms
+              do DIMPC =2,15 !order 5D requires 3003 terms
                  dyncyccnt=dyncyccnt+1
 
                  ! Get number of terms in the expansion
