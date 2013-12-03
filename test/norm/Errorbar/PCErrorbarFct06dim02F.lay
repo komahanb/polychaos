@@ -942,7 +942,7 @@ $!LINEMAP  [1]
   LINES
     {
     COLOR = CUSTOM2
-    LINETHICKNESS = 0.8
+    LINETHICKNESS = 0.4
     }
   SYMBOLS
     {
@@ -960,15 +960,14 @@ $!LINEMAP  [1]
     {
     VAR = 6
     SHOW = YES
-    COLOR = CUSTOM2
-    LINETHICKNESS = 0.4
-    SIZE = 2
+    COLOR = CUSTOM1
+    SIZE = 1
     }
   INDICES
     {
     IRANGE
       {
-      MAX = -10
+      MAX = -4
       }
     }
 $!LINEMAP  [2]
@@ -982,7 +981,7 @@ $!LINEMAP  [2]
   LINES
     {
     COLOR = BLACK
-    LINETHICKNESS = 0.8
+    LINETHICKNESS = 0.4
     }
   SYMBOLS
     {
@@ -1001,14 +1000,13 @@ $!LINEMAP  [2]
     VAR = 6
     SHOW = YES
     COLOR = BLACK
-    LINETHICKNESS = 0.4
-    SIZE = 2
+    SIZE = 1
     }
   INDICES
     {
     IRANGE
       {
-      MAX = -10
+      MAX = -4
       }
     }
 $!XYLINEAXIS 
@@ -1024,8 +1022,9 @@ $!XYLINEAXIS
   XDETAIL 1
     {
     RANGEMIN = 0
-    RANGEMAX = 50
-    GRSPACING = 10
+    RANGEMAX = 160
+    AUTOGRID = NO
+    GRSPACING = 25
     TICKLABEL
       {
       TEXTSHAPE

@@ -138,7 +138,7 @@ program main
 
   !  do  dynamics=1,1
   
-  do  ctest=2,3
+  do  ctest=3,3
 
      if (ctest.eq.2) then
 
@@ -172,7 +172,7 @@ program main
      
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=0,2 
+        do  stat=0,0 
 
            !0= Function only
            !1= Function + Gradient
@@ -188,8 +188,8 @@ program main
               if (fuct.eq.1) fct=4
               if (fuct.eq.2) fct =2
               if (fuct.eq.3) fct =6
-!!$              if (fuct.eq.4) fct =10
 
+!!$              if (fuct.eq.4) fct =10
               !1 : cos(x+y) (Nd)
               !2 : 1.0/(1.0+x**2+y**2)  (Nd)
               !3 : x**2+y**2  (Nd)
@@ -205,7 +205,7 @@ program main
               !20: CFD
               !>20: Mixed Uncertainties, calling suboptimization program to find the worst and best case scenarios to fix the corresponsing epistemic vars at extrema, whereas the aleatory vars are sampled within the space spanned by the mean and 3*SD. The surrogate is built on aleatory vars only, with epistemic vars fixed at extrema. F(B*,A_i) is what is given to the surrogate for each corresponding training point location A_i.
 
-              nruns=10
+              nruns=1
 
               !                    if (nruns.gt.1) then
               if (id_proc.eq.0) allocate(rmsemat(nruns,1000,2))
@@ -285,9 +285,9 @@ program main
                  stop 'Wrong Casemode'
 
               end if
-
+              
               dyncyccnt=0
-              do DIMPC =2,15 !order 5D requires 3003 terms
+              do DIMPC =2,11 !order 5D requires 3003 terms
                  dyncyccnt=dyncyccnt+1
 
                  ! Get number of terms in the expansion
@@ -466,7 +466,7 @@ program main
                        write(filenum,*) '================================================='
                        write(filenum,*)
                     end if
-!                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
+                    !                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
                     call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
                     call MPI_Barrier(MPI_COMM_WORLD,ierr)
                  end if
@@ -486,7 +486,7 @@ program main
                        call tecplot(dim,dimpc,ipar,par,fct,npts,xcof) 
                     end if
                  end if
-                 
+
                  nptsold=npts
                  ntermsold=nterms
 
@@ -502,7 +502,7 @@ program main
 !!$                    end do
 !!$                 end do
 
-              call matrix_process(nruns)
+              if (nruns.gt.1) call matrix_process(nruns)
 
               deallocate(rmsemat)
 
@@ -519,9 +519,9 @@ program main
 end do !dynamics loop
 
 if (id_proc.eq.0) then
-   write(filenum,*)
-   write(filenum,*)'>> Program terminated successfully'
-   write(filenum,*) 
+  write(filenum,*)
+  write(filenum,*)'>> Program terminated successfully'
+  write(filenum,*) 
 end if
 
 !!$  if (id_proc.eq.0) then
@@ -533,22 +533,22 @@ call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
 call stop_all
 
-end program main
+end program
 
 !+======================================================================
 
 function PHI(dim,x1,x2,scal)
 
-  implicit none
-  integer :: dim,j
-  real*8 :: x1(dim),x2(dim),phi,x(dim),xnorm,tmp,scal
+implicit none
+integer :: dim,j
+real*8 :: x1(dim),x2(dim),phi,x(dim),xnorm,tmp,scal
 
-  x(:)=x1(:)-x2(:)
+x(:)=x1(:)-x2(:)
 
-  xnorm=0.0
-  do j=1,dim
-     xnorm=xnorm+x(j)**2
-  end do
+xnorm=0.0
+do j=1,dim
+  xnorm=xnorm+x(j)**2
+end do
   xnorm=SQRT(xnorm)/scal
 
   tmp=max(1.0-xnorm,0.0)

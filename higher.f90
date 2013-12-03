@@ -64,7 +64,7 @@ subroutine RMSE_Higher(stat,ndim,fct,npts,dimPC,ipar,par,xcof)
 
      end if
 
-     if (dyncyccnt.eq.1)   write(51,'(a)') 'dimpc    npts    diff       maxdiff graddiff hessdiff  Time'
+     if (dyncyccnt.eq.1)   write(51,'(a)') 'dimpc    npts    diff       maxdiff graddiff hessdiff  Maxdisc Meandisc'
 
 
 
@@ -280,7 +280,7 @@ subroutine RMSE_Higher(stat,ndim,fct,npts,dimPC,ipar,par,xcof)
         write(filenum,*)
 
         ! write to errornorm file
-        write(51,'(2i8,6e15.8)') dimpc,npts,errorglb,maxerrorglb, errorhatglb, errordblehatglb !, ttotal !write to file
+        write(51,'(2i8,6e15.8)') dimpc,npts,errorglb,maxerrorglb, errorhatglb, errordblehatglb,difflocmax,diffloc2 !, ttotal !write to file
 
         rmsemat(runnum,dyncyccnt,1)=npts
         rmsemat(runnum,dyncyccnt,2)=errorglb

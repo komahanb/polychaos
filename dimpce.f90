@@ -25,4 +25,7 @@ Module dimpce
       character*60 :: outfile
       integer::runnum
       integer :: randomflag
+
+      double precision :: diffloc2,difflocmax
+
     End Module dimpce

@@ -33,6 +33,7 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
 
   
   real*8::diffloc
+
   real*8::derivdummy(ndim),dblederivdummy(ndim,ndim)
 
   integer::npass
@@ -98,7 +99,7 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
   call mirtunableparams(fct,ndim,nptsold,ncp,taylororder)
   !  print *,nptsold, ncp
 
-  NTOEX=5000   !int(nptstoaddpercyc*1000) !int(1000*num_proc/ndim)
+  NTOEX=10000   !int(nptstoaddpercyc*1000) !int(1000*num_proc/ndim)
 
   !  if (stat.gt.0) NTOEX=int(NTOEX)
   !  NTOEX=5000*NDIM
@@ -241,9 +242,16 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
      !       distcomp=1.1*distmean !0.618
      !    end if
 
+     diffloctmp=0.0d0
+     diffloc2=0.0d0
+     do k=1,NTOEX
+        diffloctmp=(maxftoex(k)-minftoex(k))**2
+        diffloc2=diffloc2+diffloctmp
+     end do
+     diffloc2=diffloc2/dble(ntoex)
+     diffloc2=sqrt(diffloc2)
 
      diffloc=0.0
-
      do ii=1,nptstoaddpercyc
         
         npass=0
@@ -345,6 +353,8 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
         !INSTEAD STORE INTO RN
 
      end do !! ii loop
+
+     difflocmax=diffloc !stores maxdiff to write as output
 
   END IF! master thread 
 
@@ -565,10 +575,10 @@ end subroutine dynsampdist
            Taylororder=5!ncp
 
         else if (nhs.gt.35 .and. nhs.le.70)  then  
-           NCP=35!50+0.1*nhs
+           NCP=50 !50+0.1*nhs
            Taylororder=5
         else if (nhs.gt.70 .and. nhs.le.100)  then  
-           NCP=50!50+0.1*nhs
+           NCP=60!50+0.1*nhs
            Taylororder=5       
         else
            NCP=70

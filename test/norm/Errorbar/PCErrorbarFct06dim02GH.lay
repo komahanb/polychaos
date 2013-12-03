@@ -955,9 +955,9 @@ $!LINEMAP  [1]
     }
   LINES
     {
-    COLOR = CUSTOM2
+    COLOR = CUSTOM1
     LINEPATTERN = DASHDOT
-    LINETHICKNESS = 0.8
+    LINETHICKNESS = 0.4
     }
   SYMBOLS
     {
@@ -975,15 +975,14 @@ $!LINEMAP  [1]
     {
     VAR = 6
     SHOW = YES
-    COLOR = CUSTOM2
-    LINETHICKNESS = 0.4
-    SIZE = 2
+    COLOR = CUSTOM1
+    SIZE = 1
     }
   INDICES
     {
     IRANGE
       {
-      MAX = -9
+      MAX = -2
       }
     }
 $!LINEMAP  [2]
@@ -999,7 +998,7 @@ $!LINEMAP  [2]
     {
     COLOR = BLACK
     LINEPATTERN = DASHDOT
-    LINETHICKNESS = 0.8
+    LINETHICKNESS = 0.4
     }
   SYMBOLS
     {
@@ -1018,14 +1017,13 @@ $!LINEMAP  [2]
     VAR = 6
     SHOW = YES
     COLOR = BLACK
-    LINETHICKNESS = 0.4
-    SIZE = 2
+    SIZE = 1
     }
   INDICES
     {
     IRANGE
       {
-      MAX = -9
+      MAX = -2
       }
     }
 $!LINEMAP  [3]
@@ -1039,8 +1037,8 @@ $!LINEMAP  [3]
     }
   LINES
     {
-    COLOR = CUSTOM2
-    LINETHICKNESS = 0.8
+    COLOR = CUSTOM1
+    LINETHICKNESS = 0.4
     }
   SYMBOLS
     {
@@ -1058,15 +1056,14 @@ $!LINEMAP  [3]
     {
     VAR = 6
     SHOW = YES
-    COLOR = CUSTOM2
-    LINETHICKNESS = 0.4
-    SIZE = 2
+    COLOR = CUSTOM1
+    SIZE = 1
     }
   INDICES
     {
     IRANGE
       {
-      MAX = -8
+      MAX = -2
       }
     }
 $!LINEMAP  [4]
@@ -1081,7 +1078,7 @@ $!LINEMAP  [4]
   LINES
     {
     COLOR = BLACK
-    LINETHICKNESS = 0.8
+    LINETHICKNESS = 0.4
     }
   SYMBOLS
     {
@@ -1100,14 +1097,13 @@ $!LINEMAP  [4]
     VAR = 6
     SHOW = YES
     COLOR = BLACK
-    LINETHICKNESS = 0.4
-    SIZE = 2
+    SIZE = 1
     }
   INDICES
     {
     IRANGE
       {
-      MAX = -8
+      MAX = -2
       }
     }
 $!XYLINEAXIS 
@@ -1123,8 +1119,8 @@ $!XYLINEAXIS
   XDETAIL 1
     {
     RANGEMIN = 0
-    RANGEMAX = 20
-    GRSPACING = 5
+    RANGEMAX = 70
+    GRSPACING = 10
     TICKLABEL
       {
       TEXTSHAPE
@@ -1150,8 +1146,8 @@ $!XYLINEAXIS
     {
     COORDSCALE = LOG
     RANGEMIN = 9.9999999999999999882E-15
-    RANGEMAX = 100000
-    GRSPACING = 20000
+    RANGEMAX = 10000
+    GRSPACING = 2000
     TICKLABEL
       {
       TEXTSHAPE
