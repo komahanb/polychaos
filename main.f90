@@ -7,7 +7,7 @@ program main
   include 'mpif.h'
 
   integer :: DIM
-  parameter (DIM=2)
+  parameter (DIM=6)
 
   !indices
   integer :: i,j,k,ii,jj,kk,fuct
@@ -183,7 +183,7 @@ program main
 
            fctindx=0 
 
-           do fuct=1,3,1
+           do fuct=1,1,1
               
               if (fuct.eq.1) fct=4
               if (fuct.eq.2) fct =2

@@ -99,12 +99,12 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
   call mirtunableparams(fct,ndim,nptsold,ncp,taylororder)
   !  print *,nptsold, ncp
 
-  NTOEX=10000   !int(nptstoaddpercyc*1000) !int(1000*num_proc/ndim)
+  NTOEX=46656   !int(nptstoaddpercyc*1000) !int(1000*num_proc/ndim)
 
   !  if (stat.gt.0) NTOEX=int(NTOEX)
   !  NTOEX=5000*NDIM
 
-  if (NTOEX.gt.20000) NTOEX=25000
+!  if (NTOEX.gt.20000) NTOEX=25000
 
   !  if (stat.eq.2)  NTOEX=int(NTOEX*nDIM*nDIM)
 
@@ -456,6 +456,7 @@ end subroutine dynsampdist
 !++++++++++++++++++++++++++++++++++++++++
 
     subroutine mirtunableparams(fct,ndim,nhs,ncp,taylororder)
+      use dimpce,only:ndimt
       implicit none
       integer,INTENT(IN)::fct,ndim,nhs
       INTEGER,INTENT(OUT)::NCP,TAYLORORDER
@@ -647,9 +648,22 @@ end subroutine dynsampdist
            NCP=20
            tAYLORORDER=5
         end if
-
-
+        
+        
      end if ! end of CFD 
+
+     if(ndimt.gt.2) then ! use 25% of the existing data points
+
+        !NCP= ceiling(0.25*dble(nhs))
+
+        if (Nhs.lt.25) then
+           NCP=nhs
+        else
+           ncp=25
+        end if
+        !        print *,'NCP:',ncp
+        tAYLORORDER=3
+     end if
 
      return
    end subroutine mirtunableparams

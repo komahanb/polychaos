@@ -38,6 +38,10 @@ subroutine RMSE_Higher(stat,ndim,fct,npts,dimPC,ipar,par,xcof)
 
   if(ndim.eq.3) ifac=30
 
+  if(ndim.eq.10) ifac=2
+
+  if(ndim.eq.6) ifac=6
+
   if (ndim.eq.2) then
      if (fct.eq.20) then
         ifac = 51 ! I have database of only  51*51 for CFD
