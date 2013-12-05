@@ -138,8 +138,15 @@ subroutine RMSE_Higher(stat,ndim,fct,npts,dimPC,ipar,par,xcof)
 
      write(filenum,*)
      write(filenum,'(6x,a,e20.10)') '>> RMSE compared to Database = ',error
-     write(51,'(2i8,3e15.8)') dimpc,npts,error,maxerror !write to file
+     !write(51,'(2i8,3e15.8)') dimpc,npts,error,maxerror !write to file
 
+     ! write to errornorm file
+     write(51,'(2i8,6e15.8)') dimpc,npts,error,maxerror, error, error,difflocmax,diffloc2 !, ttotal !write to file
+     close(51) !close the file
+
+     rmsemat(runnum,dyncyccnt,1)=npts
+     rmsemat(runnum,dyncyccnt,2)=error
+     outfile=filename
 
 
      ! Tecplot output of PC surrogate

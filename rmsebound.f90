@@ -162,15 +162,16 @@ subroutine  matrix_process(nruns)
   bnd(:)=0.0
 
   outfile(6:10)='AvgPC'
-  open(63,file=outfile,form='formatted',status='unknown')
-  write(63,'(3a)') 'NPOINTS   ','   MeanRMSE   ','   BOUND'
+  open(53,file=outfile,form='formatted',status='unknown')
+  write(53,'(3a)') 'NPOINTS   ','   MeanRMSE   ','   BOUND'
 
   do i=1,nrows !nrows
      vec=rmsemat(1:nruns,i,2)
      call make_bound(nruns,vec,1.0,bnd)
-    write(63,'(2i8,7e15.8)')i+1,int(rmsemat(1,i,1)),bnd(1),bnd(2),bnd(3),bnd(4),bnd(5),bnd(6),bnd(7)
+     print*,"npts",(rmsemat(1,i,1))
+     write(53,'(2i8,7e15.8)')i+1,int(rmsemat(1,i,1)),bnd(1),bnd(2),bnd(3),bnd(4),bnd(5),bnd(6),bnd(7)
   end do
-  close(63)
+  close(53)
 
   return
 end subroutine matrix_process

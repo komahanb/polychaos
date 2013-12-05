@@ -44,11 +44,11 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
   else if (Fct.eq.20) then
 
      ! Flow solver needs input:
-
+     
      !1) Angle of attack in rads and 2) Mach number
-
+     
      !If ndimt.gt.ndim, you are sending in shape DV's to the Eulersolve routine. In that case the last two entries comprise of alpha, mach respectively.
-
+     
      CALL chdir('lowfid') ! Comment when using fine mesh
 
      call omp_set_num_threads(omp_get_max_threads())

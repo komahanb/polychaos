@@ -7,7 +7,7 @@ program main
   include 'mpif.h'
 
   integer :: DIM
-  parameter (DIM=6)
+  parameter (DIM=2)
 
   !indices
   integer :: i,j,k,ii,jj,kk,fuct
@@ -138,7 +138,9 @@ program main
 
   !  do  dynamics=1,1
   
-  do  ctest=3,3
+  do fctindx=0,4,4 ! 4,4
+
+  do  ctest=2,3
 
      if (ctest.eq.2) then
 
@@ -165,7 +167,6 @@ program main
         randomflag=1
      end if
 
-
      !===============================
      ! Main Program
      !===============================
@@ -181,11 +182,11 @@ program main
            call solvertype(stat,os,solver)
 
 
-           fctindx=0 
+!           fctindx=0 
 
            do fuct=1,1,1
               
-              if (fuct.eq.1) fct=4
+              if (fuct.eq.1) fct=20
               if (fuct.eq.2) fct =2
               if (fuct.eq.3) fct =6
 
@@ -205,7 +206,7 @@ program main
               !20: CFD
               !>20: Mixed Uncertainties, calling suboptimization program to find the worst and best case scenarios to fix the corresponsing epistemic vars at extrema, whereas the aleatory vars are sampled within the space spanned by the mean and 3*SD. The surrogate is built on aleatory vars only, with epistemic vars fixed at extrema. F(B*,A_i) is what is given to the surrogate for each corresponding training point location A_i.
 
-              nruns=1
+              nruns=5
 
               !                    if (nruns.gt.1) then
               if (id_proc.eq.0) allocate(rmsemat(nruns,1000,2))
@@ -287,7 +288,7 @@ program main
               end if
               
               dyncyccnt=0
-              do DIMPC =2,11 !order 5D requires 3003 terms
+              do DIMPC =2,9 !order 5D requires 3003 terms
                  dyncyccnt=dyncyccnt+1
 
                  ! Get number of terms in the expansion
@@ -501,7 +502,7 @@ program main
 !!$                       print*,rmsemat(i,j,:)
 !!$                    end do
 !!$                 end do
-
+!              print*,nruns,dyncyccnt
               if (nruns.gt.1) call matrix_process(nruns)
 
               deallocate(rmsemat)
@@ -517,6 +518,8 @@ program main
   end do !Oversamp loop
 
 end do !dynamics loop
+
+end do
 
 if (id_proc.eq.0) then
   write(filenum,*)

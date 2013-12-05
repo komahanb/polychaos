@@ -99,7 +99,7 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
   call mirtunableparams(fct,ndim,nptsold,ncp,taylororder)
   !  print *,nptsold, ncp
 
-  NTOEX=46656   !int(nptstoaddpercyc*1000) !int(1000*num_proc/ndim)
+  NTOEX=2601 !1000   !46656   !int(nptstoaddpercyc*1000) !int(1000*num_proc/ndim)
 
   !  if (stat.gt.0) NTOEX=int(NTOEX)
   !  NTOEX=5000*NDIM
