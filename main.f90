@@ -186,7 +186,7 @@ program main
 
            do fuct=1,1,1
               
-              if (fuct.eq.1) fct=20
+              if (fuct.eq.1) fct=4
               if (fuct.eq.2) fct =2
               if (fuct.eq.3) fct =6
 

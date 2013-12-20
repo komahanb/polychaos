@@ -23,7 +23,7 @@ program main
   real*8 :: coll(MAXPTS,DIM),par(DIM,MAXPAR)
   real*8 :: RN(DIM,MAXPTS),DS(2,DIM)
   real*8 :: fpcb(MAXPTS),gpcb(DIM,MAXPTS),xcof(MAXTRM),hpcb(dim,dim,maxpts)
-  integer :: ipar(MAXVAR)
+  integer:: ipar(MAXVAR)
 
 
   !RandomNumber 
@@ -55,14 +55,15 @@ program main
   integer::index,evalfunction
   integer::nptsold,ntermsold
   integer::  nptstoaddpercyc
-  integer::ctest
+  integer::ctest,nruns
+  integer::jjj
   call MPI_START 
  
   mainprog=.true.
 
   ndimt=dim ! If all are assumed to be aleatory variables
 
-  if (dim.ne.ndimt) OUUflag=1 ! mixed uncertainties, need to  call optimization at the end
+  if (dim.ne.ndimt) OUUflag=1 ! mixed uncertainties, need to  call optimization at the end, not used in mainprog though.
  
   !Settings
   
@@ -135,20 +136,36 @@ program main
   xavg(1:DIM)=xavgt(ndimt-DIM+1:ndimt)
   xstd(1:DIM)=xstdt(ndimt-DIM+1:ndimt)
 
-!  do  dynamics=1,1
+  !  do  dynamics=1,1
+  
+  do fctindx=0,4,4 ! 4,4
 
-  do  ctest=1,3
-     
-     if (ctest.eq.1) dynamics=0
+  do  ctest=2,3
+
      if (ctest.eq.2) then
+
+        dynamics=0
+
+        !1=LHS,
+        !2=Nieder
+        !3=Halton
+        !4=Hammersley
+        !5=Sobol
+        !6=Faure
+
+        randomflag=1
+
+     end if
+     if (ctest.eq.1) then
         dynamics=1
         lhsdyn=.true.
+        randomflag=1
      end if
      if (ctest.eq.3) then
         dynamics=1
         lhsdyn=.false. !mirdyn is true
+        randomflag=1
      end if
-
 
      !===============================
      ! Main Program
@@ -156,7 +173,7 @@ program main
      
      DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
-        do  stat=0,2 
+        do  stat=0,0 
 
            !0= Function only
            !1= Function + Gradient
@@ -165,13 +182,14 @@ program main
            call solvertype(stat,os,solver)
 
 
-           fctindx=0 
+!           fctindx=0 
 
-           do fct=1,1,1
+           do fuct=1,1,1
+              
+              if (fuct.eq.1) fct=4
+              if (fuct.eq.2) fct =2
+              if (fuct.eq.3) fct =6
 
-!!$              if (fuct.eq.1) fct=4
-!!$              if (fuct.eq.2) fct =2
-!!$              if (fuct.eq.3) fct =6
 !!$              if (fuct.eq.4) fct =10
               !1 : cos(x+y) (Nd)
               !2 : 1.0/(1.0+x**2+y**2)  (Nd)
@@ -188,6 +206,16 @@ program main
               !20: CFD
               !>20: Mixed Uncertainties, calling suboptimization program to find the worst and best case scenarios to fix the corresponsing epistemic vars at extrema, whereas the aleatory vars are sampled within the space spanned by the mean and 3*SD. The surrogate is built on aleatory vars only, with epistemic vars fixed at extrema. F(B*,A_i) is what is given to the surrogate for each corresponding training point location A_i.
 
+              nruns=5
+
+              !                    if (nruns.gt.1) then
+              if (id_proc.eq.0) allocate(rmsemat(nruns,1000,2))
+              ! 1000 data points , RMSE only, mean +sd, 
+              !                   end if
+
+              runnum=0
+              do jjj=1,nruns
+                 runnum=runnum+1
 
               !Domain size
               if (casemode.eq.0) then !RMSE comparisons only
@@ -258,10 +286,9 @@ program main
                  stop 'Wrong Casemode'
 
               end if
-
+              
               dyncyccnt=0
-              do DIMPC =2,10 !order 5D requires 3003 terms
-
+              do DIMPC =2,9 !order 5D requires 3003 terms
                  dyncyccnt=dyncyccnt+1
 
                  ! Get number of terms in the expansion
@@ -440,7 +467,7 @@ program main
                        write(filenum,*) '================================================='
                        write(filenum,*)
                     end if
-!                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
+                    !                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
                     call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
                     call MPI_Barrier(MPI_COMM_WORLD,ierr)
                  end if
@@ -457,7 +484,6 @@ program main
                        write(filenum,*) '================================================='
                        write(filenum,*)
                        write(filenum,*)'>> Writing Tecplot output to file . . .'
-
                        call tecplot(dim,dimpc,ipar,par,fct,npts,xcof) 
                     end if
                  end if
@@ -465,47 +491,67 @@ program main
                  nptsold=npts
                  ntermsold=nterms
 
-              enddo !order
+              end do !norder
 
-           enddo ! fct
+           enddo !nruns
 
-        enddo ! F or FG (Stat)
+           if (id_proc.eq.0) then
+!!$
+!!$                 do i=1,nruns
+!!$                    do j=1,loopcounter
+!!$                       print*,rmsemat(i,j,:)
+!!$                    end do
+!!$                 end do
+!              print*,nruns,dyncyccnt
+              if (nruns.gt.1) call matrix_process(nruns)
 
-     end do !Oversamp loop
+              deallocate(rmsemat)
 
-  end do !dynamics loop
+           end if
 
-  if (id_proc.eq.0) then
-     write(filenum,*)
-     write(filenum,*)'>> Program terminated successfully'
-     write(filenum,*) 
-  end if
+           call MPI_Barrier(MPI_COMM_WORLD,ierr)              
+
+        enddo ! fct
+
+     enddo ! F or FG (Stat)
+
+  end do !Oversamp loop
+
+end do !dynamics loop
+
+end do
+
+if (id_proc.eq.0) then
+  write(filenum,*)
+  write(filenum,*)'>> Program terminated successfully'
+  write(filenum,*) 
+end if
 
 !!$  if (id_proc.eq.0) then
 !!$     print *, fmean,fmeanprime(1:dim)
 !!$     print *,fvar,fvarprime(1:dim)
 !!$  end if
 
-  call MPI_Barrier(MPI_COMM_WORLD,ierr)
+call MPI_Barrier(MPI_COMM_WORLD,ierr)
 
-  call stop_all
+call stop_all
 
-end program main
+end program
 
 !+======================================================================
 
 function PHI(dim,x1,x2,scal)
 
-  implicit none
-  integer :: dim,j
-  real*8 :: x1(dim),x2(dim),phi,x(dim),xnorm,tmp,scal
+implicit none
+integer :: dim,j
+real*8 :: x1(dim),x2(dim),phi,x(dim),xnorm,tmp,scal
 
-  x(:)=x1(:)-x2(:)
+x(:)=x1(:)-x2(:)
 
-  xnorm=0.0
-  do j=1,dim
-     xnorm=xnorm+x(j)**2
-  end do
+xnorm=0.0
+do j=1,dim
+  xnorm=xnorm+x(j)**2
+end do
   xnorm=SQRT(xnorm)/scal
 
   tmp=max(1.0-xnorm,0.0)
@@ -641,7 +687,7 @@ end subroutine i_to_s
 
 
 subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
-  use dimpce,only:OS,fctindx,dynamics,lhsdyn
+  use dimpce,only:OS,fctindx,dynamics,lhsdyn,randomflag
   implicit none  
   character*2 :: dimnumber,fctnumber,ordnumber,OSnumber,fctindxnumber
   integer ::lenc,fct,dim,stat,casemode,dimpc
@@ -718,6 +764,34 @@ subroutine getfilename(dim,fct,dimpc,stat,casemode,filename)
   else if (stat.eq.0) then
      filename(lenc+1:lenc+1)='F'
      lenc=lenc+1 
+
+     if (randomflag.eq.2) then
+
+        filename(lenc+1:lenc+1)='2'
+        lenc=lenc+1 
+
+     else if (randomflag.eq.3) then
+
+        filename(lenc+1:lenc+1)='3'
+        lenc=lenc+1 
+
+     else  if (randomflag.eq.4) then
+
+        filename(lenc+1:lenc+1)='4'
+        lenc=lenc+1 
+
+     else if (randomflag.eq.5) then
+
+        filename(lenc+1:lenc+1)='5'
+        lenc=lenc+1 
+
+     else if (randomflag.eq.6) then
+
+        filename(lenc+1:lenc+1)='6'
+        lenc=lenc+1 
+     end if
+
+
   else
      print *, 'Wrong value in hstat'
      stop'Wrong value in stat'
