@@ -946,6 +946,7 @@ $!GLOBALLINEPLOT
     TEXTSHAPE
       {
       FONT = COURIERBOLD
+      HEIGHT = 4
       }
     BOX
       {
@@ -953,8 +954,8 @@ $!GLOBALLINEPLOT
       }
     XYPOS
       {
-      X = 99.543
-      Y = 100
+      X = 100
+      Y = 39.347
       }
     }
 $!LINEMAP  [1]
