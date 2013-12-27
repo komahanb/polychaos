@@ -28,4 +28,6 @@ Module dimpce
 
       double precision :: diffloc2,difflocmax
 
+      integer::fcnt,fgcnt,fghcnt
+
     End Module dimpce

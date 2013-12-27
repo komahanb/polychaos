@@ -251,6 +251,7 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 
               end if
 
+              randomflag=1
 
               dyncyccnt=0
               do DIMPC =orderinitial,orderfinal !order 5D requires 3003 terms

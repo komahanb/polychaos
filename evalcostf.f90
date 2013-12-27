@@ -139,7 +139,7 @@ end subroutine evalcostf
 
 
 subroutine get_f(dim,fct,x,f)
-    use dimpce,only:fctindx,DAT,mainprog
+    use dimpce,only:fctindx,DAT,mainprog,fcnt
   implicit none
 
   integer :: fct,dim,k
@@ -157,6 +157,8 @@ subroutine get_f(dim,fct,x,f)
 
 
   f=0.0d0
+
+  fcnt=fcnt+1  
 
   if (fct.eq.1) then     
 
@@ -632,7 +634,7 @@ subroutine get_f(dim,fct,x,f)
 end subroutine get_f
 
    subroutine get_df(dim,fct,x,df)
-     use dimpce,only:fctindx,DAT,mainprog
+     use dimpce,only:fctindx,DAT,mainprog,fgcnt
      implicit none
 
   integer :: fct,dim,k
@@ -649,6 +651,8 @@ end subroutine get_f
   real*8::comp_sigma1_max,comp_sigma2_max,comp_sigma3_max
   
   real*8::max_u_disp,max_v_disp,theta,pu,pv,u,sigma(3)
+  
+  fgcnt=fgcnt+1
   
   if (fct.eq.1) then
 
@@ -1116,7 +1120,7 @@ end subroutine get_df
 
 
 subroutine get_dff(DIM,fct,x,d2f)
-  use dimpce,only:fctindx,DAT,mainprog
+  use dimpce,only:fctindx,DAT,mainprog,fghcnt
   implicit none
 
   integer :: DIM,fct,j,k
@@ -1130,6 +1134,8 @@ subroutine get_dff(DIM,fct,x,d2f)
   real*8::comp_sigma1_max,comp_sigma2_max,comp_sigma3_max
 
   real*8::max_u_disp,max_v_disp,theta,pu,pv,u,sigma(3)
+
+  fghcnt=fghcnt+1
 
   if (fct.eq.1) then !Cosine
      !f=cos(x+y)
