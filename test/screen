@@ -25,6 +25,287 @@
   >> Number of rows    in the matrix  (numpc):          12
      >> Solver : SV Decomposition
      >> Finding Pseudo-Inverse of the matrix . . . 
-   3.46410161513776     
-rank 0 in job 3  cfd3_55429   caused collective abort of all ranks
-  exit status of rank 0: return code 0 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           4
+     >> Setting up the RHS with Function evals . . .
+     >> Number of RHS entries :          12
+ 
+           1   1.00000000000000     
+           2   7.72973590050410     
+           3   1.34675349023919     
+           4  0.782705252880774     
+           5  0.378181354752299     
+           6   1.58112277087656     
+           7  0.143744017951706     
+           8  0.284197296466537     
+           9   4.57557941148192     
+          10  0.355301909530220     
+          11   2.87316784129481     
+          12   1.19892281043053     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1   1.40064787302869     
+           2   1.62033360730272     
+           3   1.48464337416091     
+           4  0.485754356423544     
+           5   1.42408387388511     
+           6  0.463816047649108     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :            6
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      1275      1911 ] for Processor  2
+           >> [      3823      4459 ] for Processor  6
+           >> [      8919      9555 ] for Processor 14
+           >> [      1912      2548 ] for Processor  3
+           >> [       638      1274 ] for Processor  1
+           >> [      6371      7007 ] for Processor 10
+           >> [      5734      6370 ] for Processor  9
+           >> [      8282      8918 ] for Processor 13
+           >> [      4460      5096 ] for Processor  7
+           >> [      2549      3185 ] for Processor  4
+           >> [      9556     10201 ] for Processor 15
+           >> [      5097      5733 ] for Processor  8
+           >> [      3186      3822 ] for Processor  5
+           >> [      7008      7644 ] for Processor 11
+           >> [      7645      8281 ] for Processor 12
+           >> [         1       637 ] for Processor  0
+ 
+      >> RMSE compared to Analytical function =     0.3295181335E+01
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+          Summary of function requirements        
+ =================================================
+ 
+ >> Number of Function evals needed :          20
+ 
+ >> Initial Sample Points by Latin Hypercube
+ >> Including center of the domain
+ >> Training points are written to file :samp/sampdim02ord03Rat02F                                   
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):          10
+  >> Number of rows    in the matrix  (numpc):          20
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           4
+     >> Setting up the RHS with Function evals . . .
+     >> Number of RHS entries :          20
+ 
+           1   1.00000000000000     
+           2   1.86980988438922     
+           3   3.99797160936907     
+           4  0.641436164469562     
+           5   4.74464883413784     
+           6   3.36309103468435     
+           7  0.170446424510700     
+           8  4.524783107860829E-002
+           9  8.248402884616099E-002
+          10  0.658962877093365     
+          11   13.9049939267724     
+          12   1.84789016977614     
+          13  0.446616142238065     
+          14   2.83289159723401     
+          15  0.449331981190832     
+          16   2.29020598664004     
+          17  0.126122257834170     
+          18  0.652647775625752     
+          19   4.13279029797735     
+          20   1.13781831354638     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1   1.34168149373558     
+           2   1.27689934780652     
+           3   1.16042960823048     
+           4  0.619627618640282     
+           5   1.77710631238726     
+           6  0.545226522058838     
+           7  0.117578763730599     
+           8  0.479470836007497     
+           9  0.417939100349649     
+          10  0.103045853147035     
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :           10
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [         1       637 ] for Processor  0
+           >> [      1275      1911 ] for Processor  2
+           >> [      3823      4459 ] for Processor  6
+           >> [       638      1274 ] for Processor  1
+           >> [      8282      8918 ] for Processor 13
+           >> [      7008      7644 ] for Processor 11
+           >> [      1912      2548 ] for Processor  3
+           >> [      5097      5733 ] for Processor  8
+           >> [      3186      3822 ] for Processor  5
+           >> [      8919      9555 ] for Processor 14
+           >> [      6371      7007 ] for Processor 10
+           >> [      2549      3185 ] for Processor  4
+           >> [      4460      5096 ] for Processor  7
+           >> [      5734      6370 ] for Processor  9
+           >> [      9556     10201 ] for Processor 15
+           >> [      7645      8281 ] for Processor 12
+ 
+      >> RMSE compared to Analytical function =     0.1512627437E+01
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
+ 
+ =================================================
+          Summary of function requirements        
+ =================================================
+ 
+ >> Number of Function evals needed :          30
+ 
+ >> Initial Sample Points by Latin Hypercube
+ >> Including center of the domain
+ >> Training points are written to file :samp/sampdim02ord04Rat02F                                   
+ 
+ =================================================
+         Matrix Setup & Pseudo-Inverse            
+ =================================================
+ 
+  >> Number of columns in the matrix (nterms):          15
+  >> Number of rows    in the matrix  (numpc):          30
+     >> Solver : SV Decomposition
+     >> Finding Pseudo-Inverse of the matrix . . . 
+ 
+ =================================================
+                 RHS Setup                        
+ =================================================
+ 
+ >> Cost Function Number :           4
+     >> Setting up the RHS with Function evals . . .
+     >> Number of RHS entries :          30
+ 
+           1   1.00000000000000     
+           2  0.958341499707668     
+           3   1.01632529841703     
+           4  0.225043209152660     
+           5   1.54045805323405     
+           6   1.79686914878901     
+           7  4.889477169034128E-002
+           8  3.225432071254729E-002
+           9  0.109150952751236     
+          10   1.26936646467875     
+          11  0.103970819495372     
+          12   6.14120108198489     
+          13   14.9096687720749     
+          14   3.93641141198408     
+          15   7.25391235793118     
+          16   1.56604204182108     
+          17   4.77186538174682     
+          18  0.318775466005190     
+          19  0.188471207961768     
+          20   1.56488591161218     
+          21   1.38099563513878     
+          22   1.31702590336395     
+          23   1.11408230089106     
+          24   4.99454137764126     
+          25   1.01621220580174     
+          26   1.25160186684129     
+          27   18.7730444198160     
+          28  0.282058252954467     
+          29   1.08847939046889     
+          30  0.729138744491831     
+ 
+ =================================================
+             Solve Linear System                  
+ =================================================
+ 
+ >> Solving for the coefficients . . . 
+           1   1.40854816367269     
+           2   1.19404640097872     
+           3   1.21487720260410     
+           4  0.507090573686409     
+           5   1.22455920794763     
+           6  0.326716796237073     
+           7  0.115210965047227     
+           8  0.518114920205624     
+           9  0.552207878274779     
+          10  0.128933754638723     
+          11 -9.124725328731875E-004
+          12  7.630137680661685E-002
+          13  0.142831346820700     
+          14  9.420573200530126E-002
+          15  2.422972779816336E-002
+ >> Coeffs are succesfully determined . . .
+ >> Number of coefficients :           15
+ 
+ 
+ =================================================
+              RMSE on Surrogate                   
+ =================================================
+ 
+ 
+      >> RMSE on        10201  points . . .
+ 
+           >> [      3186      3822 ] for Processor  5
+           >> [      7008      7644 ] for Processor 11
+           >> [      1912      2548 ] for Processor  3
+           >> [      4460      5096 ] for Processor  7
+           >> [       638      1274 ] for Processor  1
+           >> [      5734      6370 ] for Processor  9
+           >> [      9556     10201 ] for Processor 15
+           >> [      7645      8281 ] for Processor 12
+           >> [      2549      3185 ] for Processor  4
+           >> [      3823      4459 ] for Processor  6
+           >> [      8282      8918 ] for Processor 13
+           >> [      8919      9555 ] for Processor 14
+           >> [         1       637 ] for Processor  0
+           >> [      5097      5733 ] for Processor  8
+           >> [      6371      7007 ] for Processor 10
+           >> [      1275      1911 ] for Processor  2
+ 
+      >> RMSE compared to Analytical function =     0.6951988516E+00
+ 
+ 
+ =================================================
+              Tecplot Output                      
+ =================================================
+ 
+ >> Writing Tecplot output to file . . .
