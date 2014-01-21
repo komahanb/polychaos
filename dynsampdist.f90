@@ -99,8 +99,9 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
   call mirtunableparams(fct,ndim,nptsold,ncp,taylororder)
   !  print *,nptsold, ncp
 
+  NTOEX=10100
 
-  NTOEX=5000*NDIM
+!  NTOEX=5000*NDIM
 
   if (NTOEX.gt.25000) NTOEX=25000
 
@@ -242,9 +243,11 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
 
      diffloctmp=0.0d0
      diffloc2=0.0d0
+     difflocmax=0.0d0
      do k=1,NTOEX
         diffloctmp=(maxftoex(k)-minftoex(k))**2
         diffloc2=diffloc2+diffloctmp
+        difflocmax=max(difflocmax,dsqrt(diffloctmp))
      end do
      diffloc2=diffloc2/dble(ntoex)
      diffloc2=sqrt(diffloc2)
@@ -352,7 +355,7 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
 
      end do !! ii loop
 
-     difflocmax=diffloc !stores maxdiff to write as output
+!     difflocmax=diffloc !stores maxdiff to write as output
 
   END IF! master thread 
 
@@ -453,218 +456,210 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
 end subroutine dynsampdist
 !++++++++++++++++++++++++++++++++++++++++
 
-    subroutine mirtunableparams(fct,ndim,nhs,ncp,taylororder)
-      use dimpce,only:ndimt
+subroutine mirtunableparams(fct,ndim,nhs,ncp,taylororder)
+ 
       implicit none
-      integer,INTENT(IN)::fct,ndim,nhs
-      INTEGER,INTENT(OUT)::NCP,TAYLORORDER
+      integer::fct,ndim,taylororder,ncp,nhs
       
-      !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
-      !                 EXP
-      !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
-      if (Fct.eq.4) then
-         if (nhs.le.11)  then  
-           NCP=nhs     
-           Taylororder=3!nhs!2!2!INT(NHS/4)
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
+  !                 EXP
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
+  if (Fct.eq.4) then
+     if (nhs.le.11)  then  
+        NCP=nhs     
+        Taylororder=3!nhs!2!2!INT(NHS/4)
 
-        else if (nhs.gt.11 .and. nhs.le.15)  then  
-           NCP=10
-           Taylororder=5!ncp
+     else if (nhs.gt.11 .and. nhs.le.15)  then  
+        NCP=10
+        Taylororder=5!ncp
 
-        else  if (nhs.gt.15 .and. nhs.le.25)  then  
-           NCP=15
-           Taylororder=5!ncp
-           
-        else  if (nhs.gt.25 .and. nhs.le.35)  then  
-           NCP=20
-           Taylororder=5!ncp
-           
-        else if (nhs.gt.35 .and. nhs.le.100)  then  
-           NCP=20!20+3*ndim
-           Taylororder=5
-       ! else if (nhs.gt.70 .and. nhs.le.100)  then  
-       !   NCP=30!50+0.1*nhs
-       !    Taylororder=17       
-        else
-           NCP=20!+5*ndim
-           tAYLORORDER=5
-        end if
+     else  if (nhs.gt.15 .and. nhs.le.25)  then  
+        NCP=15
+        Taylororder=5!ncp
 
-     end if
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!    
-!                COS
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
-     if (Fct.eq.1) then
-        if (nhs.le.11)  then  
-           NCP=nhs
-           Taylororder=ncp!2!2!INT(NHS/4)
-        else if (nhs.gt.11 .and. nhs.le.15)  then  
-           NCP=10
-           Taylororder=5!ncp
+     else  if (nhs.gt.25 .and. nhs.le.35)  then  
+        NCP=20
+        Taylororder=5!ncp
 
-        else if (nhs.gt.15 .and. nhs.le.25)  then  
-           NCP=15
-           Taylororder=5!ncp
-
-        else if (nhs.gt.25 .and. nhs.le.35)  then  
-           NCP=20
-           Taylororder=5!ncp
-
-        else if (nhs.gt.35 .and. nhs.le.70)  then  
-           NCP=20!50+0.1*nhs
-           Taylororder=5
-        else if (nhs.gt.70 .and. nhs.le.100)  then  
-           NCP=20!50+0.1*nhs
-           Taylororder=5       
-        else
-           NCP=20
-           tAYLORORDER=5
-        end if
-
-     end if
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
-!               RUNGE
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!     
-     if (fct.eq.2) then
-        if (nhs.le.20)  then  
-           NCP=nhs
-           Taylororder=5!nhs!2!2!INT(NHS/4)
-
-           !   else if (nhs.gt.11 .and. nhs.le.15)  then  
-           !      NCP=nhs
-           !      Taylororder=7!ncp
-           !      
-           !   else if (nhs.gt.15 .and. nhs.le.25)  then  
-           !      NCP=nhs
-           !      Taylororder=13!ncp
-           !      
-           !   else if (nhs.gt.25 .and. nhs.le.35)  then  
-           !      NCP=nhs
-           !      Taylororder=17!ncp
-           !      
-           !   else if (nhs.gt.35 .and. nhs.le.70)  then  
-           !      NCP=30!50+0.1*nhs
-           !      Taylororder=17
-        else  if (nhs.gt.20 .and. nhs.le.100)  then  
-           NCP=20!50+0.1*nhs
-           Taylororder=5       
-        else
-           NCP=20
-           tAYLORORDER=5
-        end if
-
-     end if
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
-!           ROSENBROCK    
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
-     if (Fct.eq.6) then
-        if (nhs.le.11)  then  
-           NCP=5
-           Taylororder=ncp!2!2!INT(NHS/4)
-        else if (nhs.gt.11 .and. nhs.le.15)  then  
-           NCP=10
-           Taylororder=5!ncp
-
-        else if (nhs.gt.15 .and. nhs.le.25)  then  
-           NCP=15
-           Taylororder=5!ncp
-
-        else if (nhs.gt.25 .and. nhs.le.35)  then  
-           NCP=25
-           Taylororder=5!ncp
-
-        else if (nhs.gt.35 .and. nhs.le.70)  then  
-           NCP=50 !50+0.1*nhs
-           Taylororder=5
-        else if (nhs.gt.70 .and. nhs.le.100)  then  
-           NCP=60!50+0.1*nhs
-           Taylororder=5       
-        else
-           NCP=70
-           tAYLORORDER=5
-        end if
-
-     end if
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
-!                      CFD   
-!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
-     if (fct.eq.20) then
-        if (nhs.le.10)  then  
-           NCP=nhs
-           Taylororder=nhs!nhs!2!2!INT(NHS/4)
-        else if (nhs.gt.10 .and. nhs.le.15)  then  
-           NCP=nhs
-           Taylororder=10!ncp
-           
-        else  if (nhs.gt.15 .and. nhs.le.25)  then  
-           NCP=nhs
-           Taylororder=10!ncp
-           
-        else  if (nhs.gt.25 .and. nhs.le.35)  then  
-           NCP=nhs
-           Taylororder=7!ncp
-           
-        else if (nhs.gt.35 .and. nhs.le.45)  then  
-           NCP=30
-           Taylororder=7
-           
-        else if (nhs.gt.45 .and. nhs.le.100)  then  
-           NCP=30!50+0.1*nhs
-           Taylororder=7
-        else
-           NCP=35
-           Taylororder=7
-           
-        end if
-
-
+     else if (nhs.gt.35 .and. nhs.le.100)  then  
+        NCP=20!20+3*ndim
+        Taylororder=5
+        ! else if (nhs.gt.70 .and. nhs.le.100)  then  
+        !   NCP=30!50+0.1*nhs
+        !    Taylororder=17       
      else
-
-
-        if (nhs.le.11)  then  
-           NCP=nhs
-           Taylororder=ncp!2!2!INT(NHS/4)
-        else if (nhs.gt.11 .and. nhs.le.15)  then  
-           NCP=10
-           Taylororder=5!ncp
-
-        else if (nhs.gt.15 .and. nhs.le.25)  then  
-           NCP=15
-           Taylororder=5!ncp
-
-        else if (nhs.gt.25 .and. nhs.le.35)  then  
-           NCP=20
-           Taylororder=5!ncp
-
-        else if (nhs.gt.35 .and. nhs.le.70)  then  
-           NCP=20!50+0.1*nhs
-           Taylororder=5
-        else if (nhs.gt.70 .and. nhs.le.100)  then  
-           NCP=20!50+0.1*nhs
-           Taylororder=5       
-        else
-           NCP=20
-           tAYLORORDER=5
-        end if
-        
-        
-     end if ! end of CFD
-
-     if(ndimt.gt.2) then ! use 25% of the existing data points
-
-        !NCP= ceiling(0.25*dble(nhs))
-
-        if (Nhs.lt.25) then
-           NCP=nhs
-        else
-           ncp=25
-        end if
-        !        print *,'NCP:',ncp
-        tAYLORORDER=3
+        NCP=20!+5*ndim
+        tAYLORORDER=5
      end if
 
-     return
-   end subroutine mirtunableparams
+  end if
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!    
+  !                COS
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
+  if (Fct.eq.1) then
+     if (nhs.le.11)  then  
+        NCP=nhs
+        Taylororder=ncp!2!2!INT(NHS/4)
+     else if (nhs.gt.11 .and. nhs.le.15)  then  
+        NCP=10
+        Taylororder=5!ncp
+
+     else if (nhs.gt.15 .and. nhs.le.25)  then  
+        NCP=15
+        Taylororder=5!ncp
+
+     else if (nhs.gt.25 .and. nhs.le.35)  then  
+        NCP=20
+        Taylororder=5!ncp
+
+     else if (nhs.gt.35 .and. nhs.le.70)  then  
+        NCP=20!50+0.1*nhs
+        Taylororder=5
+     else if (nhs.gt.70 .and. nhs.le.100)  then  
+        NCP=20!50+0.1*nhs
+        Taylororder=5       
+     else
+        NCP=20
+        tAYLORORDER=5
+     end if
+
+  end if
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
+  !               RUNGE
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!     
+  if (fct.eq.2) then
+     if (nhs.le.20)  then  
+        NCP=nhs
+        Taylororder=5!nhs!2!2!INT(NHS/4)
+
+        !   else if (nhs.gt.11 .and. nhs.le.15)  then  
+        !      NCP=nhs
+        !      Taylororder=7!ncp
+        !      
+        !   else if (nhs.gt.15 .and. nhs.le.25)  then  
+        !      NCP=nhs
+        !      Taylororder=13!ncp
+        !      
+        !   else if (nhs.gt.25 .and. nhs.le.35)  then  
+        !      NCP=nhs
+        !      Taylororder=17!ncp
+        !      
+        !   else if (nhs.gt.35 .and. nhs.le.70)  then  
+        !      NCP=30!50+0.1*nhs
+        !      Taylororder=17
+     else  if (nhs.gt.20 .and. nhs.le.100)  then  
+        NCP=20!50+0.1*nhs
+        Taylororder=5       
+     else
+        NCP=20
+        tAYLORORDER=5
+     end if
+
+  end if
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
+  !           ROSENBROCK    
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
+  if (Fct.eq.6) then
+     if (nhs.le.11)  then  
+        NCP=5
+        Taylororder=ncp!2!2!INT(NHS/4)
+     else if (nhs.gt.11 .and. nhs.le.15)  then  
+        NCP=10
+        Taylororder=5!ncp
+
+     else if (nhs.gt.15 .and. nhs.le.25)  then  
+        NCP=15
+        Taylororder=5!ncp
+
+     else if (nhs.gt.25 .and. nhs.le.35)  then  
+        NCP=25
+        Taylororder=5!ncp
+
+     else if (nhs.gt.35 .and. nhs.le.70)  then  
+        NCP=35!50+0.1*nhs
+        Taylororder=5
+     else if (nhs.gt.70 .and. nhs.le.100)  then  
+        NCP=50!50+0.1*nhs
+        Taylororder=5       
+     else
+        NCP=70
+        tAYLORORDER=5
+     end if
+
+  end if
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
+  !                      CFD   
+  !%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%!
+  if (fct.eq.20) then
+     if (nhs.le.10)  then  
+        NCP=nhs
+        Taylororder=nhs!nhs!2!2!INT(NHS/4)
+     else if (nhs.gt.10 .and. nhs.le.15)  then  
+        NCP=nhs
+        Taylororder=10!ncp
+
+     else  if (nhs.gt.15 .and. nhs.le.25)  then  
+        NCP=nhs
+        Taylororder=10!ncp
+
+     else  if (nhs.gt.25 .and. nhs.le.35)  then  
+        NCP=nhs
+        Taylororder=7!ncp
+
+     else if (nhs.gt.35 .and. nhs.le.45)  then  
+        NCP=30
+        Taylororder=7
+
+     else if (nhs.gt.45 .and. nhs.le.100)  then  
+        NCP=30!50+0.1*nhs
+        Taylororder=7
+     else
+        NCP=35
+        Taylororder=7
+
+     end if
+
+
+  else
+
+
+     if (nhs.le.25)  then  
+
+        NCP=nhs
+        Taylororder=5 !2!2!INT(NHS/4)
+
+     else if (nhs.gt.25 .and. nhs.le.35)  then  
+        NCP=25
+        Taylororder=5!ncp
+
+     else if (nhs.gt.35 .and. nhs.le.70)  then  
+        NCP=25!50+0.1*nhs
+        Taylororder=5
+     else if (nhs.gt.70 .and. nhs.le.100)  then  
+        NCP=25!50+0.1*nhs
+        Taylororder=5       
+     else
+        NCP=25
+        tAYLORORDER=5
+     end if
+
+  end if ! end of CFD 
+
+  if(ndim.gt.2) then ! use 25% of the existing data points
+
+     !NCP= ceiling(0.25*dble(nhs))
+
+     if (Nhs.lt.50) then
+        NCP=nhs
+     else
+        ncp=50
+     end if
+     !        print *,'NCP:',ncp
+     tAYLORORDER=5
+  end if
+
+  return
+end subroutine mirtunableparams
 
    subroutine knn(SC,sample,knnptr,ndim,nhs,NCP)
      ! Subroutine to find NCP closest neighbours from array sample to point SC

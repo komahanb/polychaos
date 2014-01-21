@@ -564,18 +564,18 @@ subroutine get_f(dim,fct,x,f)
         dat(1)=10.0 !height ref
         dat(2)=1.0e7 !E
         dat(3)=0.1 !gamma
-        dat(4)=45.0*pi/180.0
-        dat(5)=20000.0
+        dat(4)=50.0*pi/180.0
+        dat(5)=30000.0
 
         ! Max constraint values
 
         !Tensile
         dat(6)=5000.0    ! psi tensile_sigma1_max=dat(6)      
-        dat(7)=20000.0    ! psi tensile_sigma2_max=dat(7)
+        dat(7)=10000.0    ! psi tensile_sigma2_max=dat(7)
         dat(8)=5000.0    ! psi tensile_sigma3_max=dat(8)
         !Compressive
         dat(9)=5000.0    ! psi comp_sigma1_max=dat(9)
-        dat(10)=20000.0   ! psi comp_sigma2_max=dat(10)
+        dat(10)=10000.0   ! psi comp_sigma2_max=dat(10)
         dat(11)=5000.0   ! psi comp_sigma3_max=dat(11)
         !Displacement
         dat(12)=0.005    ! in  max_u_disp=dat(12)

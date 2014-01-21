@@ -168,7 +168,7 @@ CU    USES pythag
             endif
             goto 3
           endif
-          if(its.eq.30) pause 'no convergence in svdcmp'
+          if(its.eq.30) print*,'no convergence in svdcmp'
           x=w(l)
           nm=k-1
           y=w(nm)
