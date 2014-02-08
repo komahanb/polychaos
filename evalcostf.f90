@@ -107,7 +107,21 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
         stop
      end if
 
+!     if (fctindx.eq.0) then
+!        print*,'X in:',xtmp
+!        print*,'Fv in:',fv
+!        print*,'DF in:',dftmp
+!     end if
+
      call optimize(ndimt-DIM,xtmp,ndimt,fv,dftmp,low,up,gtol,.true.,.false.,fctindx)
+
+
+ !    if (fctindx.eq.0) then
+ !       print*,'X out:',xtmp
+ !       print*,'Fv out:',fv
+ !       print*,'DF out:',dftmp
+ !       stop
+ !    end if
 
   else
 
