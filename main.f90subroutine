@@ -1,4 +1,8 @@
-subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,orderinitial,orderfinal,statin,probtypeIN,fmeanout,fvarout,fmeanprimeout,fvarprimeout,fmeandbleprimeout,fvardbleprimeout)
+subroutine PCestimate(dim,ndimint,fctin,DATIN,orderinitial,orderfinal,statin,probtypeIN,fmeanout)
+
+!(ndimin,ndimint,fctin,DATIN,initpts,ncyc,nptsin,statin,trainingdataptsin,testptin,fmeanout)
+
+
   use dimpce
 
   implicit none
@@ -9,13 +13,13 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
   integer::ndimint
 
   !Input variables
-  integer,intent(in):: DIM,PROBTYPEIN(20),OSIN
-  double precision,intent(in) :: xavgin(ndimint),xstdin(ndimint)
-  integer,intent(in)::fctindxin,fctin,orderfinal,statin,orderinitial
-  real*8,intent(in)::DATIN(20) ! constants and other values for objective function/constraints
+  integer,intent(in):: DIM
+!  double precision,intent(in) :: xavgin(ndimint),xstdin(ndimint)
+  integer,intent(in)::fctin,orderfinal,statin,orderinitial
+  real*8,intent(in)::DATIN ! constants and other values for objective function/constraints
 
   !Export variables  
-  double precision,intent(out)::fmeanout,fvarout,fmeanprimeout(ndimint),fvarprimeout(ndimint),fvardbleprimeout(ndimint,ndimint),fmeandbleprimeout(ndimint,ndimint)
+  double precision,intent(out)::fmeanout
 
   !indices
   integer :: i,j,k,ii,jj,kk,fuct
@@ -78,11 +82,11 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 
   if (dim.ne.ndimt) OUUflag=1 ! mixed uncertainties, need to  call optimization at the end
 
-  DAT=DATIN
+  DAT(1)=DATIN
 
-  probtype(1:dim)=probtypeIN(1:dim)
+!  probtype(1:dim)=probtypeIN(1:dim)
 
-  filenum=  int(DAT(20)) ! 6 for screen, any other number for fort.x
+  filenum=  int(DAT(1)) ! 6 for screen, any other number for fort.x
 
   if(id_proc.eq.0)  then
      write(filenum,*)
@@ -130,28 +134,28 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 !!$  end do
 
 
-  xavgt(1:ndimt)=xavgin(1:ndimt)
+!  xavgt(1:ndimt)=xavgin(1:ndimt)
 
-  do i=1,ndimt
-     if (probtype(i).eq.1) then
-        xstdt(i)=xstdin(i)
-     else if (probtype(i).eq.2) then
-        xstdt(i)=xavgin(i)*xstdin(i)
-     else
-        stop"Wrong problem type"
-     end if
-  end do
+ ! do i=1,ndimt
+ !    if (probtype(i).eq.1) then
+ !       xstdt(i)=xstdin(i)
+ !    else if (probtype(i).eq.2) then
+ !       xstdt(i)=xavgin(i)*xstdin(i)
+ !    else
+ !       stop"Wrong problem type"
+ !    end if
+ !end do
 
-  xavg(1:DIM)=xavgt(ndimt-DIM+1:ndimt)
-  xstd(1:DIM)=xstdt(ndimt-DIM+1:ndimt)
+  !xavg(1:DIM)=xavgt(ndimt-DIM+1:ndimt)
+  !xstd(1:DIM)=xstdt(ndimt-DIM+1:ndimt)
 
-  do  dynamics=1,1
+  do  dynamics=0,0
 
      !===============================
      ! Main Program
      !===============================
 
-     DO OS=OSin,OSin ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
+     DO OS=2,2 ! Ratio of Over Sampling ratio 1 or 2 (2 is recommended)
 
         do  stat=statin,statin
 
@@ -162,7 +166,7 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 	   call solvertype(stat,os,solver)
 
 
-           fctindx=fctindxin
+           fctindx=0
 
            do fct=fctin,fctin
 
@@ -237,12 +241,17 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
                  end if
 
               else if (Casemode.eq.1) then ! stats + rmse domain
+                 
+                 DO j = 1, DIM
+                    par(j,1)=-2.0
+                    par(j,2)=2.0
+                 END DO
 
-                 ! statistics--> construct PC surrogate between mean and 3 SD's
-                 do i=1,dim
-                    par(i,1)=xavg(i)-3.0*xstd(i)                 
-                    par(i,2)=xavg(i)+3.0*xstd(i)
-                 end do
+!!$                 ! statistics--> construct PC surrogate between mean and 3 SD's
+!!$                 do i=1,dim
+!!$                    par(i,1)=xavg(i)-3.0*xstd(i)                 
+!!$                    par(i,2)=xavg(i)+3.0*xstd(i)
+!!$                 end do
 
               else
 
@@ -265,6 +274,10 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
                  ! Get number of points based on stat,solver,oversamp ratios
 
                  call getnpts(solver,stat,dim,nterms,OS,npts) 
+
+
+                 npts=npts-1 !leaving one for CV ?
+
 
                  if (dyncyccnt.eq.1) then
 
@@ -474,67 +487,16 @@ subroutine PCestimate(dim,ndimint,xavgin,xstdin,fctin,fctindxin,DATIN,OSin,order
 
   end do !dynamics loop
 
-!!$  if (id_proc.eq.0) then
-!!$     print *, fmean,fmeanprime(1:dim)
-!!$     print *,fvar,fvarprime(1:dim)	
-!!$  end if
-
-  ! Export out of this subroutine for optimization
-
-  ! Function values
-  fmeanout=fmean
-  fvarout=fvar  
-
-  if (OUUflag.eq.1) then
-
-     if (id_proc.eq.0) then
-
-        call epigrads(fct,fctindx,dim,ndimt,xavgt,xstdt,ftmp,dftmp)
-
-        do j=1,ndimt-dim
-           fmeanprimeout(j)=dftmp(j) ! epistemic mean
-           fvarprimeout(j)=0.0       ! epistemic var assumed to be small
-        end do
-
-     end if
-
-  end if
-  
-  call MPI_Barrier(MPI_COMM_WORLD,ierr)
-  call MPI_BCAST(fmeanprimeout,ndimt,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
-  call MPI_BCAST(fvarprimeout,ndimt,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
-
-  !assembling epistemic and aleatory gradients in place
-
-  fmeanprimeout(ndimt-dim+1:ndimt)=fmeanprime(1:dim) 
-  fvarprimeout(ndimt-dim+1:ndimt)=fvarprime(1:dim)
-
-  ! Hessian (need to be worked on)
-  
-  do i=1,dim
-     do j=1,dim
-	fmeandbleprimeout(i,j) = fmeandbleprime(i,j)
-	fvardbleprimeout(i,j)  = fvardbleprime(i,j)
-     end do
-  end do
-
+  fmeanout=cverror
+ 
   if (id_proc.eq.0) then
-!     print*,'mean:',fmeanout
-!     print*,'var:',fvarout
-!     print*,'fmeanprime:',fmeanprimeout
-!     print*,'fvarprime:',fvarprimeout
-!!$     write(filenum,*)
-!!$     write(filenum,'(E15.6)')'>> fmean:',fmeanout
-!!$     write(filenum,'(E15.6)')'>> fvar :',fvarout
-!!$     write(filenum,*)
-!!$     write(filenum,'(99E15.6)')'>> fmeanprime:',fmeanprimeout
-!!$     write(filenum,'(99E15.6)')'>> fvarprime :',fvarprimeout
-!!$     write(filenum,*)
      write(filenum,*)
      write(filenum,*)'>> Program call is successful'
      write(filenum,*) 
   end if
+
   call MPI_Barrier(MPI_COMM_WORLD,ierr)
+
   return
 end subroutine PCestimate
 

@@ -66,16 +66,28 @@ subroutine sampdist(stat,DIM,DIMPC,ipar,par,makesamples,nterms,npts,fct,RN)
 
         if (randomflag.eq.1) then
 
-           write(filenum,*)'>> Initial Sample Points by Latin Hypercube'
-           write(filenum,*)'>> Including center of the domain'
+           write(filenum,*)'>> Using points supplied by the user'
+!           write(filenum,*)'>> Initial Sample Points by Latin Hypercube'
+!          write(filenum,*)'>> Including center of the domain'
            
            ! force center of the domain
-           do j=1,dim
-              RN(j,1)=0.5d0
+!           do j=1,dim
+!              RN(j,1)=0.5d0
+!           end do
+
+ !          call get_seed(seed)
+           !          call latin_random(dim,npts-1,seed,RN(:,2:npts))       
+
+           do i =1,npts
+              RN(:,i)=trainingdatapts(:,i)
+              !                    trainingdatapts(i,:)=trainingdataptsin(:,i)
+              !                    print*,"Inside kriging:"
+              !                        print*,i,  sample(:,i)
+              !                        print*,''
            end do
 
-           call get_seed(seed)
-           call latin_random(dim,npts-1,seed,RN(:,2:npts))       
+
+
 
         else if (randomflag.eq.2) then
 
@@ -150,6 +162,14 @@ subroutine sampdist(stat,DIM,DIMPC,ipar,par,makesamples,nterms,npts,fct,RN)
      end do
 
   end do
+
+  
+  ! Also scale the test point xi(2)
+
+  do j=1,DIM
+     xi(j)=par(j,1)+(par(j,2)-par(j,1))*xi(j)
+  end do
+
 
 
 !? Do I need this anymore? Tecplot may be affected

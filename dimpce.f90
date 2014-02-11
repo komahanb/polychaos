@@ -30,4 +30,6 @@ Module dimpce
 
       integer::fcnt,fgcnt,fghcnt
 
+      real*8::xi(2),cverror,trainingdatapts(2,1000)
+
     End Module dimpce
