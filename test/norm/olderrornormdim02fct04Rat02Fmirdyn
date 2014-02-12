@@ -1,0 +1,2 @@
+dimpc    npts    diff       maxdiff graddiff hessdiff  Maxdisc Meandisc
+       2      12 0.28114481E+01 0.31258463E+02 0.67533246E+01 0.12721455E+02 0.78120902E-01 0.20898172E-01
