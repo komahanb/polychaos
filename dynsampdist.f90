@@ -99,9 +99,11 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
   call mirtunableparams(fct,stat,ndim,nptsold,ncp,taylororder)
   !  print *,nptsold, ncp
 
-  NTOEX=10201
+  NTOEX= 10201
 
 !  NTOEX=5000*NDIM
+
+  if (fct.eq.20) NTOEX=2501
 
   if (NTOEX.gt.25000) NTOEX=25000
 
@@ -184,7 +186,12 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
 
      else if (fct.eq.6) then
 
-        gamm=0.5d0
+        gamm=0.005d0
+       
+
+     else if (fct.eq.20) then
+
+        gamm=10
 
      else
            
@@ -256,7 +263,7 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
      ! Pick test candidate with largest difference in values, but above distcomp distance to nearest neighbours
      
      !    if (NTOEX.lt.10) then
-     distcomp=distmean 
+     distcomp=1.1*distmean 
      !    else
      !       distcomp=1.1*distmean !0.618
      !    end if
@@ -499,10 +506,10 @@ subroutine mirtunableparams(fct,stat,ndim,nhs,ncp,taylororder)
      !NCP= ceiling(0.25*dble(nhs))
      ! use 25% of the existing data points?
 
-     if (Nhs.lt.50) then
+     if (Nhs.lt.25) then
         NCP=nhs
      else
-        ncp=50
+        ncp=25
      end if
 
   end if

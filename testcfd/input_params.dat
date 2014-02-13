@@ -3,7 +3,7 @@ Solver control
 Steady parameters
 ----------------
 1e-3		cfls
-1e2		cflm
+1e3		cflm
 1.05            cflg
 -1              nsol_s
 1		istart (1=freestream, 3=read_file)

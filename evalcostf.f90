@@ -49,13 +49,13 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
      
      !If ndimt.gt.ndim, you are sending in shape DV's to the Eulersolve routine. In that case the last two entries comprise of alpha, mach respectively.
      
-     CALL chdir('lowfid') ! Comment when using fine mesh
+!     CALL chdir('lowfid') ! Comment when using fine mesh
 
      call omp_set_num_threads(omp_get_max_threads())
 
      call Eulersolve(xtmp,ndimt,0,fv,dftmp,d2ftmp,flag,v,fctindx)
 
-     CALL chdir('../') !Comment when using fine mesh
+ !    CALL chdir('../') !Comment when using fine mesh
 
   else if (fct.eq.21) then ! Two bar truss 
 

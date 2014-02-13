@@ -138,7 +138,7 @@ program main
 
   !  do  dynamics=1,1
   
-  do fctindx=4,4,4 ! 4,4
+  do fctindx=0,4,4 ! 4,4
 
   do  ctest=3,3
 
@@ -186,11 +186,12 @@ program main
 
 !           fctindx=0 
 
-           do fuct=3,1,-1
+           do fuct=4,4
               
-              if (fuct.eq.1) fct =2
-              if (fuct.eq.2) fct =4
+              if (fuct.eq.1) fct =4
+              if (fuct.eq.2) fct =2
               if (fuct.eq.3) fct =6
+              if (fuct.eq.4) fct =20
 
 !!$              if (fuct.eq.4) fct =10
               !1 : cos(x+y) (Nd)
@@ -290,7 +291,7 @@ program main
               end if
               
               dyncyccnt=0
-              do DIMPC =2,11 !order 5D requires 3003 terms
+              do DIMPC =2,9 !order 5D requires 3003 terms
                  dyncyccnt=dyncyccnt+1
 
                  ! Get number of terms in the expansion
