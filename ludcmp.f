@@ -10,7 +10,7 @@
         do 11 j=1,n
           if (abs(a(i,j)).gt.aamax) aamax=abs(a(i,j))
 11      continue
-        if (aamax.eq.0.) pause 'singular matrix in ludcmp'
+        if (aamax.eq.0.) stop'singular matrix in ludcmp'
         vv(i)=1./aamax
 12    continue
       do 19 j=1,n

@@ -186,12 +186,11 @@ program main
 
 !           fctindx=0 
 
-           do fuct=4,4
+           do fuct=1,3,1
               
-              if (fuct.eq.1) fct =4
-              if (fuct.eq.2) fct =2
+              if (fuct.eq.1) fct =2
+              if (fuct.eq.2) fct =4
               if (fuct.eq.3) fct =6
-              if (fuct.eq.4) fct =20
 
 !!$              if (fuct.eq.4) fct =10
               !1 : cos(x+y) (Nd)
@@ -291,7 +290,7 @@ program main
               end if
               
               dyncyccnt=0
-              do DIMPC =2,9 !order 5D requires 3003 terms
+              do DIMPC =2,11 !order 5D requires 3003 terms
                  dyncyccnt=dyncyccnt+1
 
                  ! Get number of terms in the expansion
@@ -302,7 +301,8 @@ program main
 
                  if (dyncyccnt.eq.1) then
 
-                    if(id_proc.eq.0) call sampdist(stat,DIM,DIMPC,ipar,par,makesamples,nterms,npts,fct,RN)
+                    if(id_proc.eq.0) call sampdist(stat,DIM,DIMPC,ipar,par,&
+makesamples,nterms,npts,fct,RN)
 
                  else
 
@@ -328,7 +328,8 @@ program main
                           write(filenum,*)' >> NPTS to add this cycle:',nptstoaddpercyc 
                        end if
 
-                       call dynsampdist(stat,DIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,nptsold,npts,nptstoaddpercyc,fct,fpcb,gpcb,hpcb,xcof,RN)
+                       call dynsampdist(stat,DIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,nptsold,npts,nptstoaddpercyc,fct,&
+fpcb,gpcb,hpcb,xcof,RN)
 
                     else ! random points again call the same routine
 

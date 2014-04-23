@@ -25,9 +25,9 @@ F77	= mpif77
 
 
 CC = gcc
-FC = ifort
+FC = gfortran
 
-FFLAGS  = -r8 -O4 -openmp # -fpe3 -parallel  #-traceback #-ftrapuv -check uninit -traceback #  -g -fpe3 # -traceback -debug all
+FFLAGS  = -fopenmp -g  #r8 -O4 -openmp # -fpe3 -parallel  #-traceback #-ftrapuv -check uninit -traceback #  -g -fpe3 # -traceback -debug all
 
 # -zero -fpe0  -CB  -O0  -g3 -debug extended -ftrapuv -check all #-parallel # -check
 # -openmp #-check

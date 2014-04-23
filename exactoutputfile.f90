@@ -6,7 +6,8 @@ subroutine exactoutputfile(jex,kex,par,ipar,fct,coll,dim,dimpc,nterms,npts,fpcb,
   integer :: Jex,Kex,k,j,fct,npts,dim,i,kk,mreg(MAXDAT,DIM),nterms,dimpc,ipar(MAXVAR),ict
   real*8  :: par(MAXVAR,MAXPAR) 
   real*8  :: fex(Jex,Kex),dxex,dyex!,xex(Jex,Kex),yex(Jex,Kex)
-  real*8  :: fpcb(MAXPTS),coll(MAXPTS,MAXVAR),coor(DIM), PL(DIM,0:MAXTRM),DPL(DIM,0:MAXTRM),fpc(Jex,Kex),xcoftmp,rhsF(MAXTRM),ddpl(dim,0:maxtrm)
+  real*8  :: fpcb(MAXPTS),coll(MAXPTS,MAXVAR),coor(DIM)
+real*8:: PL(DIM,0:MAXTRM),DPL(DIM,0:MAXTRM),fpc(Jex,Kex),xcoftmp,rhsF(MAXTRM),ddpl(dim,0:maxtrm)
   real*8 :: x(DIM),xin(dim),Xex(DIM,JEx*Kex),xcof(MAXTRM)
 
   !=========================================
