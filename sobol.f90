@@ -1250,23 +1250,23 @@ subroutine i8_sobol_generate ( m, n, skip, r )
 !
 !  Parameters:
 !
-!    Input, integer ( kind = 4 ) M, the spatial dimension.
+!    Input, integer ( kind = 8 ) M, the spatial dimension.
 !
-!    Input, integer N, ( kind = 4 ) the number of points to generate.
+!    Input, integer N, ( kind = 8 ) the number of points to generate.
 !
-!    Input, integer ( kind = 4 ) SKIP, the number of initial points to skip.
+!    Input, integer ( kind = 8 ) SKIP, the number of initial points to skip.
 !
 !    Output, real ( kind = 8 ) R(M,N), the points.
 !
   implicit none
 
-  integer ( kind = 4 ) m
-  integer ( kind = 4 ) n
+  integer ( kind = 8 ) m
+  integer ( kind = 8 ) n
 
-  integer ( kind = 4 ) j
+  integer ( kind = 8 ) j
   real ( kind = 8 ), dimension ( m, n ) :: r
   integer ( kind = 8 ) seed
-  integer ( kind = 4 ) skip
+  integer ( kind = 8 ) skip
 
   seed = skip
 

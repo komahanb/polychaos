@@ -550,7 +550,8 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 
               write(filenum,'(6x,a,3e15.5)')'PC   : Mean, Var, SD',fmean,fvar,fstd
 
-              write(filenum,'(6x,a,3e15.5)')'Error: Mean, Var, SD',abs(fmean-Javg(1)),abs(fvar-Jvar(1)),abs(fstd-Jstd(1))
+              write(filenum,'(6x,a,3e15.5)')'Error: Mean, Var, SD',&
+                   abs(fmean-Javg(1)),abs(fvar-Jvar(1)),abs(fstd-Jstd(1))
 
               ! Stats output
 
@@ -565,7 +566,8 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
                  write(94,'(11a)') '      dimpc ',' npts   ','RealAVG   ','       RealVAR   ', '   RealSTD   ','           PcAVG   ', '   PcVAR   ', '             PcSTD  ','        ErrAVG   ','     ErrVAR', '           ErrSTD'
               end if
 
-              write(94,'(2i8,9e16.8)') dimpc,npts,Javg(1),Jvar(1),Jstd(1),fmean,fvar,fstd,abs(fmean-Javg(1)),abs(fvar-Jvar(1)),abs(fstd-Jstd(1))
+              write(94,'(2i8,9e16.8)') dimpc,npts,Javg(1),Jvar(1),&
+                   Jstd(1),fmean,fvar,fstd,abs(fmean-Javg(1)),abs(fvar-Jvar(1)),abs(fstd-Jstd(1))
 
               close(94)
            end if

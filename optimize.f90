@@ -5,7 +5,8 @@ subroutine optimize(ndvar,D,ndvart,fobj,dfdD,low,up,gtol,maximize,outputscreen,f
   integer   ::   mmax,ndvar,ndvart,Nouter,maxfev,fct
   parameter      (mmax=80)  !mmax is the maximum number of limited memory corrections.
 
-  double precision :: D(ndvart),fobj,dfdD(ndvart),dfdDtmp(ndvar),dfdDD(ndvart,ndvart),v(ndvart),gtol,low(ndvar),up(ndvar)
+  double precision :: D(ndvart),fobj,dfdD(ndvart),dfdDtmp(ndvar)
+  double precision :: dfdDD(ndvart,ndvart),v(ndvart),gtol,low(ndvar),up(ndvar)
 
   character*60 :: csave,task
   logical ::      lsave(4),maximize,outputscreen
@@ -75,7 +76,8 @@ subroutine optimize(ndvar,D,ndvart,fobj,dfdD,low,up,gtol,maximize,outputscreen,f
 
         if (normgrad .le. gtol) task='STOP: THE GRADIENT IS SUFFICIENTLY SMALL'
 
-        if(outputscreen) write (*,'(2(a,i5,4x),a,1p,d12.5,4x,a,1p,d12.5)') 'Iter',isave(30),'nfg =',1,'f =',fobj,'|grad| =',normgrad
+        if(outputscreen) write (*,'(2(a,i5,4x),a,1p,d12.5,4x,a,1p,d12.5)') &
+             'Iter',isave(30),'nfg =',1,'f =',fobj,'|grad| =',normgrad
 
      end if
 
@@ -111,7 +113,8 @@ subroutine optimize(ndvar,D,ndvart,fobj,dfdD,low,up,gtol,maximize,outputscreen,f
      !          3) the value of the objective function fobj,
      !          4) the norm of the projected gradient,  dsave(13)
 
-     if(outputscreen) write (*,'(2(a,i5,4x),a,1p,d12.5,4x,a,1p,d12.5)') 'Iter',isave(30),'nfg =',isave(34),'f =',fobj,'|grad| =',normgrad
+     if(outputscreen) write (*,'(2(a,i5,4x),a,1p,d12.5,4x,a,1p,d12.5)') &
+          'Iter',isave(30),'nfg =',isave(34),'f =',fobj,'|grad| =',normgrad
 
 
      !        go back to the minimization routine.

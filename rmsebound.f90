@@ -108,8 +108,8 @@ bnd(3)=maxval(array) !bnd(2)/dlog(10.0)
 bnd(4)=abs(bnd(2)-bnd(1))
 bnd(5)=abs(bnd(3)-bnd(1))
 
-bnd(6)=abs(bnd(2)-bnd(1))/dlog(10.0)
-bnd(7)=abs(bnd(3)-bnd(1))/dlog(10.0)
+bnd(6)=abs(bnd(2)-bnd(1))/dlog(10.0d0)
+bnd(7)=abs(bnd(3)-bnd(1))/dlog(10.0d0)
 !!$
 !!$mid=avg
 !!$!= mid - dble(ks)*std
@@ -154,8 +154,8 @@ subroutine  matrix_process(nruns)
   implicit none
 
   real*8::vec(nruns)
-  real*8::nrows
-  real*8::bnd(3)
+  integer::nrows
+  real*8::bnd(10)
   integer::i,j,k,nruns
 
   nrows=dyncyccnt
@@ -167,7 +167,7 @@ subroutine  matrix_process(nruns)
 
   do i=1,nrows !nrows
      vec=rmsemat(1:nruns,i,2)
-     call make_bound(nruns,vec,1.0,bnd)
+     call make_bound(nruns,vec,1.0d0,bnd)
      print*,"npts",(rmsemat(1,i,1))
      write(53,'(2i8,7e15.8)')i+1,int(rmsemat(1,i,1)),bnd(1),bnd(2),bnd(3),bnd(4),bnd(5),bnd(6),bnd(7)
   end do

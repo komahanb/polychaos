@@ -53,7 +53,7 @@ SUBROUTINE LEGENDRE(order,X,POLY,DPOLY,ddpoly)
   IF (N.GE.2) THEN 
 
      DO K=2,N+1
-        PL(K) =DBLE((2.0d0*k-1)*X*PL(K-1)/k) - DBLE((k-1)*PL(K-2.0d0)/k)
+        PL(K) =DBLE((2.0d0*k-1)*X*PL(K-1)/k) - DBLE((k-1)*PL(K-2)/k)
      END DO
 
      DO K=2,N
@@ -358,9 +358,9 @@ SUBROUTINE LAGUERRE(N,X,POLY,DPOLY,ddpoly)
   IF (N.GE.2) THEN 
 
      DO K=2,N
-        PL(K) = ((2.0d0*k-1-X)*PL(K-1)/K) - ((k-1)*PL(K-2.0d0)/K)
+        PL(K) = ((2.0d0*k-1-X)*PL(K-1)/K) - ((k-1)*PL(K-2)/K)
         DPL(K)= (K/X)*(PL(K)- PL(K-1))
-        ddpl(k)=(pl(k-2.0d0))**1
+        ddpl(k)=(pl(k-2))**1
      END DO
 
 
