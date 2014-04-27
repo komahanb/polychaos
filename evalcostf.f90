@@ -53,7 +53,7 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
 
      call omp_set_num_threads(omp_get_max_threads())
 
-     call Eulersolve(xtmp,ndimt,0,fv,dftmp,d2ftmp,flag,v,fctindx)
+!     call Eulersolve(xtmp,ndimt,0,fv,dftmp,d2ftmp,flag,v,fctindx)
 
  !    CALL chdir('../') !Comment when using fine mesh
 

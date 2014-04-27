@@ -1,4 +1,4 @@
 cd ..
 make
 cd -
-mpiexec -np 16 ../pc |tee screen
+mpiexec -np 4 ../pc |tee screen
