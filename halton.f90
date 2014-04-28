@@ -38,7 +38,7 @@ subroutine halton_real(dim_max,npts,rmat)
 !  integer ( kind = 4 ), dimension ( test_num ) :: step_vec = (/ 0, 5, 1000, 1000000 /)
   integer (kind=4) :: step_vec
   integer ( kind = 4 ) step
-  integer ( kind = 4 ) test
+!  integer ( kind = 4 ) test
 
   step_vec=0
 

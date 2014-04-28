@@ -211,7 +211,7 @@ double precision::diffloctmp,difflocmin,difflocavg, SIGMAmean,distcomp
 
      call evalPC(ndim,dimPC-1,ipar,xcof,Dtoex(:,k),ftoextry(2,k),derivdummy,dblederivdummy) ! Evaluates PC at x and returns yhat 
 
-     !      print *,k,ftoextry(2,k),ftoextry(1,k)!(ftoextry(2,k)-ftoextry(1,k))!,ftoextry(2,k),ftoextry(1,k),
+!           print *,k,ftoextry(2,k),ftoextry(1,k)!(ftoextry(2,k)-ftoextry(1,k))!,ftoextry(2,k),ftoextry(1,k),
 
   end do !NTOEX
 
@@ -268,7 +268,7 @@ double precision::diffloctmp,difflocmin,difflocavg, SIGMAmean,distcomp
      ! Pick test candidate with largest difference in values, but above distcomp distance to nearest neighbours
      
      !    if (NTOEX.lt.10) then
-     distcomp=1.1*distmean 
+     distcomp=1.0d0*distmean 
      !    else
      !       distcomp=1.1*distmean !0.618
      !    end if
@@ -314,6 +314,7 @@ double precision::diffloctmp,difflocmin,difflocavg, SIGMAmean,distcomp
 
            write (filenum,*) '  >>No passing candidate found . . .'
            write (filenum,*) '  >>Relaxing geometric constraint by 2 percent . . .'
+           print*,distcomp
            distcomp=0.98*distcomp
 
         else 

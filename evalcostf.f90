@@ -1,5 +1,5 @@
 subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
-  use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
+  use dimpce,only:fctindx,ndimt,xavgt,xstdt
   use omp_lib
 
   implicit none
@@ -10,9 +10,8 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
   !CFD
 
   integer:: flag
-  real*8:: time,temp
 
-  real*8 :: xtmp(ndimt),v(ndimt),dftmp(ndimt),d2ftmp(ndimt,ndimt)
+  real*8 :: xtmp(ndimt),dftmp(ndimt),d2ftmp(ndimt,ndimt)
   real*8 :: gtol,low(ndimt-DIM),up(ndimt-DIM)
 
   !=======================================================
@@ -664,7 +663,7 @@ subroutine get_df(dim,fct,x,df)
 
   real*8::comp_sigma1_max,comp_sigma2_max,comp_sigma3_max
 
-  real*8::max_u_disp,max_v_disp,theta,pu,pv,u,sigma(3)
+  real*8::max_u_disp,max_v_disp,theta,pu,pv
 
   fgcnt=fgcnt+1
 
@@ -1186,7 +1185,7 @@ subroutine get_dff(DIM,fct,x,d2f)
   implicit none
 
   integer :: DIM,fct,j,k
-  real*8 :: x(DIM),d2f(DIM,DIM),fac,A,omeg
+  real*8 :: x(DIM),d2f(DIM,DIM),fac
   real*8:: tau_allow,M,V,B,D
   !    real*8 :: rho, L, sigmay, pi, Fs, p, E
   real*8 :: rho, L, sigmay, pi, Fs, p, E, R, T,sigma_allow !Truss design parameters
@@ -1195,7 +1194,7 @@ subroutine get_dff(DIM,fct,x,d2f)
 
   real*8::comp_sigma1_max,comp_sigma2_max,comp_sigma3_max
 
-  real*8::max_u_disp,max_v_disp,theta,pu,pv,u,sigma(3)
+  real*8::max_u_disp,max_v_disp,theta,pu,pv
 
   fghcnt=fghcnt+1
 
@@ -2069,12 +2068,12 @@ subroutine get_dff(DIM,fct,x,d2f)
 end subroutine get_dff
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 subroutine gather_costfn(dim,fct,stat,npts,RN,fpcb,gpcb,hpcb)
-  use dimpce,only:fctindx,ndimt,xavgt,xstdt,filenum,DAT,mainprog
+  use dimpce,only:fctindx
   implicit none
   include "collsub.h"
 
   integer,intent(in)::dim,fct,stat,npts
-  integer::i,j,k,ii
+  integer::j,ii
   real*8,intent(in)::RN(DIM,MAXPTS)
   real*8::x(dim)
   real*8::fv,gv(dim),hv(dim,dim)

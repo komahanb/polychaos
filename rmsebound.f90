@@ -92,7 +92,7 @@ real*8,intent(in)::ks
 real*8,intent(out):: bnd(7)
 
 real*8::avg,std
-real*8::low,up,mid
+!real*8::low,up,mid
 
 if (ks.le.0.0) stop'Wrong Ks value'
 
@@ -156,7 +156,7 @@ subroutine  matrix_process(nruns)
   real*8::vec(nruns)
   integer::nrows
   real*8::bnd(10)
-  integer::i,j,k,nruns
+  integer::i,nruns
 
   nrows=dyncyccnt
   bnd(:)=0.0

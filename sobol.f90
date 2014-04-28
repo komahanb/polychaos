@@ -173,7 +173,7 @@ subroutine i8_sobol ( dim_num, seed, quasi )
   integer ( kind = 8 ) :: i
   integer ( kind = 8 ) :: i8_bit_hi1
   integer ( kind = 8 ) :: i8_bit_lo0
-  integer ( kind = 8 ) :: inc
+!  integer ( kind = 8 ) :: inc
   logical includ(log_max)
   logical, save :: initialized = .false.
   integer ( kind = 8 ) :: j

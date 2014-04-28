@@ -9,39 +9,40 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   real*8,intent(in) ::xcof
   integer::ndimtmp
 
-  real*8:: fv,gv(nDIM),hv(nDIM,nDIM)
+!  real*8:: fv,gv(nDIM),hv(nDIM,nDIM)
 
-  integer :: idec,is,ie,id,istat,ierr
+  integer :: idec,is,ie,id,ierr
 
   integer :: mreg(MAXDAT,NDIM)
   integer :: npdf
 
-  real*8  :: DS(2,NDIM),scal
-  real*8  :: fpcb(MAXPTS),coll(MAXPTS,MAXVAR),PL(nDIM,0:MAXTRM),DPL(nDIM,0:MAXTRM),xcoftmp
+  real*8  :: DS(2,NDIM)
+!  real*8  :: PL(nDIM,0:MAXTRM)
   integer :: NMCS,nmcstmp,seed,i,j,k,readMcsamples,kk,jj
 
-  real*8 :: xavgtmp(ndim),xvartmp(ndim),xstdtmp(ndim)
+  real*8 :: xavgtmp(ndim),xstdtmp(ndim)
 
   character*60 :: histname
   character*2  :: fctindxnumber
 
   character*60 :: filename
 
-  real*8::average(ndim)
+!  real*8::average(ndim)
 
   double precision :: ymin,ymax,yminglb,ymaxglb,yhmin,yhmax
 
-  integer :: ict,ictglb,ihst
+  integer :: ict,ictglb
   double precision :: MCm,MCmglb,MCd,MCdglb,hglb,width,pdf
   double precision, dimension(ndim):: xmin,xmax,xminglb,xmaxglb,MCmprime,MCmprimeglb,MCdprime,MCdprimeglb
 
   real*8,dimension(ndim,ndim)::MCmdbleprimeglb,MCmdbleprime,MCddbleprimeglb,MCddbleprime
 
-  double precision :: st,pst,dx,p1,p2,xmintmp,xmaxtmp,dinvnorm
-  double precision :: yhat,RMSE,EI,ran
-  double precision, dimension(ndim)      :: x,df,x0,Ddiff,sigma,xbar,v
+  double precision ::dinvnorm
+  double precision :: yhat
+  double precision, dimension(ndim)      :: x,df,Ddiff,xbar
   double precision, dimension(ndim,ndim) :: d2f
-  double precision :: f,muy1,muy2,sigmay1,sigmay2,fobjlin,fobjquad,Javg(3),Jvar(3),freal,Jstd(3)
+!  double precision :: f,muy1,muy2,sigmay1,sigmay2,fobjlin,fobjquad
+  double precision::Javg(3),Jvar(3),freal,Jstd(3),fobjlin,fobjquad
 
   ! FOR MPI
 
@@ -50,8 +51,8 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   double precision, allocatable, dimension(:,:) :: HST,HSTglb
 
   integer::fctindxtmp
-  real*8::yhatprime(ndim),yhatprimetmp
-  real*8::yhatdbleprime(ndim,ndim),yhatdbleprimetmp
+
+  real*8::yhatprime(ndim),yhatdbleprime(ndim,ndim)
 
   integer :: expensive
 
@@ -196,7 +197,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   !=======================================================================!
 
 
-  idec = dble(NMCS)/dble(num_proc)
+  idec = int(dble(NMCS)/dble(num_proc))
   is   = idec*id_proc + 1
   ie   = idec*(id_proc+1)
   if(id_proc.eq.num_proc-1)ie = NMCS 
@@ -563,7 +564,9 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
               end if
 
               if (dyncyccnt.eq.1) then ! Write the title line
-                 write(94,'(11a)') '      dimpc ',' npts   ','RealAVG   ','       RealVAR   ', '   RealSTD   ','           PcAVG   ', '   PcVAR   ', '             PcSTD  ','        ErrAVG   ','     ErrVAR', '           ErrSTD'
+                 write(94,'(11a)') '      dimpc ',' npts   ','RealAVG   ','       RealVAR   ',&
+                      '   RealSTD   ','           PcAVG   ', '   PcVAR   ', '             PcSTD  ',&
+                      '        ErrAVG   ','     ErrVAR', '           ErrSTD'
               end if
 
               write(94,'(2i8,9e16.8)') dimpc,npts,Javg(1),Jvar(1),&
@@ -709,7 +712,7 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
         implicit none
         double precision, intent(in)  :: xin,xc,st
         double precision, intent(out) :: cdf
-        double precision :: vtmp
+!        double precision :: vtmp
         integer :: i,num
         double precision :: xs,xe,dx,x1,x2,pdf1,pdf2
         if(xin.lt.xc)then

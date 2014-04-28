@@ -1,0 +1,34 @@
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c dimpce.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c main.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c higher.f90
+mpif77 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c LUroutines.f
+mpif77 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c collsub.f
+mpif77 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c srsmsub.f
+mpif77 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c ludcmp.f
+mpif77 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c lubksb.f
+mpif77 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c svdcmp.f
+mpif77 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c svbksb.f
+mpif77 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c pythag.f
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c randomroutines.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c exactoutputfile.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c sampdist.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c dynsampdist.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c evalcostf.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c threebarcost.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c setuprhs.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c setupmat.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c tecplot.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c montecarlo.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c mypoly.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c mpi.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c optimize.f90
+mpif77 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c BFGSroutines.f
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c CalcstuffBFGS.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c nieder.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c sobol.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c faure.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c hammersley.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c halton.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -c rmsebound.f90
+mpif90 -fopenmp -g  -Wall -fbacktrace -pg -m64  -o pc dimpce.o main.o higher.o LUroutines.o collsub.o srsmsub.o ludcmp.o lubksb.o svdcmp.o svbksb.o pythag.o randomroutines.o exactoutputfile.o sampdist.o dynsampdist.o evalcostf.o threebarcost.o setuprhs.o setupmat.o tecplot.o montecarlo.o mypoly.o mpi.o optimize.o BFGSroutines.o CalcstuffBFGS.o nieder.o sobol.o faure.o hammersley.o halton.o rmsebound.o Eulersolve.a libmir.a tapenade.a -L/usr/local/lib -lgsl -lgslcblas -lm -Wl,-rpath=.
+ ----------- pc created ----------- 

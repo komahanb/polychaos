@@ -2,10 +2,11 @@ subroutine setupmat(stat,dim,dimpc,npts,ipar,RN,numpc,xmat)
   implicit none
   include "collsub.h"
 
-  integer :: stat,dim,dimpc,nterms,i,j,mreg(MAXDAT,DIM),npts,ipar(MAXVAR),kk,k,type,ii,jj,nn
+  integer :: stat,dim,dimpc,nterms,i,j,mreg(MAXDAT,DIM),npts,ipar(MAXVAR),kk,k,jj
   integer,intent(out)::numpc
   real*8  :: xmat(MAXDAT,MAXDAT), coll(MAXPTS,DIM), PL(DIM,0:MAXTRM),DPL(DIM,0:MAXTRM),ddpl(dim,0:maxtrm)!,xmatG(MAXDAT,MAXDAT)
   real*8::RN(dim,maxpts)
+
   !-------------------------  
   ! (2)  Assemble Matrix
   !--------------------------
@@ -14,7 +15,8 @@ subroutine setupmat(stat,dim,dimpc,npts,ipar,RN,numpc,xmat)
      coll(j,1:dim)=RN(1:dim,j)
   end do
 
-  call multidx(MAXDAT,DIM,DIMPC,mreg,nterms) ! get multiindex notation for tensor procduct
+  call multidx(MAXDAT,DIM,DIMPC,mreg,nterms) ! get multiindex notation for tensor product
+
 !!$
 !!$print *,nterms
 !!$ do i=1,nterms
@@ -150,11 +152,11 @@ subroutine setupmat(stat,dim,dimpc,npts,ipar,RN,numpc,xmat)
                        else
                           xmat(numpc,j) = xmat(numpc,j)*PL(k,mreg(j,k))         
                        end if
-
-                    else !lower diagonal elements
-
-                     !  numpc=numpc-1
-!                       stop'Something is wrong'
+!!$
+!!$                    else !lower diagonal elements
+!!$
+!!$                     !  numpc=numpc-1
+!!$!                       stop'Something is wrong'
 
                     end if
 
