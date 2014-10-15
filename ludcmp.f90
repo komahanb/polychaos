@@ -1,17 +1,17 @@
       SUBROUTINE ludcmp(a,n,np,indx,d)
       INTEGER n,np,indx(n),NMAX
-      REAL d,a(np,np),TINY
+      REAL*8:: d,a(np,np),TINY
       PARAMETER (NMAX=1500,TINY=1.0e-20)
       INTEGER i,imax,j,k
-      REAL aamax,dum,sum,vv(NMAX)
-      d=1.
+      REAL*8:: aamax,dum,sum,vv(NMAX)
+      d=1.0d0
       do 12 i=1,n
         aamax=0.
         do 11 j=1,n
           if (abs(a(i,j)).gt.aamax) aamax=abs(a(i,j))
 11      continue
         if (aamax.eq.0.) stop'singular matrix in ludcmp'
-        vv(i)=1./aamax
+        vv(i)=1.0d0/aamax
 12    continue
       do 19 j=1,n
         do 14 i=1,j-1
@@ -44,14 +44,14 @@
           vv(imax)=vv(j)
         endif
         indx(j)=imax
-        if(a(j,j).eq.0.)a(j,j)=TINY
+        if(a(j,j).eq.0.0d0)a(j,j)=TINY
         if(j.ne.n)then
-          dum=1./a(j,j)
+          dum=1.0d0/a(j,j)
           do 18 i=j+1,n
             a(i,j)=a(i,j)*dum
 18        continue
         endif
 19    continue
       return
-      END
-C  (C) Copr. 1986-92 Numerical Recipes Software #,V41.04'21v.
+   END SUBROUTINE ludcmp
+!C  (C) Copr. 1986-92 Numerical Recipes Software #,V41.04'21v.

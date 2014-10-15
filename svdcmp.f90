@@ -1,11 +1,8 @@
-      SUBROUTINE svdcmp(a,m,n,mp,np,w,v)
-      include 'collsub.h'
-      INTEGER m,mp,n,np,NMAX
-      REAL a(mp,np),v(np,np),w(np)
-      PARAMETER (NMAX=MAXDAT)
-CU    USES pythag
+      SUBROUTINE svdcmp(a,m,n,w,v)
+      INTEGER m,n
+      REAL*8:: a(m,n),v(n,n),w(n)
       INTEGER i,its,j,jj,k,l,nm
-      REAL anorm,c,f,g,h,s,scale,x,y,z,rv1(NMAX),pythag
+      REAL*8:: anorm,c,f,g,h,s,scale,x,y,z,rv1(n),pythag
       g=0.0
       scale=0.0
       anorm=0.0
@@ -168,7 +165,10 @@ CU    USES pythag
             endif
             goto 3
           endif
-          if(its.eq.30) print*,'no convergence in svdcmp'
+          if(its.eq.30) then
+             write(*,*)'no convergence in svdcmp'
+             read(*,*)
+          end if
           x=w(l)
           nm=k-1
           y=w(nm)
@@ -222,5 +222,5 @@ CU    USES pythag
 3       continue
 49    continue
       return
-      END
-C  (C) Copr. 1986-92 Numerical Recipes Software #,V41.04'21v.
+    END SUBROUTINE svdcmp
+!C  (C) Copr. 1986-92 Numerical Recipes Software #,V41.04'21v.

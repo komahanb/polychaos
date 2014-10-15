@@ -1,7 +1,9 @@
-subroutine exactoutputfile(jex,kex,par,ipar,fct,coll,dim,dimpc,nterms,npts,fpcb,rhsF,mreg,fex,fpc)
+subroutine exactoutputfile(jex,kex,par,ipar,fct,coll,&
+     dim,dimpc,nterms,npts,fpcb,rhsF,mreg,fex,fpc)
   use dimpce
+  use dimcollsub
   implicit none
-  INCLUDE "collsub.h"
+
 
   integer :: Jex,Kex,k,j,fct,npts,dim,i,kk,mreg(MAXDAT,DIM),nterms,dimpc,ipar(MAXVAR),ict
   real*8  :: par(MAXVAR,MAXPAR) 

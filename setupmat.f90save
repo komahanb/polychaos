@@ -175,13 +175,10 @@ subroutine setupmat(stat,dim,dimpc,npts,ipar,RN,numpc,xmat)
 
      end do !npts loop
 
-
-
-     
   end if
 
 end subroutine setupmat
- 
+
 subroutine multidx(maxdim,DIM,DIMPC,mregout,nterms)
 
   implicit none

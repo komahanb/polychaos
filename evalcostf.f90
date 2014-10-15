@@ -11,7 +11,7 @@ subroutine evalcostf(stat,dim,fct,x,fv,gv,hv)
 
   integer:: flag
 
-  real*8 :: xtmp(ndimt),dftmp(ndimt),d2ftmp(ndimt,ndimt)
+  real*8 :: v(ndimt),xtmp(ndimt),dftmp(ndimt),d2ftmp(ndimt,ndimt)
   real*8 :: gtol,low(ndimt-DIM),up(ndimt-DIM)
 
   !=======================================================

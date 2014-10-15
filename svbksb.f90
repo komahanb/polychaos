@@ -1,10 +1,10 @@
       SUBROUTINE svbksb(u,w,v,m,n,mp,np,b,x)
       include 'collsub.h'
       INTEGER m,mp,n,np,NMAX
-      REAL b(mp),u(mp,np),v(np,np),w(np),x(np)
+      REAL*8:: b(mp),u(mp,np),v(np,np),w(np),x(np)
       PARAMETER (NMAX=MAXDAT)
       INTEGER i,j,jj
-      REAL s,tmp(NMAX)
+      REAL*8:: s,tmp(NMAX)
       do 12 j=1,n
         s=0.
         if(w(j).ne.0.)then
@@ -23,5 +23,5 @@
         x(j)=s
 14    continue
       return
-      END
-C  (C) Copr. 1986-92 Numerical Recipes Software #,V41.04'21v.
+      END SUBROUTINE svbksb
+!C  (C) Copr. 1986-92 Numerical Recipes Software #,V41.04'21v.

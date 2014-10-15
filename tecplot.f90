@@ -1,9 +1,7 @@
 subroutine tecplot(ndim,dimpc,ipar,par,fct,npts,xcof) 
   use dimpce
   implicit none
-
   include "collsub.h"
-  !#include 'mpif.h'
 
   integer ::ndim,npts
   integer :: ifac

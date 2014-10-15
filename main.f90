@@ -1,9 +1,8 @@
 program main
   use dimpce
-
+  use dimcollsub
   implicit none
 
-  INCLUDE "collsub.h"
   include 'mpif.h'
 
   integer :: DIM
@@ -20,19 +19,25 @@ program main
 
   !PC vitals
   integer::DIMPC,numpc,npts,nterms
-  real*8 :: par(DIM,MAXPAR)
+
+  !allocate these as well
+  real*8 :: par(DIM,2)
   real*8 :: RN(DIM,MAXPTS)
-  real*8 :: fpcb(MAXPTS),gpcb(DIM,MAXPTS),xcof(MAXTRM),hpcb(dim,dim,maxpts)
+  real*8 :: fpcb(MAXPTS),gpcb(DIM,MAXPTS),hpcb(dim,dim,maxpts),xcof(MAXTRM)
   integer:: ipar(MAXVAR)
 
   !LU Decomposition
+
+  ! make these allocatable
+
   integer :: indx(MAXDAT)
-  real*8 :: W(MAXDAT),V(MAXDAT,MAXDAT),rhsF(MAXTRM)
+  real*8 :: W(MAXDAT),V(MAXDAT,MAXDAT)
+  real*8::rhsF(MAXTRM)
 
 
   !Orthogonal Polynomial related
 
-  real*8 ::xmat(MAXDAT,MAXDAT)
+  real*8,allocatable ::xmat(:,:)
 
 
   ! Cost func evals
@@ -284,7 +289,6 @@ program main
                        ! Get number of terms in the expansion
                        call combination(DIM+DIMPC,DIM,nterms)
                        ! Get number of points based on stat,solver,oversamp ratios
-
                        call getnpts(solver,stat,dim,nterms,OS,npts) 
 
                        if (dyncyccnt.eq.1) then
@@ -345,9 +349,13 @@ program main
                           write(filenum,*) '================================================='
                           write(filenum,*)
 
-!                          call setupmat(stat,dim,dimpc,npts,ipar,RN,numpc,xmat)
+                          call get_numpc(dim,npts,stat,numpc)
+                          allocate(xmat(numpc,nterms))
 
-                          write(filenum,*)' >> Number of columns in the matrix (nterms):',nterms 
+                          !xmat needs to be allocated
+                       !   call setupmat(stat,dim,dimpc,npts,ipar,RN,numpc,xmat)
+
+                          write(filenum,*)' >> Number of columns in the matrix (nterms):',nterms
                           write(filenum,*)' >> Number of rows    in the matrix  (numpc):',numpc
                           if (solver.eq.1)then
                              write(filenum,*)'    >> Solver : LU Decomposition'
@@ -373,7 +381,7 @@ program main
                           ! Evaluates cost and grad and stores them as arrays fpcb(maxpts),gpcb(dim,maxpts)
 
                           if (dynamics.eq.0.or.dyncyccnt.eq.1) then
-!                             call gather_costfn(dim,fct,stat,npts,RN,fpcb,gpcb,hpcb)
+                             call gather_costfn(dim,fct,stat,npts,RN,fpcb,gpcb,hpcb)
                              ! for further dyncyccnts they are automatically computed within dynsamp routine
                           end if
 
@@ -387,7 +395,8 @@ program main
                           if (stat.eq.2) write(filenum,*)'    >> Setting up the RHS with Func+Grad+Hess evals . . .'
 
                           ! Put fpcb,gpcb,hpcb all into one rhsF
-!                          call setupRHS(stat,dim,npts,fpcb,gpcb,hpcb,numpc,rhsF)
+!                          allocate(rhsF(numpc))
+                          call setupRHS(stat,dim,npts,fpcb,gpcb,hpcb,numpc,rhsF)
 
                           write(filenum,*)'    >> Number of RHS entries :',numpc ! Atleast equal to number of coeffients
                           write(filenum,*)
@@ -410,7 +419,8 @@ program main
                           write(filenum,*)'>> Coeffs are succesfully determined . . .'
                           write(filenum,*)'>> Number of coefficients : ',nterms
                           write(filenum,*)
-
+                          deallocate(xmat)
+                          
                        end if !master 
 
                        !-------------------------- Info Sharing -------------------------------!
@@ -459,7 +469,6 @@ program main
                              write(filenum,*) '================================================='
                              write(filenum,*)
                           end if
-                          !                    call MPI_Barrier(MPI_COMM_WORLD,ierr)
                           call RMSE_Higher(stat,dim,fct,npts,dimPC,ipar,par,xcof)
                           call MPI_Barrier(MPI_COMM_WORLD,ierr)
                        end if
@@ -892,12 +901,12 @@ subroutine solvertype(stat,os,solver)
 end subroutine solvertype
 !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 subroutine cfdparams(par)
+
   implicit none
-  include "collsub.h"
   integer,parameter::dim=2   
   integer::j
 
-  real*8,intent(out)::  par(DIM,MAXPAR)
+  real*8,intent(out)::  par(DIM,2)
 
   double precision :: Initialmach, Finalmach, InitialAOA,FinalAOA
 
@@ -923,25 +932,33 @@ end subroutine cfdparams
 !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 subroutine pseudoinv(solver,numpc,nterms,xmat,indx,W,V)
+!  use dimcollsub
 
   implicit none
-  include "collsub.h"
+
 
   integer,intent(in)::solver,numpc,nterms
-  integer,intent(out)::indx(MAXDAT)
-  real*8,intent(in)::xmat(MAXDAT,MAXDAT)
-  real*8,intent(out)::W(MAXDAT),V(MAXDAT,MAXDAT)
+  real*8,intent(in)::xmat(numpc,nterms)
+
+  real*8,intent(out)::W(nterms),V(nterms,nterms)
+  integer,intent(out)::indx(nterms)
+
   real*8::dd
 
 
   if (solver.eq.1) then
-     call ludcmp(xmat,numpc,MAXDAT,indx,dd)
+     call ludcmp(xmat,nterms,numpc,indx,dd)
      W=0.0d0
      V=0.0d0
-  else
+  else if (solver.eq.2) then
 
-     call svdcmp(xmat,numpc,nterms,MAXDAT,MAXDAT,W,V)     
+     call svdcmp(xmat,numpc,nterms,W,V)     
      indx=0
+
+else
+
+   stop'Wrong SOLVER for the linear system'
+
 
   end if
 
@@ -950,8 +967,10 @@ end subroutine pseudoinv
 !++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 subroutine backsub(solver,xmat,numpc,nterms,indx,W,V,rhsF,XCOF)
   use dimpce,only:filenum
+  use dimcollsub
+
   implicit none
-  include "collsub.h"
+
   INTEGER::J
 
   integer,intent(in)::solver,numpc,nterms
@@ -1069,9 +1088,9 @@ SUBROUTINE HERM(N,X,Y,DY,D2Y)
 
 
       subroutine evalPC(ndim,dimPC,ipar,xcof,x,yhat,yhatprime,yhatdbleprime)
-
+        use dimcollsub
         implicit none
-        include "collsub.h"
+!        include 'collsub.h'
 
         integer :: NDIM,DIMPC,nterms,mreg(maxdat,ndim) ! multi-index variables
         integer :: k,j,jj,kk
@@ -1215,3 +1234,34 @@ SUBROUTINE HERM(N,X,Y,DY,D2Y)
 
         return
       end subroutine evalPC
+
+subroutine get_numpc(dim,npts,stat,numpc)
+implicit none
+
+integer,intent(in)::dim,npts,stat
+integer, intent(out)::numpc
+
+numpc=0 !initialize
+
+if (stat.eq.0) then 
+
+numpc=npts
+
+else if (stat.eq.1) then
+
+numpc= npts*(1+dim)
+
+else if (stat.eq.2) then
+
+numpc=npts*(1+dim+(dim*(dim+1))/2)
+
+
+else 
+
+stop'Wrong STAT in numpc!'
+
+end if
+
+return
+end subroutine get_numpc
+
