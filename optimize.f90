@@ -111,7 +111,8 @@ subroutine optimize(ndvar,D,ndvart,fobj,dfdD,low,up,gtol,maximize,outputscreen,f
      !          3) the value of the objective function fobj,
      !          4) the norm of the projected gradient,  dsave(13)
 
-     if(outputscreen) write (*,'(2(a,i5,4x),a,1p,d12.5,4x,a,1p,d12.5)') 'Iter',isave(30),'nfg =',isave(34),'f =',fobj,'|grad| =',normgrad
+     if(outputscreen) write (*,'(2(a,i5,4x),a,1p,d12.5,4x,a,1p,d12.5)') &
+          & 'Iter',isave(30),'nfg =',isave(34),'f =',fobj,'|grad| =',normgrad
 
 
      !        go back to the minimization routine.

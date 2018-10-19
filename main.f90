@@ -327,12 +327,19 @@ program main
                           write(filenum,*)
                           write(filenum,*)' >> NPTS to add this cycle:',nptstoaddpercyc 
                        end if
-
-                       call dynsampdist(stat,DIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,nptsold,npts,nptstoaddpercyc,fct,fpcb,gpcb,hpcb,xcof,RN)
+                       
+                       call dynsampdist(stat,DIM,DIMPC,ipar, par, &
+                            & makesamples,ntermsold,nterms, &
+                            & nptsold,npts,nptstoaddpercyc, &
+                            & fct,fpcb,gpcb,hpcb,xcof,RN)
 
                     else ! random points again call the same routine
 
-                       if(id_proc.eq.0)  call sampdist(stat,DIM,DIMPC,ipar,par,makesamples,nterms,npts,fct,RN)
+                       if(id_proc.eq.0)  call sampdist(stat,DIM,DIMPC,&
+                            & ipar,par,&
+                            & makesamples,&
+                            & nterms,npts,&
+                            & fct,RN)
 
                     end if !dynamics
 

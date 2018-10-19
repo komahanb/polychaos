@@ -17,7 +17,8 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
   integer :: npdf
 
   real*8  :: DS(2,NDIM),scal
-  real*8  :: fpcb(MAXPTS),coll(MAXPTS,MAXVAR),PL(nDIM,0:MAXTRM),DPL(nDIM,0:MAXTRM),xcoftmp
+  real*8  :: fpcb(MAXPTS),coll(MAXPTS,MAXVAR),PL(nDIM,0:MAXTRM), &
+       & DPL(nDIM,0:MAXTRM),xcoftmp
   integer :: NMCS,nmcstmp,seed,i,j,k,readMcsamples,kk,jj
 
   real*8 :: xavgtmp(ndim),xvartmp(ndim),xstdtmp(ndim)
@@ -33,15 +34,18 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 
   integer :: ict,ictglb,ihst
   double precision :: MCm,MCmglb,MCd,MCdglb,hglb,width,pdf
-  double precision, dimension(ndim):: xmin,xmax,xminglb,xmaxglb,MCmprime,MCmprimeglb,MCdprime,MCdprimeglb
+  double precision, dimension(ndim):: xmin,xmax,xminglb,xmaxglb,&
+       & MCmprime,MCmprimeglb,MCdprime,MCdprimeglb
 
-  real*8,dimension(ndim,ndim)::MCmdbleprimeglb,MCmdbleprime,MCddbleprimeglb,MCddbleprime
+  real*8,dimension(ndim,ndim)::MCmdbleprimeglb,MCmdbleprime,&
+       & MCddbleprimeglb,MCddbleprime
 
   double precision :: st,pst,dx,p1,p2,xmintmp,xmaxtmp,dinvnorm
   double precision :: yhat,RMSE,EI,ran
   double precision, dimension(ndim)      :: x,df,x0,Ddiff,sigma,xbar,v
   double precision, dimension(ndim,ndim) :: d2f
-  double precision :: f,muy1,muy2,sigmay1,sigmay2,fobjlin,fobjquad,Javg(3),Jvar(3),freal,Jstd(3)
+  double precision :: f,muy1,muy2,sigmay1,sigmay2,fobjlin,fobjquad,&
+       & Javg(3),Jvar(3),freal,Jstd(3)
 
   ! FOR MPI
 
@@ -550,7 +554,8 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
 
               write(filenum,'(6x,a,3e15.5)')'PC   : Mean, Var, SD',fmean,fvar,fstd
 
-              write(filenum,'(6x,a,3e15.5)')'Error: Mean, Var, SD',abs(fmean-Javg(1)),abs(fvar-Jvar(1)),abs(fstd-Jstd(1))
+              write(filenum,'(6x,a,3e15.5)')'Error: Mean, Var, SD',abs(fmean-Javg(1)),&
+                   & abs(fvar-Jvar(1)),abs(fstd-Jstd(1))
 
               ! Stats output
 
@@ -562,10 +567,16 @@ subroutine montecarlo(stat,fct,NDIM,dimpc,nterms,npts,ipar,xcof)
               end if
 
               if (dyncyccnt.eq.1) then ! Write the title line
-                 write(94,'(11a)') '      dimpc ',' npts   ','RealAVG   ','       RealVAR   ', '   RealSTD   ','           PcAVG   ', '   PcVAR   ', '             PcSTD  ','        ErrAVG   ','     ErrVAR', '           ErrSTD'
+                 write(94,'(11a)') '      dimpc ',' npts   ','RealAVG   ',&
+                      & '       RealVAR   ', '   RealSTD   ',&
+                      & '           PcAVG   ', '   PcVAR   ',&
+                      & '             PcSTD  ','        ErrAVG   ',&
+                      & '     ErrVAR', '           ErrSTD'
               end if
 
-              write(94,'(2i8,9e16.8)') dimpc,npts,Javg(1),Jvar(1),Jstd(1),fmean,fvar,fstd,abs(fmean-Javg(1)),abs(fvar-Jvar(1)),abs(fstd-Jstd(1))
+              write(94,'(2i8,9e16.8)') dimpc,npts,Javg(1),Jvar(1),&
+                   & Jstd(1),fmean,fvar,fstd,&
+                   & abs(fmean-Javg(1)),abs(fvar-Jvar(1)),abs(fstd-Jstd(1))
 
               close(94)
            end if

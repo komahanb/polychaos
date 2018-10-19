@@ -1,4 +1,5 @@
-subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,nptsold,npts,nptstoaddpercyc,fct,fpcb,gpcb,hpcb,xcof,RN)
+subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,&
+     & nterms,nptsold,npts,nptstoaddpercyc,fct,fpcb,gpcb,hpcb,xcof,RN)
   use dimpce
   implicit none
   include 'collsub.h'
@@ -15,17 +16,25 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
   real*8::RNTEMP(NDIM,nptstoaddpercyc)
   character*60::filename
 
-  integer :: i,ii,j,jj,jjj,k,kk,kp,l,NTOEX,NTOEXtmp,triangle_node(ndim+1,100000),triangle_num,triangle_coor_num,NCP,node,knnptr(20000),nseed
+  integer :: i,ii,j,jj,jjj,k,kk,kp,l,NTOEX,NTOEXtmp,&
+       & triangle_node(ndim+1,100000),triangle_num,triangle_coor_num,&
+       & NCP,node,knnptr(20000),nseed
   integer :: mode
-  double precision :: Dtoextmp(ndim),Dtoex(ndim,100000),dist(100000),minftoex(100000),maxftoex(100000),distmean,ftoextry(2,100000)
-  double precision :: diff2,RMSE(100000),RMSEmean,EI,Ddibtmp(ndim,0:1000),Dgdibtmp(ndim,0:1000),fdibtmp(0:1000),gdibtmp(ndim,0:1000),hdibtmp(ndim,ndim,0:1000),diffloctmp,difflocmin,difflocavg, SIGMAmean,distcomp
+  double precision :: Dtoextmp(ndim),Dtoex(ndim,100000),dist(100000),&
+       & minftoex(100000),maxftoex(100000),distmean,ftoextry(2,100000)
+  double precision :: diff2,RMSE(100000),RMSEmean,EI,Ddibtmp(ndim,0:1000),&
+       & Dgdibtmp(ndim,0:1000),fdibtmp(0:1000),gdibtmp(ndim,0:1000),&
+       & hdibtmp(ndim,ndim,0:1000),diffloctmp,difflocmin,difflocavg,&
+       & SIGMAmean,distcomp
   double precision, dimension(nptstoaddpercyc) :: f
   double precision, dimension(ndim,nptstoaddpercyc) :: df,Dad,v
   double precision, dimension(ndim,ndim,nptstoaddpercyc) :: d2f
   double precision, DIMENSION(200) :: SIGV
   double precision, DIMENSION(200) :: SIGG
-  integer :: Taylororder,  NCPG,idec,is,ie,id,point,kpc,nptstoaddpercyctmp,  nptstoaddpercycorig
-  double precision :: BETA, GAMM, SIGMA(100000),distmeanloc,RMSEmeanloc,minftoexloc(10000),maxftoexloc(10000),phi,invphi
+  integer :: Taylororder,  NCPG,idec,is,ie,id,point,kpc,&
+       & nptstoaddpercyctmp, nptstoaddpercycorig
+  double precision :: BETA, GAMM, SIGMA(100000),distmeanloc,RMSEmeanloc,&
+       & minftoexloc(10000),maxftoexloc(10000),phi,invphi
   character*60::export
   integer::ntermsold
   real*8,intent(inout):: fpcb(MAXPTS),gpcb(NDIM,MAXPTS),hpcb(NDIM,NDIM,maxpts)
@@ -199,12 +208,16 @@ subroutine dynsampdist(stat,nDIM,DIMPC,ipar,par,makesamples,ntermsold,nterms,npt
         
      end if
 
-     CALL MIR_EVALUATE(1, ndim, 1, Dtoex(:,k), NCP, Ddibtmp(:,0:NCP-1), fdibtmp(0:NCP-1), SIGV, NCPG , Dgdibtmp(:,0:NCPG-1), gdibtmp(:,0:NCPG-1), SIGG, BETA, GAMM, Taylororder, 1, ftoextry(1,k), SIGMA(k), IERR)
+     CALL MIR_EVALUATE(1, ndim, 1, Dtoex(:,k), NCP, Ddibtmp(:,0:NCP-1), &
+          & fdibtmp(0:NCP-1), SIGV, NCPG , Dgdibtmp(:,0:NCPG-1), &
+          &  gdibtmp(:,0:NCPG-1), SIGG, BETA, GAMM, Taylororder, 1, &
+          & ftoextry(1,k), SIGMA(k), IERR)
 
      if (IERR.ne.0)stop'Error in MIR Local Surrogate Beta Gamma'
 
 
-     call evalPC(ndim,dimPC-1,ipar,xcof,Dtoex(:,k),ftoextry(2,k),derivdummy,dblederivdummy) ! Evaluates PC at x and returns yhat 
+     call evalPC(ndim,dimPC-1,ipar,xcof,Dtoex(:,k),ftoextry(2,k), &
+          & derivdummy,dblederivdummy) ! Evaluates PC at x and returns yhat 
 
      !      print *,k,ftoextry(2,k),ftoextry(1,k)!(ftoextry(2,k)-ftoextry(1,k))!,ftoextry(2,k),ftoextry(1,k),
 

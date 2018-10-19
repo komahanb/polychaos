@@ -25,15 +25,15 @@ F77	= mpif77
 
 
 CC = gcc
-FC = ifort
+FC = mpif90
 
-FFLAGS  = -r8 -O4 -openmp # -fpe3 -parallel  #-traceback #-ftrapuv -check uninit -traceback #  -g -fpe3 # -traceback -debug all
+FFLAGS  = -O3 # -r8 -O4 -openmp # -fpe3 -parallel  #-traceback #-ftrapuv -check uninit -traceback #  -g -fpe3 # -traceback -debug all
 
 # -zero -fpe0  -CB  -O0  -g3 -debug extended -ftrapuv -check all #-parallel # -check
 # -openmp #-check
 
-CFLAGS = -fPIC -Wall -O0 -g -I$(GSL_prefix)/include
-LFLAGS =  -L$(GSL_prefix)/lib -lgsl -lgslcblas -lm
+CFLAGS = -fPIC -Wall -O0 -g #-I$(GSL_prefix)/include
+LFLAGS =  -L$(GSL_prefix)/lib -lm -lgsl -lgslcblas 
 LIBS = -ldl -lstdc++
 
 
